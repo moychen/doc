@@ -1,10 +1,7 @@
 ﻿# Go语言array、slice和map
 
-标签（空格分隔）： Golang
+## 数组Array
 
----
-
-##数组Array
 >* [10]int和[20]int是不同类型
 >* 调用func f(arr [10]int)传参时会对数组进行拷贝
 >* go语言中一般不直接使用数组
