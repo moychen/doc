@@ -253,9 +253,10 @@ func inspect(r Retriever) {
 	}
 }
 ```
-###接口的组合
+### 接口的组合
 一个接口可以包含一个或多个其他的接口，这相当于直接将这些内嵌接口的方法列举在外层接口中一样。
 比如接口 File 包含了 ReadWrite 和 Lock 的所有方法，它还额外有一个 Close() 方法。
+
 ```go
 type ReadWrite interface {
     Read(b Buffer) bool
@@ -273,8 +274,9 @@ type File interface {
     Close()
 }
 ```
-###常用系统接口
-##总结
+
+
+## 总 结
 我们总结一下前面看到的：Go没有类，而是松耦合的类型、方法对接口的实现。
 OO 语言最重要的三个方面分别是：封装，继承和多态，在 Go 中它们是怎样表现的呢？
 

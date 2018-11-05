@@ -16,7 +16,9 @@ ssh-keygen -t rsa -C “enumhack@163.com"
 生成的时候注意选择sshkey保存的位置，设置连接时的password（建议不设置密码，方便本地使用）。
 
 ## Git 代码管理
-### Git Branching and Merging 
+### git branch and git Merge 
 ```
 
 ```
+
+### git pull and git fetch
