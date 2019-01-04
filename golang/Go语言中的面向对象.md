@@ -41,10 +41,11 @@ func (node Node) Print() {
 var pRoot *Node
 pRoot.SetValue(2) 
 ```
->* nil指针也可以调用方法
+>* nil指针也可以调用方法，但是nil指针指向不合法内存。
 >* 无论是值接收者和指针接收者，它们调用方法的方式都是一样的
 
-**演示程序**
+**示例**
+
 ```go
 package main
 
@@ -132,10 +133,25 @@ func (myNode *myTreeNode) postOrder() {
 ```
 2.通过别名的方式
 ```go
-
+package queue
+// 定义了新类型Queue，该类型具有几种方法
+type Queue []int
+// 因为需要改参数，所以传地址
+func (q *Queue) Push(v int) {
+    *q = append(*q, v)
+}
+func (q *Queue) Pop() int {
+    head := (*q)[0] // 注意加括号
+    *q = (*q)[1:]
+    return head
+}
+func (q *Queue) IsEmpty() bool{
+    return len(*q) == 0
+}
 ```
 ## Golang面向接口
-###接口的定义和使用
+### 接口的定义和使用
+
 >* 接口的实现是隐式的,只需要结构实现了接口的方法，我们就说实现了这个接口。
 
 在main包中我们定义了一个Retriever接口，里面包含一个Get方法。在mock包中我们定义一个Retriever结构体，实现了Get方法，我们就当做mock.Retriever实现了Retriever接口。
@@ -210,8 +226,9 @@ r = &real.Retriever{
 fmt.Printf("%T, %v\n", r, r)
 fmt.Println(download(r))
 ```
-而定义mock.Retriever结构中的Get方法时，采用的值接收者，在使用时，既可以采用值方式使用指针方式使用，如下所示
+而定义mock.Retriever结构中的Get方法时，采用的值接收者，在使用时，既可以采用值方式使用也可以使用指针方式使用，如下所示：
 **值传递方式**
+
 ```go
 var r Retriever 
 r = mock.Retriever{"This is a mock retriever!"}
@@ -280,7 +297,7 @@ type File interface {
 我们总结一下前面看到的：Go没有类，而是松耦合的类型、方法对接口的实现。
 OO 语言最重要的三个方面分别是：封装，继承和多态，在 Go 中它们是怎样表现的呢？
 
-**封装（数据隐藏）**：和别的 OO 语言有 4 个或更多的访问层次相比，Go 把它简化为了 2 层（参见 4.2 节的可见性规则）:
+**封装（数据隐藏）**：和别的 OO 语言有 4 个或更多的访问层次相比:
 >* 包范围内的：通过标识符首字母小写，对象 只在它所在的包内可见
 >* 可导出的：通过标识符首字母大写，对象 对所在包以外也可见
 
