@@ -85,7 +85,12 @@ volatile int a;//这里对a是否初始化已经不再重要了
 ```
 为了消除这种问题，使用volatile关键字告诉编译器每次访问a的时候都需要读内存，而不对其优化。
 
+### mutable
+
+
+
 ### 动态库与静态库的区别，动态库链接的方法
+
 静态库和动态库区别来自链接阶段如何处理库、链接成可执行程序。分别称为静态链接方式、动态链接方式。
 #### 静态库
 之所以称为静态库，是因为在链接阶段会将会变生成的目标文件.o与引用到的库一起打包到可执行文件中，整个函数库的所有数据都会被整合进目标代码中。
@@ -127,6 +132,8 @@ g++ TestDynamicLibrary.cpp -L../DynamicLibrary -ldynmath
 这种方式是指在编译之前并不知道将会调用哪些DLL函数，完全是在运行过程中根据需要决定应调用哪个函数，将其加载到内存中（只加载调用的函数进内存），并标识内存地址，其他程序也可以使用该程序，并用LoadLibrary和GetProcAddress动态获得DLL函数的入口地址。（dll在内存中只存在一份，处在运行阶段）
 
 ### pkg_config的作用
+
+
 
 ### C++ explicit的作用
 This keyword is a declaration specifier that can only be applied to in-class constructor declarations. Constructors declared **explicit** will not be considered for implicit conversions. For example:
