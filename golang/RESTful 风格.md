@@ -1,2 +1,2 @@
-# RESTful风格
+# RESTful
 

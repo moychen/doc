@@ -2,8 +2,6 @@
 
 ## 1 安装Docker
 
-
-
 ## 2 配置Docker服务
 
 **避免每次使用docker命令时都需要切换到特权身份，将当前用户加入安装中自动创建的docker用户组。**
@@ -138,7 +136,7 @@ docker pull ubuntu:18.04其实就相当于docker pull registry.hub.docker.com/ub
 
 ### 3.4 删除和清理镜像
 
-#### 使用镜像标签或ID	删除镜像
+#### 使用镜像标签或ID删除镜像
 
 使用docker rmi和docker image rm命令可以删除镜像。
 
@@ -243,7 +241,7 @@ Dockerfile内容如下：
 ```dockerfile
 FROM debian:stretch-slim 
 LABEL version="1.0" maintainer="docker user <docker_user@github>"
-RUN  apt-get update && \                                                                    
+RUN  apt-get update && \                                                                 
 			apt-get install -y python3 && \
     		apt-get clean && \
     		rm -rf /var/lib/apt/lists/*
