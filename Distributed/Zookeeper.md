@@ -4,13 +4,20 @@
 
 Zoo
 
-ZK 服务有两种模式（standalone和quorum），standalone模式下ZK集群只有一个独立运行的ZK节点，quorum模式下ZK集群包含多个ZK节点。应用使用ZK客户端库来使用ZK服务，ZK客户端负责和ZK集群交互。
+ZK 服务有两种模式（standalone和quorum），standalone模式下ZK集群只有一个独立运行的ZK节点，quorum模式下ZK集群包含多个ZK节点, 一个leader节点和其他follower节点, leader节点可以处理读写请求, 而follower节点只可以处理读请求, follower接收到写请求时会转发给leader处理. 应用使用ZK客户端库来使用ZK服务，ZK客户端负责和ZK集群交互。
 
-![image-20200316011624971](F:\Doc\Distributed\images\Zookeeper\image-20200316011624971.png)
+![image-20200316011624971](images\Zookeeper\image-20200316011624971.png)
 
 **session**
 
+​		ZK客户端在和ZK集群中的某个节点建立连接成功之后会创建一个session. 客户端可以主动关闭session. 另外, 在会话超时(即ZK节点在设置的timeout时间内没有收到客户端任何消息)时, ZK节点也会关闭session. 如果ZK客户端发现链接的ZK节点异常, 会自动和其他ZK节点建立连接.
 
+![1584375796409](images/Zookeeper/1584375796409.png)
+
+**数据一致性**
+
+> * 全局可线性化(Linearizable)写入: 先到达leader的写请求会被先处理, leader决定写请求的执行顺序.
+> * 客户端FIFO顺序: 保证单个客户端的请求按照发送顺序执行.
 
 
 
@@ -36,7 +43,7 @@ ZooKeeper适用于存储和协同相关的关键数据，不适用于大量数�
 
 ​		ZooKeeper的层次模型称作 data tree。Data tree的每个节点称为znode。不同于文件系统，ZooKeeper的每个节点都可以保存数据。每个节点都有一个版本号（version），版本从0开始计数。
 
-![image-20200315211414646](F:\Doc\Distributed\images\Zookeeper\image-20200315211414646.png)
+![image-20200315211414646](images\Zookeeper\image-20200315211414646.png)
 
 ​		ZooKeeper 对外提供一个用来访问 data tree 的简化文件系统API：
 
@@ -67,7 +74,38 @@ ZooKeeper主要有以上4种znode。其他暂不了解。
 
 参考示例配置文件：
 
+```json
+# The number of milliseconds of each tick
+tickTime=2000
+# The number of ticks that the initial 
+# synchronization phase can take
+initLimit=10
+# The number of ticks that can pass between 
+# sending a request and getting an acknowledgement
+syncLimit=5
+# the directory where the snapshot is stored.
+# do not use /tmp for storage, /tmp here is just 
+# example sakes.
+dataDir=/tmp/zookeeper
+# the port at which the clients will connect
+clientPort=2181
+# the maximum number of client connections.
+# increase this if you need to handle more clients
+#maxClientCnxns=60
+#
+# Be sure to read the maintenance section of the 
+# administrator guide before turning on autopurge.
+#
+# http://zookeeper.apache.org/doc/current/zookeeperAdmin.html#sc_maintenance
+#
+# The number of snapshots to retain in dataDir
+#autopurge.snapRetainCount=3
+# Purge task interval in hours
+# Set to "0" to disable auto purge feature
+#autopurge.purgeInterval=1
+```
 
+![1584376508614](images/Zookeeper/1584376508614.png)
 
 ### 1.4 常用命令
 
@@ -80,6 +118,7 @@ ZooKeeper主要有以上4种znode。其他暂不了解。
 |        |                                                              |
 |        |                                                              |
 | quit   |                                                              |
+
 
 
 ### 1.5 应用实例
@@ -166,6 +205,8 @@ grep -E -i "((exception)|(error))" *
 # 检查端口是否在指定端口监听
 netstat -an | ag 2181
 ```
+
+
 
 ## 2. 开发篇
 
