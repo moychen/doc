@@ -63,7 +63,7 @@ x（eXecute，执行权限）：对文件而言，具有执行文件的权限；
 
 ### top 选项及输出信息详解
 
-![image-20200227155436241](F:\MINE\doc\Linux\images\Linux使用手册\image-20200227155436241.png)
+![image-20200227155436241](images\Linux使用手册\image-20200227155436241.png)
 
 #### 相关选项
 
