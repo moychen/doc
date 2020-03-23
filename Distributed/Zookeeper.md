@@ -220,6 +220,140 @@ netstat -an | ag 2181
 
 ## 3. 运维篇
 
+### 1.1
+
+### 1.2 ZK监控
+
+http://zookeeper.apache.org/doc/r3.4.10/zookeeperAdmin.html#sc_zkCommands
+
+#### The Four Letter Words
+
+​		一组检查zk节点状态的命令,每个命令由四个字母组成,可以通过telnet或ncat使用客户端端口向zk发出命令.
+
+```bash
+# Are you ok?
+echo ruok | ncat localhost 2181
+# 查看配置项
+echo conf | ncat localhost 2181
+
+# 查看ZK详细的运行状态信息和客户端连接信息
+echo stat | ncat localhost 2181
+
+
+```
+
+ZooKeeper responds to a small set of commands. Each command is composed of four letters. You issue the commands to ZooKeeper via telnet or nc, at the client port.
+
+Three of the more interesting commands: "stat" gives some general information about the server and connected clients, while "srvr" and "cons" give extended details on server and connections respectively.
+
+- conf
+
+  **New in 3.3.0:** Print details about serving configuration.
+
+- cons
+
+  **New in 3.3.0:** List full connection/session details for all clients connected to this server. Includes information on numbers of packets received/sent, session id, operation latencies, last operation performed, etc...
+
+- crst
+
+  **New in 3.3.0:** Reset connection/session statistics for all connections.
+
+- dump
+
+  Lists the outstanding sessions and ephemeral nodes. This only works on the leader.
+
+- envi
+
+  Print details about serving environment
+
+- ruok
+
+  Tests if server is running in a non-error state. The server will respond with imok if it is running. Otherwise it will not respond at all.A response of "imok" does not necessarily indicate that the server has joined the quorum, just that the server process is active and bound to the specified client port. Use "stat" for details on state wrt quorum and client connection information.
+
+- srst
+
+  Reset server statistics.
+
+- srvr
+
+  **New in 3.3.0:** Lists full details for the server.
+
+- stat
+
+  Lists brief details for the server and connected clients.
+
+- wchs
+
+  **New in 3.3.0:** Lists brief information on watches for the server.
+
+- wchc
+
+  **New in 3.3.0:** Lists detailed information on watches for the server, by session. This outputs a list of sessions(connections) with associated watches (paths). Note, depending on the number of watches this operation may be expensive (ie impact server performance), use it carefully.
+
+- wchp
+
+  **New in 3.3.0:** Lists detailed information on watches for the server, by path. This outputs a list of paths (znodes) with associated sessions. Note, depending on the number of watches this operation may be expensive (ie impact server performance), use it carefully.
+
+- mntr
+
+  **New in 3.4.0:** Outputs a list of variables that could be used for monitoring the health of the cluster.
+
+  ```
+  $ echo mntr | nc localhost 2185
+  
+  zk_version  3.4.0
+  zk_avg_latency  0
+  zk_max_latency  0
+  zk_min_latency  0
+  zk_packets_received 70
+  zk_packets_sent 69
+  zk_outstanding_requests 0
+  zk_server_state leader
+  zk_znode_count   4
+  zk_watch_count  0
+  zk_ephemerals_count 0
+  zk_approximate_data_size    27
+  zk_followers    4                   - only exposed by the Leader
+  zk_synced_followers 4               - only exposed by the Leader
+  zk_pending_syncs    0               - only exposed by the Leader
+  zk_open_file_descriptor_count 23    - only available on Unix platforms
+  zk_max_file_descriptor_count 1024   - only available on Unix platforms
+  ```
+
+  The output is compatible with java properties format and the content may change over time (new keys added). Your scripts should expect changes.
+
+  ATTENTION: Some of the keys are platform specific and some of the keys are only exported by the Leader.
+
+  The output contains multiple lines with the following format:
+
+  ```
+  key \t value
+  ```
+
+#### JMX
+
+http://zookeeper.apache.org/doc/r3.4.10/zookeeperJMX.html
+
+ZooKeeper很好的支持了JMX,大量的监控和管理工作可以通过JMX来做,可以把ZK的JMX数据集成到Prometheus,使用Prometheus来做ZK的监控.
+
+```bash
+# 启动JMX, 默认只能本地访问
+jconsole 
+
+# 要想远程访问,需要在ZK server启动之前配置环境变量
+export JMXPORT = 8081
+```
+
+### 1.3 ZK Observer
+
+节点2为leader,在收到大多数节点的Accept消息后,向所有节点发送commit消息.
+
+![1584979865037](images/Zookeeper/1584979865037.png)
+
+​		Observer节点和ZK其他节点唯一的交互就是接收来自leader的inform消息,更新自己本地的存储,不参与提交和选举的投票过程.
+
+![1584979611531](images/Zookeeper/1584979611531.png)
+
 ## 4. 进阶篇
 
 ## 5.对比Chubby、etcd和ZooKeeper
