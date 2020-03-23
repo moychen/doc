@@ -346,13 +346,37 @@ export JMXPORT = 8081
 
 ### 1.3 ZK Observer
 
-节点2为leader,在收到大多数节点的Accept消息后,向所有节点发送commit消息.
+节点2为leader,其他为follower, 节点2在收到大多数节点的Accept消息后,向所有节点发送commit消息.
 
 ![1584979865037](images/Zookeeper/1584979865037.png)
 
 ​		Observer节点和ZK其他节点唯一的交互就是接收来自leader的inform消息,更新自己本地的存储,不参与提交和选举的投票过程.
 
 ![1584979611531](images/Zookeeper/1584979611531.png)
+
+假设1为observer.不参与事务提交的过程,只等待leader的通知.
+
+![1584980036113](images/Zookeeper/1584980036113.png)
+
+
+
+![1584980380696](images/Zookeeper/1584980380696.png)
+
+为什么要给每个节点推送给propose 而不是直接 commite 呢？
+
+作者回复: 我想您说的是PPT第13页。以下是ZooKeeper leader处理一个写请求的过程：
+
+\1. Leader把写请求通过propose消息发给所有的节点。
+\2. Leader在收到集群中大部分节点的accept消息之后才可以发送commit消息给所有的节点。
+
+Leader不可以直接收到用户的写请求就commit。假设我们在图中的3节点集群中加入节点4和节点5形成一个5节点集群。节点2在收到写请求之后立刻给节点1发commit消息，节点1给客户端发写成功消息。如果在节点3、节点4和节点5收到这个commit消息之前发生了如下的网络分区。
+
+​    分区A 分区B
+节点1 节点2 | 节点3 节点4 节点4
+
+分区B中的节点可以新选举一个leader，从而丢失上述的写请求。丢失已经commit的写操作是不可以的。
+
+关于这一部分的细节，后续的章节会详细说明。
 
 ## 4. 进阶篇
 
