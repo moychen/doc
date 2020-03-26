@@ -401,8 +401,6 @@ Leader不可以直接收到用户的写请求就commit。假设我们在图中�
 >
 > * 使用zkCli.sh连接每一个ZooKeeper的follower节点，并执行sync。
 
-
-
 ​		ZK3.5.0加入新的特性动态配置(dynamic reconfiguration),可以在不停ZK服务调整集群成员.但是必须启用Authentication机制.
 
 ### 1.5 数据存储 
