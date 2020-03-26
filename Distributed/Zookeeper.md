@@ -378,6 +378,39 @@ Leader不可以直接收到用户的写请求就commit。假设我们在图中�
 
 关于这一部分的细节，后续的章节会详细说明。
 
+
+
+### 1.4 动态配置
+
+手动集群成员调整
+
+> * 停止整个ZK现有集群
+> * 更改配置文件zoo.cfg的server.n项
+> * 启动新集群的ZK节点
+
+导致的问题:
+
+> * 需要停止ZK服务
+> * 可能导致已提交的数据写入被覆盖(如下图)
+
+![1585146490522](images/Zookeeper/1585146490522.png)
+
+通过以下操作可以保证每个follower节点和leader节点的数据是一样的,可以避免提交数据被覆盖问题。
+
+> * 停止所有对ZooKeeper集群的访问。
+>
+> * 使用zkCli.sh连接每一个ZooKeeper的follower节点，并执行sync。
+
+
+
+​		ZK3.5.0加入新的特性动态配置(dynamic reconfiguration),可以在不停ZK服务调整集群成员.但是必须启用Authentication机制.
+
+### 1.5 数据存储 
+
+  
+
+
+
 ## 4. 进阶篇
 
 ## 5.对比Chubby、etcd和ZooKeeper
