@@ -764,6 +764,19 @@ end
 3. Replace 语法 如果有记录，则执行 before insert, before delete, after delete, after insert
 ```
 
+### 定时任务
+
+```sql
+-- 查看event是否开启，如是OFF或者0，表示是关闭的。
+show VARIABLES LIKE '%event_scheduler%'; 
+--开启evevt功能 
+SET GLOBAL event_scheduler = 1;
+
+
+```
+
+
+
 ### SQL编程
 
 ```sql
