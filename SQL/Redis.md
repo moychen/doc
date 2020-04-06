@@ -110,6 +110,85 @@ keys一般不在生产环境使用.一般生产环境键值对多,keys命令时�
 | hsetnx [key] [f] [v]                                         | 如果f已存在,则失败                   | O(1)   |
 | hincrbyfloat                                                 | hincrby浮点数版本                    | O(1)   |
 
+#### list
+
+> * 有序
+> * 可重复
+
+| 命令                                         | 含义                                                         | 复杂度    |
+| :------------------------------------------- | ------------------------------------------------------------ | --------- |
+| rpush [key] [v1] [v2]...[vn]                 | 从列表右边插入值                                             | O(1)~O(n) |
+| lpush [key] [v1] [v2]...[vn]                 | 从列表左边插入值                                             | O(1)~(On) |
+| linsert [key] [before\|after] value newvalue | 在list指定的值前\|后插入newvalue                             | O(n)      |
+| lpop [key]                                   | 从列表左侧弹出一个item                                       | O(1)      |
+| rpop [key]                                   | 从列表右侧弹出一个item                                       | O(1)      |
+| lrem [key] [count] [value]                   | 根据count值从列表中删除所有value相等的项：（1）count>0：从左到右，删除最多count个value相等的项；（2）count<0，从右到左删除最多Math.abs(count)个value相等的项；（3）count=0,删除所有value相等的项 | O(n)      |
+| ltrim [key] [start] [end]                    | 按照索引范围修剪列表，即保留列表[start, end]，其他删除       | O(n)      |
+| lrange key [start] [end]                     | 获取列表指定索引范围[start, end]的所有item.如lrange key 0 2，lrange key 1 -1 | O(n)      |
+| lindex [key] [index]                         | 获取列表指定索引的item                                       | O(n)      |
+| llen [key]                                   | 获取列表长度                                                 | O(1)      |
+| lset [key] [index] [newvalue]                | 设置列表指定索引对应的值为newvalue                           | O(n)      |
+| blpop [key] [timeout]                        | lpop阻塞版本，timeout是阻塞超时时间，timeout=0一直等待，直到有值插入 | O(1)      |
+| brpop [key] [timeout]                        | rpop阻塞版本，timeout是阻塞超时时间，timeout=0一直等待，直到有值插入 | O(1)      |
+
+注意列表可以反向操作：
+
+![image-20200406230639468](images/Redis/image-20200406230639468.png)
+
+**TIPS**
+
+![image-20200406232148852](images/Redis/image-20200406232148852.png)
+
+#### set
+
+> * 不能插入重复元素
+> * 无序
+> * 集合间操作
+
+| 命令                                 | 含义                                               | 复杂度 |
+| :----------------------------------- | -------------------------------------------------- | ------ |
+| sadd [key] [element]                 | 向集合中添加element(如果element已存在，则添加失败) | O(1)   |
+| srem [key] [element]                 | 将集合key中的element移除                           | O(1)   |
+| scard [key]                          | 计算集合key的大小                                  | O(1)   |
+| sismember [key] [it]                 | 判断it是否在集合key中                              | O(1)   |
+| srandmember [key] [count]            | 随机取出集合key中的count个元素，不会删除集合数据   | O( )   |
+| smembers [key]                       | 取出集合中所有元素，结果无序                       | O(n)   |
+| spop [key]                           | 从集合中随机弹出一个元素，会删除集合数据           | O()    |
+| sscan                                |                                                    |        |
+| sdiff [key1] [key2]                  | 差集                                               |        |
+| sinter [key1] [key2]                 | 交集                                               |        |
+| sunion [key1] [key2]                 | 并集                                               |        |
+| sdiff\|sinter\|suion + store destkey | 将差集、交集、并集结果保存于destkey中              |        |
+
+**TIPS**
+
+![image-20200406234555130](images/Redis/image-20200406234555130.png)
+
+#### zset
+
+> * 有序
+> * 不能重复
+> * element + score
+
+| 命令                                                     | 含义                                      | 复杂度      |
+| :------------------------------------------------------- | ----------------------------------------- | ----------- |
+| zadd [key] [score] [element] [score2] [element2]...      | 添加score和element                        | O(log(n))   |
+| zrem [key] [element] [element2]...                       | 删除元素                                  | O(1)        |
+| zscore [key] [element]                                   | 获取元素的分数                            | O(1)        |
+| zincrby [key] [increScore] [element]                     | 增加或减少元素的分数                      | O(1)        |
+| zcard [key]                                              | 返回元素的总个数                          | O(1)        |
+| zrank [key] [element]                                    | 获取element的排名，从低到高               |             |
+| zrange [key] [start] [end] 【withscores】                | 获取指定范围的element并打印分数值（升序） | O(log(n)+m) |
+| zrangebyscore [key] [minScore] [maxScore] 【withscores】 | 返回指定分数范围内的升序元素[升序]        | O(log(n)+m) |
+| zcount [key] [minScore] [maxScore]                       | 返回有序集合内在指定分数范围内的个数      | O(log(n)+m) |
+| zremrangebyrank [key] [start] [end]                      | 删除指定排名内的升序元素                  | O(log(n)+m) |
+| zremrangebysocre [key] [minScore] [maxScore]             | 删除指定分数内的升序元素                  | O(log(n)+m) |
+| zrevrank                                                 | 与zrank相反                               |             |
+| zrevrange                                                | 与zrange相反                              |             |
+| zrevrangebyscore                                         | 与zrangebyscore相反                       |             |
+| zinterstore                                              | 求交集并保存                              |             |
+| zunionstore                                              | 求并集并保存                              |             |
+
 
 
 
