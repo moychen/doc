@@ -93,6 +93,25 @@ keys一般不在生产环境使用.一般生产环境键值对多,keys命令时�
 
 ​		设置多个KV串时,使用set/get操作时,客户端多次会发送请求,消耗的时间为n次网络延时+n次命令执行时间, mget/mset相对来说会好很多,消耗的时间为1次网络延时+n次命令执行时间.
 
+#### hash
+
+| 命令                                                         | 含义                                 | 复杂度 |
+| :----------------------------------------------------------- | ------------------------------------ | ------ |
+| hget [key] [field]/hgetall [key]                             | 获取hash key对应的field的value       | O(1)   |
+| hset [key] [field]                                           | 设置hash key对应的field的value       | O(1)   |
+| hdel [key] [field]                                           | 删除hash key对应的field和value       | O(1)   |
+| hexists [key] [field]                                        | 判断hash key是否存在field字段        | O(1)   |
+| hlen [key]                                                   | 获取hash key field的数量             | O(1)   |
+| hmget [key] [f1] [f2]... /hmset [key] [f1] [v1] [f2] [v2]... | 批量操作hash                         | O(n)   |
+| hincrby [key] [f1] [count]                                   | 设置f1对应的字段递增count            | O(1)   |
+| hgetall [key]                                                | 返回hash key对应的所有的field和value | O(n)   |
+| hvals [key]                                                  | 返回hash key对应的所有field的value   | O(n)   |
+| hkeys [key]                                                  | 返回hash key 对应的所有field         | O(n)   |
+| hsetnx [key] [f] [v]                                         | 如果f已存在,则失败                   | O(1)   |
+| hincrbyfloat                                                 | hincrby浮点数版本                    | O(1)   |
+
+
+
 
 
 ### 2.5 实战
@@ -103,6 +122,7 @@ keys一般不在生产环境使用.一般生产环境键值对多,keys命令时�
 
 ```bash
 incr userid:pageview    (单线程无竞争)
+hincrby userid:1:info pageview 1
 ```
 
 #### 2.5.2 缓存信息
@@ -110,6 +130,7 @@ incr userid:pageview    (单线程无竞争)
 伪代码:
 
 ```java
+// string
 public VideoInfo get(long id) {
     String redisKey = redisPrefix + id;
     //先从redis查询
@@ -126,8 +147,24 @@ public VideoInfo get(long id) {
     
     return videoInfo;
 }
+
+// hash
+public VideoInfo get(long id) {
+    String redisKey = redisPrefix + id;
+    Map<String, String> hashMap = redis.hgetAll(redisKey);
+    VideoInfo videoInfo = transferMapToVideoInfo(hashMap);
+    
+    if (videoInfo == null)
+    {
+        videoInfo = mysql.get(id);
+        if (videoInfo != null)
+        {
+            redis.hmset(redisKey, transferVideoToMap(videoInfo));
+        }
+    }
+}
 ```
 
 #### 2.5.3 分布式id生成器
 
-与2.5.1类似,利用redis单线程无竞争,能保证incr id是原子操作. 
+与2.5.1类似,利用redis单线程无竞争,能保证incr id是原子操作.  
