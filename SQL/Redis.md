@@ -341,9 +341,50 @@ redigo
 | unsubscribe [channel] ...   | 取消订阅，一个或多个 |
 | subscribe [channel] ...     | 订阅一个或多个       |
 
-
-
 ### HyperLogLog
+
+基于HypeLogLog算法,以极小的空间完成独立数量统计.本质上还是字符串.
+
+```bash
+type hyperloglog_key = string
+```
+
+**相关命令**
+
+| 命令                                     | 描述                      |
+| ---------------------------------------- | ------------------------- |
+| pfadd key element [element]...           | 向hyperloglog中添加元素   |
+| pfcount key [key] ...                    | 计算hyperloglog的独立总数 |
+| pfmerge destkey sourcekey [sourcekey]... | 合并多个hyperloglog       |
+
+ ![1586965519036](images/Redis/1586965519036.png)
+
+![1586965609890](images/Redis/1586965609890.png)
+
+**内存消耗**
+
+  ![1586965898833](images/Redis/1586965898833.png)
+
+**使用注意:**
+
+> * 以一定的错误率(0.81%)
+> * 是否需要单条数据,hyperloglog取不出
 
 ### GEO
 
+地理信息定位,存储经纬度,计算两地距离,范围计算等. 
+
+```
+type geokey = zset
+```
+
+**相关命令**
+
+| 命令                                       | 描述                                                       |
+| ------------------------------------------ | ---------------------------------------------------------- |
+| geoadd key [longtitude latitude member]... | 增加地理位置信息                                           |
+| geopos key [member...]                     | 获取地理位置信息                                           |
+| geodist key member1 member2 [unit]         | 获取两个地理位置的距离,unit:m(米)/km(千米)/mi(英里)/ft(尺) |
+| zrem key member                            | 删除member                                                 |
+
+![1586966905520](images/Redis/1586966905520.png)
