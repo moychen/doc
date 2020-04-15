@@ -22,5 +22,11 @@ decode(条件,值1,返回值1,值2,返回值2,...值n,返回值n,缺省值)
 decode(字段或字段的运算，值1，值2，值3）
 	这个函数运行的结果是，当字段或字段的运算的值等于值1时，该函数返回值2，否则返回值3
 当然值1，值2，值3也可以是表达式.
+       
+NVL(eExpression1, eExpression2)
+如果 eExpression1 的计算结果为 null 值，则 NVL( ) 返回 eExpression2。如果 eExpression1 的计算结果不是 null 值，则返回 eExpression1。eExpression1 和 eExpression2 可以是任意一种数据类型。如果 eExpression1 与 eExpression2 的结果皆为 null 值，则 NVL( ) 返回 .NULL.。
+返回值可以是字符型、日期型、日期时间型、数值型、货币型、逻辑型或 null 值。
+       
+
 ```
 

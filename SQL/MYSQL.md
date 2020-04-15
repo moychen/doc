@@ -25,6 +25,18 @@
         同时删除该数据库相关的目录及其目录内容
 ```
 
+### 配置项
+
+```
+lower_case_file_system  表示当前系统文件是否大小写敏感，只读参数，无法修改。
+	ON  大小写不敏感
+	OFF 大小写敏感
+
+lower_case_table_names  表示表名是否大小写敏感，可以修改。
+lower_case_table_names = 0时，mysql会根据表名直接操作，大小写敏感。
+lower_case_table_names = 1时，mysql会先把表名转为小写，再执行操作。
+```
+
 ### 表的操作
 
 ```sql
