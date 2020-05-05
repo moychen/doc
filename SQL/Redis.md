@@ -856,6 +856,8 @@ redis所有数据保存在内存中，对数据的更新将异步地保存在磁
 
 #### 试验
 
+
+
 #### RDB现存问题
 
 **耗时、耗性能 **
@@ -952,6 +954,148 @@ aof_base_size
 
 ![image-20200425195507871](images/Redis/image-20200425195507871.png)
 
-
-
 ### RDB和AOF的选择
+
+### 常见问题
+
+#### fork操作
+
+> * 同步操作
+> * 与内存量息息相关：内存越大，耗时越长（与机器类型有关）
+> * info：lastest_fork_usec  上一次fork使用的时间us
+
+**改善fork**
+
+> * 优先使用物理机或者高效支持fork操作的虚拟化技术
+> * 控制redis实例最大可用内存：maxmemory
+> * 合理配置linux内存分配策略：vm.overcommit_memory=1
+> * 降低fork频率：例如放宽AOF重写自动触发时机，减少不必要的全量复制
+
+#### 子进程开销和优化
+
+> * cpu：
+>   * 开销：RDB和AOF文件生成，属于CPU密集型？？？
+>   * 优化：不做CPU绑定，不和CPU密集型应用部署在一起
+> * 内存
+>   * 开销：fork内存开销，COW（copy-on-write）
+>   * echo never > /sys/kernel/mm/transparent_hugepage/enabled
+> * 硬盘：
+>   * 开销：AOF和RDB文件写入，可以结合iostat，iotop分析
+>   * 优化：
+>     * 不要和高硬盘负载服务部署在一起：存储服务、消息队列等
+>     * no-appendfsync-on-rewrite = yes
+>     * 根据写入量决定使用磁盘类型（例如ssd）
+>     * 单机多实例持久化文件目录，可以考虑分盘
+
+#### AOF追加阻塞
+
+![image-20200504105332017](images/Redis/image-20200504105332017.png![image-20200504105417435](images/Redis/image-20200504105417435.png)
+
+**问题定位**
+
+> * redis日志
+> * info persistence  
+> * top
+
+![image-20200504105457210](images/Redis/image-20200504105457210.png)
+
+![image-20200504105650219](images/Redis/image-20200504105650219.png)
+
+## 6. Redis复制的原理与优化
+
+> * 一个master可以有多个slave
+> * 一个slave只能有一个master
+> * 数据流是单向的，master->slave
+
+### 主从复制
+
+两种方法，通过配置或命令实现，复制是异步的。
+
+> * 从节点上执行slaveof + ip port（主节点），slaveof no one 可以取消复制，不会清除原来的数据，但是如果重新slaveof一个新的主节点，则会先清掉原来从节点的数据，然后再复制。
+> * 添加配置实现：
+>   * slaveof ip port
+>   * slave-read-only yes
+
+一些相关且实用的命令。
+
+```bash
+# 查看主从复制相关信息，包扩主从节点、偏移量等
+info replication
+# 查看server相关信息，比如run_id等
+info server
+```
+
+![image-20200505200647590](images/Redis/image-20200505200647590.png)
+
+当master的run_id发生变化时，从节点发现此变化就会全量复制。
+
+### 全量复制和部分复制
+
+#### 全量复制
+
+![image-20200505203145491](images/Redis/image-20200505203145491.png)
+
+**全量复制开销**
+
+> * bgsave消耗
+> * rdb文件网络传输消耗
+> * 从节点数据清空时间
+> * 从节点rdb文件加载时间
+> * 如果AOF开启，则加载rdb完成后会进行AOF重写
+
+![image-20200505223735401](images/Redis/image-20200505223735401.png)
+
+### 故障处理
+
+#### master宕机
+
+> * 没有自动故障转移的情况：在没有自动处理客户端在slave上执行slaveof no one让从节点变为主节点，然后让其他从节点变成该节点的从节点（slaveof new master）。
+> * 自动故障转移：高可用—sentinel
+
+### 常见问题
+
+#### 读写分离
+
+读流量分摊到各个从节点。
+
+**可能遇到的问题**
+
+> * 数据同步延迟，可能会导致读写不一致的问题；
+> * 读到过期的数据；
+> * 从节点故障时，该从节点上对应业务客户端的迁移；
+
+#### 配置不一致
+
+> * 例如maxmemory不一致：丢失数据
+> * 例如数据结构优化参数（例如hash-max-ziplist-entries）:内存不一致
+
+#### 规避全量复制
+
+> * 第一次全量复制
+>   * 不可避免，第一次的情况
+>   * 小主节点（数据分片）、低峰期复制
+> * 节点运行ID不匹配
+>   * 主节点重启（run_id变化）的情况
+>   * 故障转移（主从切换），例如哨兵或集群高可用
+> * 复制积压缓冲区不足
+>   * 网络中断，部分复制无法满足的情况
+>   * 增加复制缓冲区配置rel_backlog_size（可以依据当前的tps计算大概每分钟写入的内存大小，然后乘以网络故障的时间）或网络“增强”； 
+
+#### 规避复制风暴
+
+![image-20200505231004357](images/Redis/image-20200505231004357.png)
+
+## 7. Redis Sentinel
+
+### 7.1 什么是Sentinel
+
+### 7.2 主从复制高可用
+
+### 7.3 实现原理
+
+### 7.4 选举
+
+
+
+
+

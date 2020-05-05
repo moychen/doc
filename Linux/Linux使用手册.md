@@ -141,6 +141,14 @@ top命令输出结果中，统计信息区前五行是系统整体的统计信�
 |  0.0 si  | 软中断占用百分比                              |
 |  0.0 st  | 虚拟机占用百分比                              |
 
+```
+I/O wait time:
+	For a given CPU, the I/O wait time is the time during which that CPU was idle (i.e. didn’t execute any tasks) and there was at least one outstanding disk I/O operation requested by a task scheduled on that CPU (at the time it generated that I/O request).
+	Note that the nuance is not innocent and has practical consequences. For example, on a system with many CPUs, even if there is a problem with I/O performance, the observed overall I/O wait time may still be small if the problem only affects a single task. It also means that while it is generally correct to say that faster CPUs tend to increase I/O wait time (simply because a faster CPU tends to be idle more often), that statement is no longer true if one replaces “faster” by “more”.
+
+来自：http://veithen.io/2013/11/18/iowait-linux.html
+```
+
 最后两行为内存信息。内容如下：
 
 |         符号         | 含义                                                         |
