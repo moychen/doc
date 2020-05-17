@@ -1089,13 +1089,120 @@ info server
 
 ### 7.1 什么是Sentinel
 
+![image-20200517162035909](images/Redis/image-20200517162035909.png)
+
+![image-20200516163835386](images/Redis/image-20200516163835386.png)
+
 ### 7.2 主从复制高可用
 
-### 7.3 实现原理
+![image-20200516164145550](images/Redis/image-20200516164145550.png)
 
-### 7.4 选举
+#### 安装与配置
+
+**主观下线：**每个sentinel节点对Redis节点失败的“偏见”。
+
+**客观下线：**所有sentinel节点对Redis节点失败“达成共识”（超过quorum个统一意见）。sentinel之间通过**sentinel is-master-down-by-addr**命令统计各sentinel节点是否认定master节点下线，然后统计认定下线并达成一致节点数。
+
+```
+1. 配置开启主从节点
+2. 配置开启sentinel监控主节点。（sentinel是特殊的redis进程，不存储数据） 
+3. 一套sentinel可以监控多个主从，通过配置中的master-name区分
+port ${port}
+dir "/root/data/redis/sentinel"\
+logfile "/root/log/redis/sentinel-${port}.log"
+# mymaster表示监控的master-name，后面是master ip和port, 至少两个sentinel节点认为master有问题再发动故障转移,sentinel对master节点客观下线的判断
+sentinel monitor mymaster 192.168.206.105 26379 2
+# 在master不通多少秒后认为故障，每个sentinel对master主观下线的判断
+sentinel down-after-milliseconds mymaster 30000
+# 数据同步并发数
+sentinel parallel-syncs mymaster 1
+# 故障转移时间
+sentinel failover-timeout mymaster 1 180000
+```
+
+### 客户端与sentinel交互
+
+```
+1. 遍历sentinel集合获取一个可用的sentinel节点
+2. 根据master-name从sentinel节点获取master ip和端口
+3. client执行role或role replication验证master信息
+4. sentinel能感知到redis节点的变化，包括master等，当节点信息变化，通过sentinel发布client订阅的机制，client能感知到redis集群节点的变化。
+```
+
+![image-20200517004743000](images/Redis/image-20200517004743000.png)
+
+### 7.3 三个定时任务
+
+> * 1 每10秒每个sentinel节点对master和slave执行info
+>   * 发现slave节点
+>   * 确认主从关系
+> * 2 每2秒每个sentinel通过master节点的channel交换信息（pub/sub）
+>   * 通过__sentinel\_\_:hello频道交互
+>   * 交互对节点的“看法”和自身信息
+> * 3 每1秒每个sentinel对其他sentinel和redis执行ping
+
+![image-20200517145330760](images/Redis/image-20200517145330760.png)
+
+![image-20200517145736702](images/Redis/image-20200517145736702.png)
+
+### 7.4 领导者选举
+
+sentinel集群选举一个sentinel节点完成故障转移。通过分布式强一致性算法raft实现。
+
+选举：通过sentinel is-master-down-by-addr获取master下线认定和发送希望成为领导者的请求。
+
+> 1. 每个做主关下线的sentinel节点向其他sentinel节点发送命令，要求将它本身设置为领导者。
+>
+> 2. 收到命令的sentinel节点如果没有同意通过其他sentinel节点发送的命令，那么将同意该请求，否则拒绝。
+> 3. 如果该Sentinel节点发现自己的票数已经超过sentinel集合半数且超过quorum，那么它将成为领导者。
+> 4. 如果此过程有多个sentinel节点成为领导者，那么将等待一段时间重新进行选举。
+
+![image-20200517151802750](images/Redis/image-20200517151802750.png)
+
+### 7.5 故障转移
+
+故障转移由sentinel领导者节点完成。
+
+```
+1. 从slave节点中选出一个“合适的”节点作为新的master节点。
+	选择slave-priority(slave节点优先级)最高的slave节点，如果存在则返回，不存在则继续。
+	选择复制偏移量最大的slave节点（复制的最完整），如果存在则返回，不存在则继续。
+	选择runId最小（启动最早）的slave节点。
+2. 对上面的slave节点执行slaveof no one命令让其成为master节点。
+3. 向剩余的slave节点发送命令，让他们成为新的maser节点的slave节点，复制规则和parallel-syncs参数有关，表示可以有几个slave同时进行复制。
+4. 更新对原来master节点配置为slave,并保持着对其“关注”，当其回复后命令它去复制新的master节点。
+```
+
+ ![image-20200517154641593](images/Redis/image-20200517154641593.png)
+
+![image-20200517155110876](images/Redis/image-20200517155110876.png)
+
+### 7.6 高可用读写分离
+
+![image-20200517161555822](images/Redis/image-20200517161555822.png)
+
+![image-20200517161620336](images/Redis/image-20200517161620336.png)
+
+![image-20200517161216520](images/Redis/image-20200517161216520.png)
+
+对于客户端需要感知slave节点的变化，需要手动实现对redis资源池监听并关注上述三个“消息”。
+
+### 7.7 总结
+
+```
+1. redis sentinel是Redis的高可用实现方案；
+	故障发现、故障自动转移、配置中心、客户端通知
+2. redis sentinel从Redis2.8版本开始正式生产可用，之前版本不可用；
+3. 尽可能在不同物理机部署redis sentinel所有节点；
+4. redis sentinel中的sentinel节点个数应该为大于等于3且最好为奇数；
+4. redis sentinel中数据节点与普通数据节点没有区别；
+5. 客户端初始化时连接的是sentinel节点集合，不再是具体的redis节点，但sentinel节点只是配置中心不是代理；
+6. redis sentinel通过是三个定时任务实现了sentinel节点对主从节点、其他sentinel的监控；
+7. redis sentinel在对节点做失败判定时分为主观下线和客观下线；
+8. 看懂redis sentinel故障转移日志对于redis sentinel以及问题排查非常有帮助；
+9. redis sentinel实现读写分离高可用可以依赖sentinel节点的消息通知，获取redis数据节点的状态变化。
+```
 
 
 
-
-
+## 8. Redis Cluster

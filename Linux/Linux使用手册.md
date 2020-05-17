@@ -80,9 +80,16 @@ find $DATA02/rating/ -type f | xargs rm -f
 find $MDB_USER_BAK -mtime +3 -name "*aimdb*" -exec rm {} \;
 ```
 
+### grep
+
+```bash
+# 去除配置中的注释和所有的空行
+$ cat sentinel.conf | grep -v "#" | grep -v "^$" > sentinel-26379.conf
+```
+
 ### xargs
 
-```
+```bash
  find -mtime 0 -type f | xargs -i cp {} /data01/jxbillbm2/brcs/t 
 ```
 
@@ -98,6 +105,11 @@ NF  字段数量变量
 ```
 
 ### sed
+
+```bash
+# 替换某个字段并重定向
+$ sed "s/26379/26380/g" redis-sentinel-26379.conf > redis-sentinel-26380.conf
+```
 
 ### top 
 
