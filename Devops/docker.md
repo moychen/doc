@@ -18,8 +18,6 @@ systemctl restart docker
 
 
 
-
-
 ## 2 配置Docker服务
 
 **避免每次使用docker命令时都需要切换到特权身份，将当前用户加入安装中自动创建的docker用户组。**

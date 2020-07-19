@@ -2,6 +2,32 @@
 
 ## 文件相关
 
+## 动态库
+
+```C++
+#include <dlfcn.h>
+
+//! 
+void *dlopen(const char *filename, int flag);
+char *dlerror(void);
+void *dlsym(void *handle, const char *symbol);
+int dlclose(void *handle);
+```
+
+## 信号
+
+```C++
+#include <signal.h>
+
+int sigemptyset(sigset_t *set);
+int sigfillset(sigset_t *set);
+int sigaddset(sigset_t *set, int signum);
+int sigdelset(sigset_t *set, int signum);
+int sigismember(const sigset_t *set, int signum);
+```
+
+
+
 ## 零拷贝
 
 ## 异步IO

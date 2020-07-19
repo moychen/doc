@@ -292,7 +292,11 @@ sort -n -k 22 -t ";" 文件名 -o 排序后的文件名
 
 ### mount
 
+### expect
 
+自动交互脚本
+
+### ldconfig
 
 ## 2. 网络工具
 
@@ -493,6 +497,12 @@ netstat -n|find  "ESTABLISH"|find  ":80" /c
 
 ### tcpdump
 
+```bash
+$ tcpdump -i bond0 -s 0 tcp port 38910 -G 3000000 -Z billapp -w  /data01/billapp/users/yujm/5g_sa/jiangxi%Y%m%d_%H%M%S_00000008.cap
+```
+
+
+
 ### nc(netcat)
 
 ### telnet
@@ -502,6 +512,24 @@ netstat -n|find  "ESTABLISH"|find  ":80" /c
 ### traceroute
 
 ### iptables
+
+### curl
+
+curl 是常用的命令行工具，用来请求 Web 服务器。它的功能非常强大，命令行参数多达几十种。如果熟练的话，完全可以取代 Postman 这一类的图形界面工具。不带有任何参数时，curl 就是发出 GET 请求，服务器返回的内容会在命令行输出。
+
+````bash
+$ curl https://www.example.com
+````
+
+**-A**
+
+-A 参数指定客户端的用户代理标头，即User-Agent，curl的默认用户代理字符串是curl/[version]。
+
+```bash
+$ curl -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36' https://google.com
+```
+
+
 
 
 
@@ -676,7 +704,9 @@ c++filt + <symbol> -- 查看符号的原型
 
 ### vmstat
 
+### ipcs
 
+### ipcrm
 
 ## 4. 查漏补缺
 
