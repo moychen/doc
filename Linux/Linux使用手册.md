@@ -80,9 +80,16 @@ find $DATA02/rating/ -type f | xargs rm -f
 find $MDB_USER_BAK -mtime +3 -name "*aimdb*" -exec rm {} \;
 ```
 
+### grep
+
+```bash
+# 去除配置中的注释和所有的空行
+$ cat sentinel.conf | grep -v "#" | grep -v "^$" > sentinel-26379.conf
+```
+
 ### xargs
 
-```
+```bash
  find -mtime 0 -type f | xargs -i cp {} /data01/jxbillbm2/brcs/t 
 ```
 
@@ -98,6 +105,11 @@ NF  字段数量变量
 ```
 
 ### sed
+
+```bash
+# 替换某个字段并重定向
+$ sed "s/26379/26380/g" redis-sentinel-26379.conf > redis-sentinel-26380.conf
+```
 
 ### top 
 
@@ -140,6 +152,14 @@ top命令输出结果中，统计信息区前五行是系统整体的统计信�
 |  0.0 hi  | 硬件CPU中断占用百分比                         |
 |  0.0 si  | 软中断占用百分比                              |
 |  0.0 st  | 虚拟机占用百分比                              |
+
+```
+I/O wait time:
+	For a given CPU, the I/O wait time is the time during which that CPU was idle (i.e. didn’t execute any tasks) and there was at least one outstanding disk I/O operation requested by a task scheduled on that CPU (at the time it generated that I/O request).
+	Note that the nuance is not innocent and has practical consequences. For example, on a system with many CPUs, even if there is a problem with I/O performance, the observed overall I/O wait time may still be small if the problem only affects a single task. It also means that while it is generally correct to say that faster CPUs tend to increase I/O wait time (simply because a faster CPU tends to be idle more often), that statement is no longer true if one replaces “faster” by “more”.
+
+来自：http://veithen.io/2013/11/18/iowait-linux.html
+```
 
 最后两行为内存信息。内容如下：
 
@@ -272,7 +292,11 @@ sort -n -k 22 -t ";" 文件名 -o 排序后的文件名
 
 ### mount
 
+### expect
 
+自动交互脚本
+
+### ldconfig
 
 ## 2. 网络工具
 
@@ -473,6 +497,12 @@ netstat -n|find  "ESTABLISH"|find  ":80" /c
 
 ### tcpdump
 
+```bash
+$ tcpdump -i bond0 -s 0 tcp port 38910 -G 3000000 -Z billapp -w  /data01/billapp/users/yujm/5g_sa/jiangxi%Y%m%d_%H%M%S_00000008.cap
+```
+
+
+
 ### nc(netcat)
 
 ### telnet
@@ -482,6 +512,24 @@ netstat -n|find  "ESTABLISH"|find  ":80" /c
 ### traceroute
 
 ### iptables
+
+### curl
+
+curl 是常用的命令行工具，用来请求 Web 服务器。它的功能非常强大，命令行参数多达几十种。如果熟练的话，完全可以取代 Postman 这一类的图形界面工具。不带有任何参数时，curl 就是发出 GET 请求，服务器返回的内容会在命令行输出。
+
+````bash
+$ curl https://www.example.com
+````
+
+**-A**
+
+-A 参数指定客户端的用户代理标头，即User-Agent，curl的默认用户代理字符串是curl/[version]。
+
+```bash
+$ curl -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36' https://google.com
+```
+
+
 
 
 
@@ -656,7 +704,9 @@ c++filt + <symbol> -- 查看符号的原型
 
 ### vmstat
 
+### ipcs
 
+### ipcrm
 
 ## 4. 查漏补缺
 

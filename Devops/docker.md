@@ -2,6 +2,22 @@
 
 ## 1 安装Docker
 
+### 1.1 centos
+
+参考[官方文档](https://docs.docker.com/engine/install/centos/#install-using-the-repository)。
+
+其他配置：
+
+```bash
+# 修改存储位置 ExecStart=/usr/bin/dockerd 后增加--graph=/new-path/docke
+vim /usr/lib/systemd/system/docker.service
+# 编辑保存成功后
+systemctl daemon-reload
+systemctl restart docker
+```
+
+
+
 ## 2 配置Docker服务
 
 **避免每次使用docker命令时都需要切换到特权身份，将当前用户加入安装中自动创建的docker用户组。**
@@ -307,4 +323,14 @@ RUN  apt-get update && \
 之前在另一个环境已经上传了neighbors/test:0.1,所以显示layer already exists.
 
 ## 4 操作Docker容器
+
+### 4.1 创建容器
+
+### 4.2 终止容器
+
+### 4.3 进入容器
+
+### 4.4 删除容器
+
+### 4.5 导入和导出容器
 
