@@ -231,6 +231,14 @@ result =(p[1]<<8)|result;
 3) 结构体的总大小为结构体最宽基本类型成员大小的整数倍，如有需要编译器会在最末一个成员之后加上填充字节。例如上面第一个结构体变量。
 ```
 
+### 函数调用约定
+
+#### __fastcall 
+
+#### __stdcall
+
+#### __cdecl
+
 ### 值传递、指针传递、引用传递
 
 ### 指针与引用的区别
@@ -1055,6 +1063,14 @@ void main()
 
 一般情况下类的析构函数里面都是释放内存资源，而析构函数不被调用的话就会造成内存泄漏。使用虚函数的目的是为了当用一个基类的指针删除一个派生类的对象时，派生类的析构函数会被调用。
 
+### cout/cin/endl的本质
+
+### 左值、右值
+
+### 隐式移动
+
+
+
 ## 其他专题
 
 ### 1. 类型转换
@@ -1736,9 +1752,9 @@ Grand* GetOne()
 
 ## STL
 
-### vector、list
+### 1. vector、list
 
-### 迭代器失效
+### 2. 迭代器失效
 **迭代器失效有两个层面的意思:**
 >* 无法通过迭代器++,--操作遍历整个stl容器。记作: 第一层失效。
 >* 无法通过迭代器存取迭代器所指向的内存。 记作: 第二层失效。
@@ -1812,9 +1828,35 @@ Grand* GetOne()
 
 set print pretty on
 
-
-
 ## Makefile
 
 ## CMake
+
+```cmake
+# CMake 最低版本号要求
+cmake_minimum_required (VERSION 2.8)
+
+# 项目信息
+project(boost)
+
+# 查找当前目录下的所有源文件
+# 并将名称保存到 DIR_SRCS 变量
+aux_source_directory(./asio DIR_SRCS)
+
+# 添加头文件目录
+#include_directories(D:\\ProgramTool\\boost_1_73_0)
+
+# 添加需要链接的库文件目录
+#link_directories(D:\\ProgramTool\\boost_1_73_0\\stage\\lib)
+
+# 添加 math 子目录
+# add_subdirectory(asio)
+
+# 指定生成目标 
+add_executable(${PROJECT_NAME}.out main.cpp)
+
+# 添加链接库
+# target_link_libraries(Demo MathFunctions)
+
+```
 

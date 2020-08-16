@@ -735,6 +735,9 @@ CREATE TRIGGER trigger_name trigger_time trigger_event ON tbl_name FOR EACH ROW 
         DELETE：从表中删除某一行时激活触发程序
     tbl_name：监听的表，必须是永久性的表，不能将触发程序与TEMPORARY表或视图关联起来。
     trigger_stmt：当触发程序激活时执行的语句。执行多个语句，可使用BEGIN...END复合语句结构
+-- 查看trigger
+SHOW TRIGGERS \G;
+SELECT * from information_schema.TRIGGERS;
 -- 删除
 DROP TRIGGER [schema_name.]trigger_name
 可以使用old和new代替旧的和新的数据
