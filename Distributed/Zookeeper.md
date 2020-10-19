@@ -239,7 +239,6 @@ echo conf | ncat localhost 2181
 # 查看ZK详细的运行状态信息和客户端连接信息
 echo stat | ncat localhost 2181
 
-
 ```
 
 ZooKeeper responds to a small set of commands. Each command is composed of four letters. You issue the commands to ZooKeeper via telnet or nc, at the client port.
@@ -366,8 +365,8 @@ export JMXPORT = 8081
 
 作者回复: 我想您说的是PPT第13页。以下是ZooKeeper leader处理一个写请求的过程：
 
-\1. Leader把写请求通过propose消息发给所有的节点。
-\2. Leader在收到集群中大部分节点的accept消息之后才可以发送commit消息给所有的节点。
+* Leader把写请求通过propose消息发给所有的节点。
+* Leader在收到集群中大部分节点的accept消息之后才可以发送commit消息给所有的节点。
 
 Leader不可以直接收到用户的写请求就commit。假设我们在图中的3节点集群中加入节点4和节点5形成一个5节点集群。节点2在收到写请求之后立刻给节点1发commit消息，节点1给客户端发写成功消息。如果在节点3、节点4和节点5收到这个commit消息之前发生了如下的网络分区。
 
@@ -414,4 +413,12 @@ Leader不可以直接收到用户的写请求就commit。假设我们在图中�
 ## 5.对比Chubby、etcd和ZooKeeper
 
 ## 6. ZooKeeper实现原理和源码解读
+
+## ACL
+
+```bash
+addauth digest zkUser:zkPass
+setAcl /tgroup_0 auth:zkUser:zkPass:cdrwa
+getAcl /tgroup_0
+```
 

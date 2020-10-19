@@ -1,4 +1,0 @@
-# Distributed Crawler
-
-## Introduce
-

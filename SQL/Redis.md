@@ -1206,3 +1206,33 @@ sentinel集群选举一个sentinel节点完成故障转移。通过分布式强�
 
 
 ## 8. Redis Cluster
+
+## 9. 源码研究
+
+### 类型定义
+
+````c
+// 对象编码
+#define REDIS_ENCODING_RAW 0     /* Raw representation */
+#define REDIS_ENCODING_INT 1     /* Encoded as integer */
+#define REDIS_ENCODING_HT 2      /* Encoded as hash table */
+#define REDIS_ENCODING_ZIPMAP 3  /* Encoded as zipmap */
+#define REDIS_ENCODING_LINKEDLIST 4 /* Encoded as regular linked list */
+#define REDIS_ENCODING_ZIPLIST 5 /* Encoded as ziplist */
+#define REDIS_ENCODING_INTSET 6  /* Encoded as intset */
+#define REDIS_ENCODING_SKIPLIST 7  /* Encoded as skiplist */
+#define REDIS_ENCODING_EMBSTR 8  /* Embedded sds string encoding */
+
+// 对象类型
+#define REDIS_STRING 0
+#define REDIS_LIST 1
+#define REDIS_SET 2
+#define REDIS_ZSET 3
+````
+
+
+
+### 有序集（zset）
+
+#### zskiplist
+

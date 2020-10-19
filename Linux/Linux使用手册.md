@@ -78,6 +78,8 @@ find $DATA01/rating/ -type f -exec rm {} \;
 find $DATA01/rating/ -type f | wc -l 
 find $DATA02/rating/ -type f | xargs rm -f 
 find $MDB_USER_BAK -mtime +3 -name "*aimdb*" -exec rm {} \;
+
+find lib -type f  -a -newer lib/xxxx -o -type l -a -newer lib/xxxx |xargs tar -czvf patch_all.tar.gz 
 ```
 
 ### grep
@@ -94,6 +96,8 @@ $ cat sentinel.conf | grep -v "#" | grep -v "^$" > sentinel-26379.conf
 ```
 
 ### awk
+
+
 
 **示例：**
 
@@ -301,6 +305,31 @@ sort -n -k 22 -t ";" 文件名 -o 排序后的文件名
 ### ldconfig
 
 ### tar
+
+```bash
+# 解压和压缩：
+$ tar -vxf ctags-5.8.tar.gz  //解压ctags-5.8.tar.gz
+$ tar -zvf tool.rar tools/
+```
+
+```
+选项
+-c: 建立压缩档案
+-x：解压
+-t：查看内容
+-r：向压缩归档文件末尾追加文件
+-u：更新原压缩包中的文件
+这五个是独立的命令，压缩解压都要用到其中一个，可以和别的命令连用但只能用其中一个。下面的参数是根据需要在压缩或解压档案时可选的。
+-z：有gzip属性的
+-j：有bz2属性的
+-Z：有compress属性的
+-v：显示所有过程
+-O：将文件解开到标准输出
+下面的参数-f是必须的
+-f: 使用档案名字，切记，这个参数是最后一个参数，后面只能接档案名。
+```
+
+
 
 ### unzip
 
@@ -661,7 +690,31 @@ sar -W：查看页面交换发生状况
 
 ### pmap
 
+**pmap [options] pid [...]**
+
+```
+选项：
+-x, --extended	    Show the extended format.
+-d, --device		Show the device format.
+-q, --quiet			Do not display some header or footer lines.
+-A, --range low,high	Limit  results  to  the given range to low and high address range.  Notice that the 						low and high arguments are single string separated with comma.
+-X     				Show even more details than the -x option. WARNING: format changes according to 							/proc/PID/smaps
+-XX    				Show everything the kernel provides
+-p, --show-path		Show full path to files in the mapping column
+-c, --read-rc				Read the default configuration
+-C, --read-rc-from file		Read the configuration from file
+-n, --create-rc 			Create new default configuration
+-N, --create-rc-to file		Create new configuration to file
+
+EXIT STATUS
+	0      Success.
+    1      Failure.          
+    42     Did not find all processes asked for.
+```
+
 pmap -x <pid> 可以查看进程的内存占用信息 最后一行的值 mapped 表示该进程映射的虚拟地址空间大小，也就是该进程预先分配的虚拟内存大小，即ps出的vsz writeable/private 表示进程所占用的私有地址空间大小，也就是该进程实际使用的内存大小    shared 表示进程和其他进程共享的内存大小
+
+
 
 ### ipcs/ipcrm
 
@@ -816,11 +869,11 @@ lrwxrwxrwx 1 root root 10 Apr 17 16:16./oldgirl.txt -> oldboy.txt
 
 
 
-## 4. 性能优化
+## 5. 性能优化
 
 
 
-## 5. 问题分析
+## 6. 问题分析
 
 ### CPU过高问题排查
 
