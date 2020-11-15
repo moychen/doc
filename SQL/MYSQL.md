@@ -436,6 +436,8 @@ h. DISTINCT, ALL 选项
 
 ### UNION
 
+
+
 ```sql
     将多个select查询的结果组合成一个结果集合。
     SELECT ... UNION [ALL|DISTINCT] SELECT ...
@@ -702,23 +704,21 @@ CREATE [OR REPLACE] [ALGORITHM = {UNDEFINED | MERGE | TEMPTABLE}] VIEW view_name
 
 **事务隔离级别**
 
+```sql
+-- 查看事务隔离级别
+show variables like 'transaction_isolation';
+show global variables like 'transaction_isolation';
+-- 设置事务隔离级别
+set transaction isolation level read committed;
+set global transaction isolation level read committed;
+```
+
 > * `Read uncommitter`(未提交读) ： 没有解决任何问题
 > * `Read Committer`(提交读) ：解决了脏读问题
 > * `Repeatable Read`(可重复读)： 解决了不可重复读和脏读问题（ps:在Innodb情况下，也不可能发生幻读问题）
 > * `Serializable`(串行化) ：脏读、幻读、不可重复读三个问题全部解决了。将当前会话的隔离级别设置为serializable的时候，其他会话对该表的写操作将被挂起。这是隔离级别中最严格的，但是这样做势必对性能造成影响。
 
-![img](F:\Doc\SQL\images\MYSQL\transction.png)
-
-### 锁表
-
-```javascript
-表锁定只用于防止其它客户端进行不正当地读取和写入
-MyISAM 支持表锁，InnoDB 支持行锁
--- 锁定
-    LOCK TABLES tbl_name [AS alias]
--- 解锁
-    UNLOCK TABLES
-```
+![img](.\images\MYSQL\transction.png)
 
 ### 触发器
 
@@ -1069,11 +1069,55 @@ OPTIMIZE [LOCAL | NO_WRITE_TO_BINLOG] TABLE tbl_name [, tbl_name] ...
 
 ## 2. MYSQL优化
 
+常见方法：
+
+> * 慢查询开启与捕获
+> * explain + 慢SQL分析
+> * show profile 查询SQL在mysql服务器里的执行细节和生命周期情况
+> * 数据库服务器参数调优
+
 ### 执行顺序
 
-![image-20200302190713060](F:\Doc\SQL\images\MYSQL\image-20200302190713060.png)
+![image-20200302190713060](.\images\MYSQL\image-20200302190713060.png)
 
 ### 慢查询日志
+
+慢查询日志是mysql提供的一种日志记录，它用来记录在mysql中响应时间超过阈值（long_query_time，默认10s）的语句.默认情况下没有开启满查询日志，需要手动设置，一般也不建议开启该参数，因为会带来一定的性能影响。
+
+```sql
+-- 临时修改
+show global variables like '%slow_query_log%';
+set global slow_query_log = 1;
+
+-- 永久修改，修改配置文件，[mysqld]下增加
+slow_query_log = 1
+slow_query_log_file = XXX
+
+-- 查询设置超时阈值
+show global variables lik '%long_query_time%';
+set global long_query_time = 3;
+
+-- 查看慢查询的个数
+show global status like '%Slow_queries%'; 
+```
+
+ #### mysqldumpslow
+
+mysql提供的慢查询日志分析工具。
+
+```bash
+# 获取返回记录集最多的10个sql
+$ mysqldumpslow -s -r -t 10 /var/lib/mysql/atguigu-slow.log
+
+# 获取访问次数最多的10个sql
+$ mysqldumpslow -s -c -t 10 /var/lib/mysql/atguigu-slow.log
+
+# 获取按照时间排序的前10条里面含有左连接的sql
+$ mysqldumpslow -s t -t 10 -g "left join" /var/lib/mysql/aiguigu-slow.log
+
+# 建议结合| 和more一起使用
+mysqldumpslow -s -r -t 10 /var/lib/mysql/aiguigu-slow.log | more
+```
 
 ### 查询计划
 
@@ -1081,7 +1125,7 @@ OPTIMIZE [LOCAL | NO_WRITE_TO_BINLOG] TABLE tbl_name [, tbl_name] ...
 
 ​	当[`EXPLAIN`](https://dev.mysql.com/doc/refman/8.0/en/explain.html)与可解释的语句一起使用时，MySQL将显示来自优化器的有关语句执行计划的信息。也就是说，MySQL解释了它将如何处理该语句，包括有关如何连接表以及以何种顺序连接表的信息。
 
-![image-20200302182905055](F:\Doc\SQL\images\MYSQL\image-20200302182905055.png)
+![image-20200302182905055](.\images\MYSQL\image-20200302182905055.png)
 
 ```sql
 特别的：如果使用union连接其值可能为null
@@ -1136,11 +1180,63 @@ OPTIMIZE [LOCAL | NO_WRITE_TO_BINLOG] TABLE tbl_name [, tbl_name] ...
             这个意味着没有好用的索引，新的索引将在联接的每一行上重新估算，N是显示在possible_keys列中索引的位图，并且是冗余的。
 ```
 
+### show profiles
 
+show profile 时mysql提供用来分析当前会话中语句执行的资源消耗情况，可以用于SQL的调优测量。官网地址(http://dev.mysql.com/doc/refman/5.5/en/show-profile.html)，默认情况下处于关闭状态，并保存最近15次的运行结果。
+
+```sql
+show variables like '%profiling%';
+set global profilling = 1;
+```
+
+```
+show profiles;
+show profile cpu,block io for query [Query_ID];
+
+type:
+		ALL:										   -- 显示所有开销信息
+		BLOCK IO								--	显示块IO相关开销
+		CONTEXT SWITCHES		 -- 上下文切换开销
+		CPU											  -- 显示CPU相关开销信息
+        IPC                                             -- 显示发送和接收相关信息
+        MEMORY                                  -- 显示内存相关信息
+        PAGE FAULTS                         -- 显示页面错误相关开销信息
+        SOURCE                                   -- 显示和Source_function, Source_file, Source_line相关信息
+        SWAPS				                       -- 显示交换次数相关开销 
+```
+
+![image-20201110134759449](images/MYSQL/image-20201110134759449.png)
+
+注意几个影响较大的status：
+
+```
+1. converting HEAP to MyISAM 查询结果太大，内存不够用开始使用到磁盘。
+2. Creating tmp table 创建临时表     a. 拷贝数据到临时表  b.用完删除
+3. Copying to tmp table on disk   把内存中临时表复制到磁盘，危险！！！
+4. locked
+```
+
+### 查询全局日志
+
+建议不要在生产开起该功能。
+
+```sql
+set global general_log = 1;
+set global log_output = 'TABLE'; -- 以表的形式输出，默认输出到mysql.general_log中
+
+-- 查询所有执行过的sql
+select * from mysql.general_log;
+```
 
 ### 索引选取
 
-> * 尽量少加些索引，特别是值经常会变的字段不要成为索引
+**一般性建议**
+
+> * 尽量少加些索引，特别是值经常会变的字段不要成为索引。
+> * 对于单键索引，尽量选择针对当前query过滤性更好的索引。
+> * 选择组合索引时，当前query中过滤性最好的字段在索引字段顺序中，位置越靠前越好。
+> * 在选择组合索引时，尽量选择可以能够包含当前query中的where子句中更多的字段
+> * 尽可能通过分析统计信息和调整query的写法来达到选择合适索引的目的。
 
 
 
@@ -1318,6 +1414,44 @@ MySQL可以很好的支持大数据量的存取，但是一般说来，数据库
 52，任何对列的操作都将导致表扫描，它包括数据库函数、计算表达式等等，查询时要尽可能将操作移至等号右边。
 ```
 
+**order by**
+
+以下验证是在满足覆盖索引的场景下进行的。
+
+filesort和Index，index指mysql在扫描索引时完成排序，效率高。filesort效率低。
+
+mysql支持两种方式的文件排序: filesort有两种算法：单路排序和双路排序。
+
+```
+双路排序
+		MYSQL4.1之前使用的是双路排序，需要两次扫描磁盘，最终得到数据，读取行指针和orderby列，对他们进行排序，然后扫描已经排序好的列表，按照列表中的值重新从列表
+中读取对应的数据输出。
+
+单路排序
+		从磁盘中读取查询需要的所有列，按照order by列在buffer中进行排序，然后扫描排序后的数据输出，避免了二次读取数据，并且把随即IO变成了顺序IO，但是会使用更多的空间，因为数据都保存在了内存中。
+		
+	 	需要注意的是当取出来的数据总量大于buffer时，每次只能去buffer容量大小数据进行排序，排序时会创建tmp文件，进而变为多路合并排序，从而导致多次I/O，得不偿失。 因此需要尝试调整参数。
+（1）sort_buffer_size
+（2）max_length_for_sort_data
+
+order by时，select * 是一个大忌，只查询需要的字段，一方面防止数据量过大，另一方面当query的字段总和大于max_length_for_sort_data，而且排序字段不是TEXT|BLOB类型时，会用改进后的算法—单路排序，否则用老算法—多路排序。
+```
+
+满足两种情况时，使用Index方式排序：
+
+> * order by 语句使用复合索引最左前列
+> * 使用where子句与order by子句条件列组合满足符合索引最左前列。
+
+![image-20201108235026665](images/MYSQL/image-20201108235026665.png)
+
+**group by**
+
+group by 实质是先排序后分组，遵照索引建的最佳左前缀。
+
+当无法使用索引列时，增大max_length_for_sort_data参数设置+增大sort_buffer_size参数的设置
+
+where高于having，能写在where限定的条件就不要使用having限定了。
+
 ### 索引优化
 
 ```sql
@@ -1353,10 +1487,9 @@ select id from t where name like ‘abc%’
 
 create table #t(…)
 
-13.很多时候用 exists 代替 in 是一个好的选择：select num from a where num in(select num from b)
-
+13.很多时候用 exists 代替 in 是一个好的选择，具体情况还是要根据小表驱动大表的原则，当a表数据集小于b表的数据集时，使用exists优于in；当当a表数据集大于b表数据集时，用in优于exists：
+select num from a where num in(select num from b)
 用下面的语句替换：
-
 select num from a where exists(select 1 from b where num=a.num)
 
 14.并不是所有索引对查询都有效，SQL是根据表中数据来进行查询优化的，当索引列有大量数据重复时，SQL查询可能不会去利用索引，如一表中有字段sex，male、female几乎各一半，那么即使在sex上建了索引也对查询效率起不了作用。
@@ -1392,7 +1525,31 @@ select num from a where exists(select 1 from b where num=a.num)
 29.尽量避免大事务操作，提高系统并发能力。
 
 30.尽量避免向客户端返回大数据量，若数据量过大，应该考虑相应需求是否合理。
+
+31. 左连接(left join)条件用与确定如何从右表搜索行，左边一定都有。右连接(right join)相反。所以左连接右表要建立索引，右连接相反。inner join 右表建立索引。
+
+32. 尽可能减少join语句中的NestedLoop的循环总次数，永远用小的结果集驱动大的结果集。优先优化NestedLoop的内层循环。
 ```
+
+**避免索引失效**
+
+```
+注意复合索引和普通索引
+1. 尽量使用全值匹配，避免模糊匹配。
+2. 如果是复合索引，要遵循最佳左前缀法则，查询从索引的最左前列开始并且不跳过索引中的列。
+3. 不在索引列上做任何操作（计算/函数/(自动或手动类型转换)），会导致索引失效，转向全表扫描。
+4. 存储引擎不能使用索引中范围条件右边的列。
+5. 尽量使用覆盖索引（只访问索引的查询（索引列和查询列一致）），避免select *。
+6. 使用不等于（!=）或大于小于（<>）时会导致索引失效。
+7. is null, is not null 也无法使用索引。
+8. like以通配符开头（‘%abc...’）索引会失效。
+9. 字符串不加单引号。
+10. 使用or连接多个条件。
+
+11. 避免索引失效导致行锁变表锁。
+```
+
+
 
 ### 表优化
 
@@ -1423,13 +1580,7 @@ done
 
 ### 表分区
 
-
-
 ### 回表、索引覆盖、最左匹配、索引下推
-
-### 索引失效的场景
-
-
 
 ## 3. MVCC
 
@@ -1488,11 +1639,10 @@ commit;-- 提交事务
 
 对上述表格做删除逻辑，执行以下SQL语句（假设获取到的事务逻辑ID为 3）
 
-```
+```sql
 begin；--获得全局事务ID = 3
 delete test_zq where id = 6;
 commit;
-复制代码
 ```
 
 执行完上述SQL之后数据并没有被真正删除，而是对删除版本号做改变，如下所示：
@@ -1508,11 +1658,10 @@ commit;
 
 执行以下SQL语句：
 
-```
+```sql
 begin;-- 获取全局系统事务ID 假设为 10
 update test_zq set test_id = 22 where id = 5;
-commit;
-复制代码
+commit；
 ```
 
 执行后表格实际数据应该是：
@@ -1539,19 +1688,121 @@ MVCC的写写操作是需要在数据对象上加写锁的，因此对于同一�
 原作者：程序猿杂货铺
 链接：https://juejin.im/post/5c68a4056fb9a049e063e0ab
 
+## 4. 锁类型
+
+### 按锁粒度分
+
+#### 表锁
+
+```
+-- 表锁定只用于防止其它客户端进行不正当地读取和写入
+-- MyISAM 支持表锁，InnoDB 支持行锁
+-- 锁定
+    LOCK TABLES tbl_name1 read(write), tbl_name2 read(write);
+-- 解锁
+    UNLOCK TABLES
+    
+-- 查看表锁 
+show open tables
+-- 分析表锁定(Table_locks_immediate和Table_locks_waited)
+show status like 'table%';
+
+Table_locks_immediate:：产生表级锁定的次数，表示可以立即获取锁的查询次数，每立即获取锁值加1；
+Table_locks_waited：出现表级锁定争用而发生等待的次数（不能立即获取锁的次数，每等待一次锁值加1），此值较高则说明存在严重的表级锁争用情况。
+
+当当前会话加了表读锁，则本会话不能修改数据或查询其他表，其他会话可以查询该表，但修改数据需要等待读锁释放。如果本会话要修改数据，可以继续加写锁，加写锁后其他会话不能读取数据，需要等到该写锁释放。
+MYISAM的读写锁调度是写锁优先，这也是myisam不适合做写为主表的引擎，因为写锁后，其他线程不能做任何操作，大量更新会使查询很难得到锁，从而造成阻塞。
+```
+
+#### 行锁
+
+```sql
+-- 锁定一行
+-- select  XXX for update
+```
+
+##### 间隙锁
+
+当我们使用范围条件而不是相等条件检索数据，并请求共享或排他锁时，InnoDB会给符合条件的已有数据记录的索引项加锁；对于键值在条件范围内但不存在的记录，叫做“间隙（GAP）”，InnoDB也会对这个“间隙”加锁，这中锁机制就是间隙锁（Next-key锁）。
+
+**危害：**
+
+因为query执行过程中通过范围查找的话，会锁定整个范围内所有的索引键值，即使这个键值不存在，这就造成在锁定的时候无法插入锁定键值范围内的任何数据，某些情况下对性能有很大影响。
+
+#### 页锁
+
+开销和加锁时间介于表锁和行锁之间；会出现死锁；锁定粒度介于表锁和行锁之间，并发度一般。
+
+### 按操作类型分
+
+#### 读锁
+
+#### 写锁
+
+### 优化
+
+检查InnoDB_row_lock状态变量来分析系统上的行锁的争夺情况
+
+```sql
+show status like 'innodb_row_lock%';
+/*
+各个状态量说明：
+		Innodb_row_lock_current_waits: 当前正在等待锁定的数量；
+		Innodb_row_lock_time: 从系统启动到现在锁定总时长；
+		Innodb_row_lock_time_avg: 每次等待所花平均时间；
+		Innodb_row_lock_time_max: 从系统启动到现在等待最长的一次所花的时间；
+		Innodb_row_lock_waits: 系统启动后到现在总共等待的次数；
+*/
+```
+
+**优化建议：**
+
+```
+（1）尽可能让所有数据检索都通过索引来完成，避免无索引行锁升级为表锁；
+（2）合理设计索引，尽量缩小锁的范围；
+（3）尽可能较少检索条件，避免间隙锁；
+（4）尽量控制事务大小，减少锁定资源量和时间长度；
+（5）尽可能低级别事务隔离。
+```
 
 
-## 4. MYSQL数据同步
+
+## 5. MYSQL数据同步
 
 原链接：https://www.cnblogs.com/wade-lt/p/9008058.html
 
 ### 主从复制
 
+MYSQL主从复制分为三步：
+
+```
+（1）master将改变操作记录到二进制日志(binary log)，这些记录过程叫做二进制日志事件，binary log events;
+（2）slave将master的binary log events拷贝到它的中继日志（relay log）;
+（3）slave重做中继日志中的事件，将改变应用到自己的数据库中，mysql复制是异步的且串行化的。
+
+注意：
+a. 每个slave只有一个master
+b. 每个slave只能有一个唯一的服务器id
+c. 每个master可以有多个slave 
+
+复制最大的问题就是延时
+```
+
 
 
 ### 主主复制
 
+### binlog
 
 
-## 5. 插件
+
+## 6. 插件
+
+### 存储引擎
+
+![image-20201110233004200](images/MYSQL/image-20201110233004200.png)
+
+![image-20201110233101735](images/MYSQL/image-20201110233101735.png)
+
+### 编写一个自定义插件
 
