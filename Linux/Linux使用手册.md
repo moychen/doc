@@ -73,7 +73,7 @@ x（eXecute，执行权限）：对文件而言，具有执行文件的权限；
 
 ### find
 
-```
+```bash
 find $DATA01/rating/ -type f -exec rm {} \; 
 find $DATA01/rating/ -type f | wc -l 
 find $DATA02/rating/ -type f | xargs rm -f 
@@ -219,10 +219,6 @@ I/O wait time:
    按 o 键可以改变列的显示顺序。按小写的 a-z 可以将相应的列向右移动，而大写的 A-Z 可以将相应的列向左移动。最后按回车键确定。
 - 按列排序
    按大写的 F 或 O 键，然后按 a-z 可以将进程按照相应的列进行排序。而大写的 R 键可以将当前的排序倒转。
-
-### lsof
-
-lsof -a -p <pid> 可以查看一个进程打开的文件信息
 
 ### du&df
 
@@ -684,7 +680,264 @@ sar -W：查看页面交换发生状况
 
 1. 启动这个工具来收集系统性能数据： /etc/init.d/sysstat start
 
+### mpstat
+
+**mpstat [ options... ] [ <interval> [ <count> ] ]**
+
+```bash
+# mpstat 1  111  [1秒刷新，111次]
+$ mpstat 1
+Linux 2.6.9-89.ELsmp (WebServer) 08/18/09
+
+10:08:25 CPU %user %nice %system %iowait %irq %soft %idle intr/s
+10:08:26 all 0.00 0.00 0.00 0.00 0.00 0.00 100.00 1005.00
+10:08:27 all 0.00 0.00 0.00 0.12 0.00 0.00 99.88 1031.00
+10:08:28 all 0.00 0.00 0.00 0.00 0.00 0.00 100.00 1009.00
+10:08:29 all 0.00 0.00 0.00 0.00 0.00 0.00 100.00 1030.00
+10:08:30 all 0.00 0.00 0.00 0.00 0.00 0.00 100.00 1006.00
+```
+
+```
+- 1.CPU （处理器编号，all表示所有处理器的平均数值） Processor number. The keyword all indicates that statistics are calculated as averages among all processors.
+- 2.%user （用户态的CPU利用率百分比） Show the percentage of CPU utilization that occurred while executing at the user level (application).
+- 3.%nice （用户态的优先级别CPU的利用率百分比） Show the percentage of CPU utilization that occurred while executing at the user level with nice priority.
+- 4.%system （内核态的CPU利用率百分比） Show the percentage of CPU utilization that occurred while executing at the system level (kernel). Note that this does not include the time spent servicing interrupts or softirqs.
+- 5.%iowait （在interval间段内io的等待百分比，interval 为采样频率，如本文的1为每一秒钟采样一次） Show the percentage of time that the CPU or CPUs were idle during which the system had an outstanding disk I/O request.
+- 6.%irq （在interval间段内,CPU的中断百分比） Show the percentage of time spent by the CPU or CPUs to service interrupts.
+- 7.%soft （在interval间段内,CPU的软中断百分比） Show the percentage of time spent by the CPU or CPUs to service softirqs. A softirq (software interrupt) is one of up to 32 enumerated software interrupts which can run on multiple CPUs at once.
+- 8.%idle （在interval间段内，CPU的闲置百分比，不包括I/O请求的等待） Show the percentage of time that the CPU or CPUs were idle and the system did not have an outstanding disk I/O request.
+- 9.intr/s （在interval间段内所有的CPU每秒中断数） Show the total number of interrupts received per second by the CPU or CPUs.
+```
+
+### iostat
+
+iostat 吞吐量
+
+```bash
+# iostat -x   1
+
+avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+                    24.13    0.00    8.22       2.50         0.00   65.15
+
+Device:         rrqm/s   wrqm/s     r/s     w/s   rsec/s   wsec/s avgrq-sz avgqu-sz   await  svctm  %util
+sda              17.51   107.98    9.98   14.52   250.06   980.07    50.20     3.23  131.70   2.53   6.19
+```
+
+```
+参数 
+-d 表示，显示设备（磁盘）使用状态；
+-k 某些使用block为单位的列强制使用Kilobytes为单位；
+1 10表示，数据显示每隔1秒刷新一次，共显示10次。
+tin 显示了系统为所有 tty 读取的字符总数。
+tout 显示了系统为所有 tty 写入的字符总数。
+% user 显示了在用户级（应用程序）执行时产生的 CPU 使用率百分比。
+% sys 显示了在系统级（内核）执行时产生的 CPU 使用率百分比。
+% idle 显示了在 CPU 空闲并且系统没有未完成的磁盘 I/O 请求时的时间百分比。
+% iowait 显示了 CPU 空闲期间系统有未完成的磁盘 I/O 请求时的时间百分比。
+
+rrqm/s: 每秒进行 merge 的读操作数目.即 delta(rmerge)/s
+wrqm/s: 每秒进行 merge 的写操作数目.即 delta(wmerge)/s
+r/s: 每秒完成的读 I/O 设备次数.即 delta(rio)/s
+w/s : 每秒完成的写 I/O 设备次数.即 delta(wio)/s
+rsec/s: 每秒读扇区数.即 delta(rsect)/s
+wsec/s: 每秒写扇区数.即 delta(wsect)/s
+rkB/s: 每秒读K字节数.是 rsect/s 的一半,因为每扇区大小为512字节.(需要计算)
+wkB/s: 每秒写K字节数.是 wsect/s 的一半.(需要计算)
+avgrq-sz: 平均每次设备I/O操作的数据大小 (扇区).delta(rsect+wsect)/delta(rio+wio)
+avgqu-sz : 平均I/O队列长度.即 delta(aveq)/s/1000 (因为aveq的单位为毫秒).
+await: 平均每次设备I/O操作的等待时间 (毫秒).即 delta(ruse+wuse)/delta(rio+wio)
+svctm: 平均每次设备I/O操作的服务时间 (毫秒).即 delta(use)/delta(rio+wio)
+%util : 一秒中有百分之多少的时间用于 I/O 操作,或者说一秒中有多少时间 I/O 队列是非空的.即 delta(use)/s/1000 (因为use的单位为毫秒)
+```
+
+如果 %util 接近 100%,说明产生的I/O请求太多,I/O系统已经满负荷,该磁盘可能存在瓶颈.
+
+idle小于70% IO压力就较大了,一般读取速度有较多的wait. 同时可以结合vmstat 查看查看b参数(等待资源的进程数) 和wa参数(IO等待所占用的CPU时间的百分比,高过30%时IO压力高)
+
+另外 await 的参数也要多和 svctm 来参考.差的过高就一定有 IO 的问题. avgqu-sz 也是个做 IO
+
+调优时需要注意的地方,这个就是直接每次操作的数据的大小,如果次数多,但数据拿的小的话,其实 IO 也会很小.如果数据拿的大,才IO 的数据会高.也可以通过 avgqu-sz × ( r/s or w/s ) = rsec/s or wsec/s.也就是讲,读定速度是这个来决定的.
+
+Linux系统出现了性能问题，一般我们可以通过top、iostat、free、vmstat等命令来查看初步定位问题。其中iostat可以给我们提供丰富的IO状态数据。
+
+**1. 基本使用**
+
+```bash
+$iostat -d -k 1 10
+```
+
+参数 -d 表示，显示设备（磁盘）使用状态；-k某些使用block为单位的列强制使用Kilobytes为单位；1 10表示，数据显示每隔1秒刷新一次，共显示10次。
+
+```bash
+$iostat -d -k 1 10
+
+Device: tps kB_read/s kB_wrtn/s kB_read kB_wrtn
+sda 39.29 21.14 1.44 441339807 29990031
+sda1 0.00 0.00 0.00 1623 523
+sda2 1.32 1.43 4.54 29834273 94827104
+sda3 6.30 0.85 24.95 17816289 520725244
+sda5 0.85 0.46 3.40 9543503 70970116
+sda6 0.00 0.00 0.00 550 236
+sda7 0.00 0.00 0.00 406 0
+sda8 0.00 0.00 0.00 406 0
+sda9 0.00 0.00 0.00 406 0
+sda10 60.68 18.35 71.43 383002263 1490928140
+
+Device: tps kB_read/s kB_wrtn/s kB_read kB_wrtn
+sda 327.55 5159.18 102.04 5056 100 sda1 0.00 0.00 0.00 0 0
+```
+
+```
+tps：该设备每秒的传输次数（Indicate the number of transfers per second that were issued to the device.）。“一次传输”意思是“一次I/O请求”。多个逻辑请求可能会被合并为“一次I/O请求”。“一次传输”请求的大小是未知的。
+kB_read/s：每秒从设备（drive expressed）读取的数据量；
+kB_wrtn/s：每秒向设备（drive expressed）写入的数据量；
+kB_read：读取的总数据量；
+kB_wrtn：写入的总数量数据量；
+这些单位都为Kilobytes。
+```
+
+上面的例子中，我们可以看到磁盘sda以及它的各个分区的统计数据，当时统计的磁盘总TPS是39.29，下面是各个分区的TPS。（因为是瞬间值，所以总TPS并不严格等于各个分区TPS的总和）
+
+**2.-x 参数**
+
+使用-x参数我们可以获得更多统计信息。
+
+```bash
+$iostat -d -x -k 1 10
+
+Device: rrqm/s wrqm/s r/s w/s rsec/s wsec/s rkB/s wkB/s avgrq-sz avgqu-sz await svctm %util
+sda 1.56 28.31 7.80 31.49 42.51 2.92 21.26 1.46 1.16 0.03 0.79 2.62 10.28
+
+Device: rrqm/s wrqm/s r/s w/s rsec/s wsec/s rkB/s wkB/s avgrq-sz avgqu-sz await svctm %util
+sda 2.00 20.00 381.00 7.00 12320.00 216.00 6160.00 108.00 32.31 1.75 4.50 2.17 84.20
+```
+
+```
+rrqm/s：每秒这个设备相关的读取请求有多少被Merge了（当系统调用需要读取数据的时候，VFS将请求发到各个FS，如果FS发现不同的读取请求读取的是相同Block的数据，FS会将这个请求合并Merge）；wrqm/s：每秒这个设备相关的写入请求有多少被Merge了。
+rsec/s：每秒读取的扇区数；wsec/：每秒写入的扇区数。r/s：The number of read requests that were issued to the device per second；w/s：The number of write requests that were issued to the device per second；
+await：每一个IO请求的处理的平均时间（单位是微秒毫秒）。这里可以理解为IO的响应时间，一般地系统IO响应时间应该低于5ms，如果大于10ms就比较大了。
+%util：在统计时间内所有处理IO时间，除以总共统计时间。例如，如果统计间隔1秒，该设备有0.8秒在处理IO，而0.2秒闲置，那么该设备的%util = 0.8/1 = 80%，所以该参数暗示了设备的繁忙程度。一般地，如果该参数是100%表示设备已经接近满负荷运行了 （当然如果是多磁盘，即使%util是100%，因为磁盘的并发能力，所以磁盘使用未必就到了瓶颈）。
+```
+
+
+
+**3.-c 参数**
+
+iostat还可以用来获取cpu部分状态值：
+
+```bash
+$iostat -c 1 10
+
+avg-cpu: %user %nice %sys %iowait %idle 1.98 0.00 0.35 11.45 86.22
+avg-cpu: %user %nice %sys %iowait %idle 1.62 0.00 0.25 34.46 63.67
+```
+
+**4.常见用法**
+
+```bash
+$iostat -d -k 1 10 
+#查看TPS和吞吐量信息 iostat -d -x -k 1 10 #查看设备使用率（%util）、响应时间（await） 
+$iostat -c 1 10 #查看cpu状态
+```
+
+**5.实例分析**
+
+```bash
+$iostat -d -k 1 |grep sda10
+
+Device: tps kB_read/s kB_wrtn/s kB_read kB_wrtn
+sda10 60.72 18.95 71.53 395637647 1493241908
+sda10 299.02 4266.67 129.41 4352 132
+sda10 483.84 4589.90 4117.17 4544 4076
+sda10 218.00 3360.00 100.00 3360 100
+sda10 546.00 8784.00 124.00 8784 124
+sda10 827.00 13232.00 136.00 13232 136
+```
+
+上面看到，磁盘每秒传输次数平均约400；每秒磁盘读取约5MB，写入约1MB。
+
+```bash
+$iostat -d -x -k 1
+
+Device: rrqm/s wrqm/s r/s w/s rsec/s wsec/s rkB/s wkB/s avgrq-sz avgqu-sz await svctm %util 
+sda 1.56 28.31 7.84 31.50 43.65 3.16 21.82 1.58 1.19 0.03 0.80 2.61 10.29
+sda 1.98 24.75 419.80 6.93 13465.35 253.47 6732.67 126.73 32.15 2.00 4.70 2.00 85.25
+sda 3.06 41.84 444.90 54.08 14204.08 2048.98 7102.04 1024.49 32.57 2.10 4.21 1.85 92.24
+```
+
+可以看到磁盘的平均响应时间<5ms，磁盘使用率>80。磁盘响应正常，但是已经很繁忙了。
+
+### iotop
+
+### iftop
+
+### vmstat
+
+vmstat是一个很全面的性能分析工具，可以观察到系统的进程状态、内存使用、虚拟内存使用、磁盘的IO、中断、上下文切换、CPU使用等。对于 Linux 的性能分析，100%理解 vmstat 输出内容的含义，并能灵活应用，那对系统性能分析的能力就算是基本掌握了。
+
+下面是vmstat命令的输出结果：
+
+```bash
+[root@monitor-www ~]# vmstat 1 5
+procs — ———–memory——————–swap——io—– —-system— —–cpu—
+r  b  swpd       free     buff      cache  si so  bi    bo       in    cs   us sy  id wa st
+1 0 84780 909744 267428 1912076  0 0  20   94      0        0     2  1  95  1 0
+1 2 84780 894968 267428 1912216  0 0   0 1396   2301 11337  8  3  89  0 0
+1 0 84780 900680 267428 1912340  0 0 76 1428  1854 8082     7  2  90  0 0
+1 0 84780 902544 267432 1912548  0 0 116 928  1655 7502    7  2  92   0 0
+2 0 84780 900076 267432 1912948  0 0 180 904 1963 8703    10  3  87  0 0
+```
+
+对输出解释如下：
+
+```
+1）procs 
+a.r列表示运行和等待CPU时间片的进程数，这个值如果长期大于系统CPU个数，就说明CPU资源不足，可以考虑增加CPU；
+b.b列表示在等待资源的进程数，比如正在等待I/O或者内存交换等。
+
+2）memory
+a.swp 列表示切换到内存交换区的内存数量（以KB为单位）。如果swp的值不为0或者比较大，而且si、so的值长期为0，那么这种情况一般不用担心，不会影响系统性能；
+b.free列表示当前空闲的物理内存数量（以KB为单位）；
+c. buff列表示buffers cache的内存数量，一般对块设备的读写才需要缓冲；
+d. cache列表示page cached的内存数量，一般作文件系统的cached，频繁访问的文件都会被cached。如果cached值较大，就说明cached文件数较多。如果此时IO中的bi比较小，就说明文件系统效率比较好。
+
+3）swap
+a.si列表示由磁盘调入内存 ，也就是内存进入内存交换区的数量；
+b.so 列表示由内存调入磁盘 ，也就是内存交换区进入内存的数量
+c.一般情况下，si、so的值都为0，如果si、so的值长期不为0，则表示系统内存不足，需要考虑是否增加系统内存 。
+
+4）IO
+a.bi列表示从块设备读入的数据总量（即读磁盘，单位KB/秒）
+b.bo列表示写入到块设备的数据总量（即写磁盘，单位KB/秒） 这里设置的bi+bo参考值为1000，如果超过1000，而且wa值比较大，则表示系统磁盘IO性能瓶颈。
+
+5）system
+a.in列表示在某一时间间隔中观察到的每秒设备中断数；
+b.cs列表示每秒产生的上下文切换次数。 上面这两个值越大，会看到内核消耗的CPU时间就越多。
+
+6）CPU
+a.us列显示了用户进程消耗CPU的时间百分比。us的值比较高时，说明用户进程消耗的CPU时间多，如果长期大于50%，需要考虑优化程序啥的。
+b.sy列显示了内核进程消耗CPU的时间百分比。sy的值比较高时，就说明内核消耗的CPU时间多；如果us+sy超过80%，就说明CPU的资源存在不足。
+c.id列显示了CPU处在空闲状态的时间百分比；
+d.wa列表示IO等待所占的CPU时间百分比。wa值越高，说明IO等待越严重。如果wa值超过20%，说明IO等待严重 。
+e.st列一般不关注，虚拟机占用的时间百分比。 （Linux 2.6.11）
+```
+
+
+
 ### perf
+
+### lsof
+
+lsof -a -p <pid> 可以查看一个进程打开的文件信息
+
+要监测该端口的状态信息。这里用22端口讲解
+
+```javascript
+[root@WebServer ~]# lsof -i:22
+COMMAND PID USER FD TYPE DEVICE SIZE NODE NAME
+sshd 11664 root 3u IPv6 109820 TCP 192.168.0.157:22->192.168.0.99:1174 (ESTABLISHED)
+sshd 24927 root 3u IPv6 62643 TCP *:22 (LISTEN)
+```
 
 ### vtune
 
@@ -755,15 +1008,15 @@ readelf -d xxx.so | grep NEEDED
 c++filt + <symbol> -- 查看符号的原型
 ```
 
+### less
+
 ### mtrace
 
 ### valgind
 
 ![img](images/Linux使用手册/201102201750352698.png)
 
-### iostat
-
-### vmstat
+### 
 
 ### ipcs
 

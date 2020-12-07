@@ -150,7 +150,7 @@ hash_map 和 map 两者不论底层是 hashtable 还是 RB-tree，都能够根�
 > - 采用链地址法解决哈希冲突;
 > - 在SGI hashtable实现过程中，hashtable的长度就是用来通过除留余数法计算地址的被除数。
 
-![](../../images/C++/hashtable.png)
+![](../../../Algorithm/images/散列表/hashtable.png)
 
 ```C++
 template <class Value>

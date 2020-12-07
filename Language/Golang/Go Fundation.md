@@ -91,7 +91,7 @@ func main() {
 	fmt.Println("-----------------After updateSlice s1-----------------")
 	s1 := arr[2:]
 	fmt.Println(s1) //[2 3 4 5 6 7]
-	updateSlice(s1)
+	updateSlice(s1) 
 	fmt.Println(s1, arr) //[100 3 4 5 6 7] [0 1 100 3 4 5 6 7]
 
 	fmt.Println("-----------------After updateSlice s2-----------------")
@@ -192,7 +192,7 @@ func main() {
 
 **注意点**
 
->* slice传参是值拷贝的形式，而且是浅拷贝（能够修		改底层数组）；
+>* slice传参是值拷贝的形式，而且是浅拷贝（能够修改底层数组）；
 >* slice做函数参数传递，可以修改底层数组，但是不能够原slice；
 >* 在使用slice的过程中，一定要注意slice和底层数组区分开来，这样才不容易出错，举例如下。
 

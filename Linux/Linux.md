@@ -1,14 +1,12 @@
 # Linux
 
-## IO
+## IO模型
 
-### BIO
+### BIO（同步阻塞IO）
 
+### NIO（同步非阻塞IO）
 
-
-### AIO
-
-### NIO
+### AIO（异步非阻塞IO）
 
 BIO : 一次连接一个线程
 
@@ -461,9 +459,9 @@ UNIX Domain socket的工作流程简述如下（与网络socket相同）。
 
 #### 自旋锁
 
-##### 屏障
+#### 屏障
 
-##### CAS（Compare And Swap）
+#### CAS（Compare And Swap）
 
 https://blog.csdn.net/qq_35571554/article/details/82892806https://blog.csdn.net/qq_35571554/article/details/82906091​https://www.ibm.com/developerworks/cn/linux/l-cn-lockfree/​https://www.cnblogs.com/gaochundong/p/lock_free_programming.html​
 

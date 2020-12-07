@@ -1067,7 +1067,13 @@ void main()
 
 ### 左值、右值
 
+​		C++中所有的值都必然属于左值、右值二者之一。左值是指表达式结束后依然存在的持久化对象，右值是指表达式结束时就不再存在的临时对象。所有的具名变量或者对象都是左值，而右值不具名。很难得到左值和右值的真正定义，但是有一个可以区分左值和右值的便捷方法：看能不能对表达式取地址，如果能，则为左值，否则为右值。
+
+​		右值分为将亡值和纯右值。纯右值就是c++98标准中右值的概念，如非引用返回的函数返回的临时变量值；一些运算表达式，如1+2产生的临时变量；不跟对象关联的字面量值，如2，'c'，true，"hello"；这些值都不能够被取地址。而将亡值则是c++11新增的和右值引用相关的表达式，这样的表达式通常时将要移动的对象、T&&函数返回值、std::move()函数的返回值等，不懂将亡值和纯右值的区别其实没关系，统一看作右值即可，不影响使用。
+
 ### 隐式移动
+
+### 引用折叠
 
 
 
@@ -1280,6 +1286,92 @@ sizeof("Hello,world") = 12
 2. 参数由调用者清楚，手动清栈，被调用函数不会要求调用者传递多少参数，调用者传递过多或者过少的参数，甚至完全不同的参数都不会产生编译阶段的错误。
 
 那么，变参函数的调用方式为（也只能是）：__cdecl 。
+
+### 3. 类型推导
+
+#### 通用引用
+
+能够依据据类型推导既能接受左值类型的参数，也能接受右值类型的参数。
+
+```c++
+template <typename T>
+void f(T&& param);
+```
+
+#### 模板类型推导
+
+对于一个函数模板，假设声明如下：
+
+```c++
+template <typename T>
+void f(ParamType param);
+
+// 函数调用
+f(expr); 
+```
+
+在编译期间，编译器会根据函数调用时的参数来推导`T`和`ParamType`的类型。因为在实际中`ParamType`经常包含const和引用限定符，所以这个两个类型推导经常不一样。比如
+
+```c++
+template <typename T>
+void f(const T& param); //Param is const T&
+
+// 函数调用
+int x = 3;
+f(x);  //T is int，ParamType is const int& 
+```
+
+类型推导不仅仅取决于`expr`的类型，有时还要依据`ParamType`的形式，下面根据以下三种场景来介绍。
+
+**case 1  ParamType 是引用或指针，但不是通用引用**
+
+```c++
+template<typename T>
+void f(T& param); //  param is a reference
+
+template<typename T>
+void f(const T& param); // param is now a ref-to-const
+
+template<typename T>
+void f(T* param); // param is now a pointer
+```
+
+在此场景下，类型推导规则如下：
+
+> * 如果expr为引用，则忽略引用性质
+> * 将expr的类型与ParamType匹配以确定T
+
+**case 2  ParamType 是通用引用**
+
+```c++
+template<typename T>
+void f(T&& param); //  param is now a universal reference
+```
+
+在此场景下，类型推导规则如下：
+
+> * 如果expr是左值，则T和ParamType都被推导为左值引用
+> * 如果expr是右值，则跟case1一致
+
+**case 3 ParamType不是指针也不是引用  **
+
+```c++
+template<typename T>
+void f(T param); // param is now passed by value
+```
+
+在此场景下，类型推导规则如下：
+
+> * 如果是引用，则忽略引用性质
+> * 忽略CV限定（const和volatile）
+
+#### auto
+
+
+
+#### decltype
+
+
 
 ## RAII
 
@@ -1748,12 +1840,6 @@ Grand* GetOne()
 }
 ```
 
-## 模板
-
-### 2. 全特化
-
-### 3. 偏特化
-
 ## STL
 
 ### 1. vector、list
@@ -1791,6 +1877,8 @@ Grand* GetOne()
 ## C++11
 
 ### 右值引用、std::forward、std::move
+
+
 
 ### 可变长参数模板
 

@@ -117,6 +117,9 @@ lower_case_table_names = 1时，mysql会先把表名转为小写，再执行操�
     REPAIR [LOCAL | NO_WRITE_TO_BINLOG] TABLE tbl_name [, tbl_name] ... [QUICK] [EXTENDED] [USE_FRM]
 -- 分析表
     ANALYZE [LOCAL | NO_WRITE_TO_BINLOG] TABLE tbl_name [, tbl_name] ...
+    
+-- 统计表数据（不要用count(*) 或 count(1)）
+
 ```
 
 **数据操作**
