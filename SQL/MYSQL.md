@@ -716,8 +716,8 @@ set transaction isolation level read committed;
 set global transaction isolation level read committed;
 ```
 
-> * `Read uncommitter`(未提交读) ： 没有解决任何问题
-> * `Read Committer`(提交读) ：解决了脏读问题
+> * `Read uncommitted`(未提交读) ： 没有解决任何问题
+> * `Read Committed`(提交读) ：解决了脏读问题
 > * `Repeatable Read`(可重复读)： 解决了不可重复读和脏读问题（ps:在Innodb情况下，也不可能发生幻读问题）
 > * `Serializable`(串行化) ：脏读、幻读、不可重复读三个问题全部解决了。将当前会话的隔离级别设置为serializable的时候，其他会话对该表的写操作将被挂起。这是隔离级别中最严格的，但是这样做势必对性能造成影响。
 
@@ -1797,7 +1797,9 @@ c. 每个master可以有多个slave
 
 ### binlog
 
+### relay log
 
+### undo、redo log
 
 ## 6. 插件
 

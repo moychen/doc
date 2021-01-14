@@ -34,11 +34,11 @@ Intel:  ret far stack_adjust
 AT&T: section:disp(base, index, scale)					
 Intel: section:[base+index*scale+disp]
 
-		AT&T																			ntel
+		AT&T													intel
 movl -4(%ebp), %eax											mov eax, [ebp - 4]
-movel array(, %eax, 4), %eax						  mov eax, [eax*4 + array]
-movw array(%ebx, %eax, 4), %cx 				   mov cx, [ebx+4*eax+array]
-movb $4, %fs:(%eax)											 mov fs:eax, 4
+movel array(, %eax, 4), %eax						 	 	mov eax, [eax*4 + array]
+movw array(%ebx, %eax, 4), %cx 				   				mov cx, [ebx+4*eax+array]
+movb $4, %fs:(%eax)											mov fs:eax, 4
 
 9. c嵌入汇编
 格式：
@@ -52,7 +52,7 @@ GNU c:	__asm__("asm statement":outputs:inputs:registers-modified);
 		"pop %%fs":"=a(_res):"0"(seg), "m"(*(addr)));\
 		_res;
 	}
-	
+
 int main() 
 {
 		int a1 = 10, b1 = 0;
