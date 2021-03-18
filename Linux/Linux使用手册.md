@@ -329,6 +329,12 @@ $ tar -zvf tool.rar tools/
 
 ### rar
 
+### pkexec
+
+### nano
+
+
+
 ## 2. 网络工具
 
 ### netstat

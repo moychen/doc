@@ -1,8 +1,10 @@
-# libevent
+# 3rd
 
-## 1. 编译安装
+## 1. libevent
 
-### windows下交叉编译
+### 1.1 编译安装
+
+#### 1.1.1 windows下交叉编译
 
 使用visual studio自带的交叉编译工具。新建build_zlib.bat编译zlib。
 
@@ -77,7 +79,7 @@ copy /Y *.dll %OUT%\bin
 pause
 ```
 
-### Linux 下编译
+#### 1.1.2 Linux 下编译
 
 **zlib:**
 
@@ -102,17 +104,19 @@ $ ./configure
 $ make && make install
 ```
 
-## 2. 网络模型介绍
+### 2. libevent 常用接口
 
-### select
+#### 2.1 event_base
 
-### poll
+#### 2.2 bufferevent
 
-### epoll
-
-### iocp
+### 3. libevent实战
 
 
 
-## 3. libevent实战
+## 2. boost
+
+### 2.1 编译安装
+
+#### 2.1.1 windows下编译
 

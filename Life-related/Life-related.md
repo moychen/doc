@@ -20,5 +20,7 @@ WINDOWS：使用nslookup命令，然后系统就会显示：默认服务器：x.
 UNIX/Linux ：使用 more 命令查看一下 /etc/resolv.conf 文本文件
 ```
 
+### wsl
+
 
 

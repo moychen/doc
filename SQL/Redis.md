@@ -2,6 +2,8 @@
 
 ## 1.Redis初识
 
+
+
 ### 配置说明
 
 ```bash
@@ -1233,4 +1235,46 @@ sentinel集群选举一个sentinel节点完成故障转移。通过分布式强�
 ### 有序集（zset）
 
 #### zskiplist
+
+## 10. 实践
+
+### 本地环境
+
+```bash
+protected-mode no
+bind 0.0.0.0
+
+#master
+redis-server ~/config/redis/redis-6379.conf
+#slave
+redis-server ~/config/redis/redis-6381.conf
+
+# slave 1
+docker run -p 6380:6380 -d -v /root/data/redis01/:/data --name redis01 redis:5.0-alpine redis-server /data/config/redis-6380.conf 
+
+检查配置文件是否设置了daemonize yes，如果是，就要改为daemonize no，因为该选项让redis成为在后台运行的守护进程，而docker容器必须要有一个前台进程才能留存。
+
+docker logs
+docker start bd41b6db781a
+docker port bd41b6db781a
+docker inspect bd41b6db781a
+docker exec -ti eb868a9b08c5 /bin/sh
+iptables -t nat -A  DOCKER -p tcp --dport 6380 -j DNAT --to-destination 172.17.0.2:6380
+
+systemctl stop firewalld
+docker容器ping不通docker0
+route add 134.105.0.0 mask 255.255.0.0 134.105.64.1
+
+网关是邮电局,所有的信息必须通过这里的打包、封箱、寻址，才能发出去与收进来；网卡是设备，也就是邮电局邮筒，你家的信箱；而网桥是邮递员，但他只负责一个镇里面(局域网)不负责广域网。
+
+
+#用localhost就会报如下错误
+slaveof 192.168.206.105 6379 
+5828:S 05 May 2020 14:33:00.051 * MASTER <-> REPLICA sync started
+5828:S 05 May 2020 14:33:00.051 # Error condition on socket for SYNC: Connection refused
+
+redis-sentinel ./sentinel-6379.conf
+redis-sentinel ./sentinel-6380.conf
+redis-sentinel ./sentinel-6381.conf
+```
 
