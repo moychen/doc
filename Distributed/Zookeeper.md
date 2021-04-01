@@ -19,8 +19,6 @@ ZK 服务有两种模式（standalone和quorum），standalone模式下ZK集群�
 > * 全局可线性化(Linearizable)写入: 先到达leader的写请求会被先处理, leader决定写请求的执行顺序.
 > * 客户端FIFO顺序: 保证单个客户端的请求按照发送顺序执行.
 
-
-
 ZooKeeper适用于存储和协同相关的关键数据，不适用于大量数据存储。
 
 **典型应用场景：**

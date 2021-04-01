@@ -672,7 +672,7 @@ func Sort() {
 }
 ```
 
-```
+```go
 func Merge() {
    files := fileop.GetAllFile(fileop.OUTPUTDIR)
    result := fileop.Openfile(RESULT_FILE)

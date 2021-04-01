@@ -438,7 +438,7 @@ int setpriority(int which, int who, int prio);
 
 ​    PRIO_USER : 一个用户拥有的所有进程，此时参数who取值为实际用户ID。
 
-**setpriority函数**：该函数用来设置指定进程的优先级。进程指定的方法与getpriority函数相同。调用成功返回指定进程优先级，失    败返回-1。
+**setpriority函数**：该函数用来设置指定进程的优先级。进程指定的方法与getpriority函数相同。调用成功返回指定进程优先级，失败返回-1。
 
 **nice系统调用是以上两种函数的组合，其等价于：**
 

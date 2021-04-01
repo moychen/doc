@@ -3,8 +3,8 @@
  <div style="float: right;">
  <img align="right" src="G:\BaiduNetdiskDownload\IMG_8824.jpg" style="zoom:13%;" />
  </div>
- -  陈腾/男/19960503
- - 本科/西安石油大学/软件工程
+ -  陈腾/男/19960503           
+ -  本科/西安石油大学/软件工程
  - 毕业时间：201807
  - 联系方式：18791485667/julychenteng@163.com
  - Github：[http://github.com/JulyMemory](http://github.com/JulyMemory)
@@ -22,7 +22,7 @@
 
 ## 工作经历
 
-### 广东亚信技术有限公司 （ 2018年12月 ~ 至今 ）				
+### 广东亚信技术有限公司 （ 2018年12月 ~ 至今	杭州）				
 
 主要从事电信行业软件开发，在此期间主要参与移动运营商BOSS计费子系统相关模块开发和代码维护工作，参与维护开发过解码、业务分析、在线计费前置机、dcc_proxy、查询代理、业务mdb等模块。
 
