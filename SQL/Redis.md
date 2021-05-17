@@ -2,8 +2,6 @@
 
 ## 1.Redis初识
 
-
-
 ### 配置说明
 
 ```bash
@@ -456,15 +454,15 @@ keys一般不在生产环境使用.一般生产环境键值对多,keys命令时�
 
 ### 2.2 数据结构和内部编码
 
-![1585151749392](images/Redis/1585151749392.png)
+<img src="images/Redis/1585151749392.png" alt="1585151749392" style="zoom:67%;" />
 
-![1585152109365](images/Redis/1585152109365.png)
+<img src="images/Redis/1585152109365.png" alt="1585152109365" style="zoom:67%;" />
 
 
 
 ### 2.3 单线程
 
-![1585223818254](images/Redis/1585223818254.png)
+<img src="images/Redis/1585223818254.png" alt="1585223818254" style="zoom:67%;" />
 
 > * 一次只运行一条命令
 > * 拒绝使用长(慢)命令,如keys,flushall,flushdb,show lua script,mutil/exec,operate big value(collection).
@@ -536,7 +534,7 @@ keys一般不在生产环境使用.一般生产环境键值对多,keys命令时�
 
 **TIPS**
 
-![image-20200406232148852](images/Redis/image-20200406232148852.png)
+<img src="images/Redis/image-20200406232148852.png" alt="image-20200406232148852" style="zoom:67%;" />
 
 #### set
 
@@ -561,7 +559,7 @@ keys一般不在生产环境使用.一般生产环境键值对多,keys命令时�
 
 **TIPS**
 
-![image-20200406234555130](images/Redis/image-20200406234555130.png)
+<img src="images/Redis/image-20200406234555130.png" alt="image-20200406234555130" style="zoom:67%;" />
 
 #### zset
 
@@ -663,7 +661,7 @@ redigo
 
 ### 慢查询
 
-![ ](images/Redis/image-20200407235904167.png)
+<img src="images/Redis/image-20200407235904167.png" alt=" " style="zoom:67%;" />
 
 > * 慢查询实现上是一个先进先出队列；
 >
@@ -671,7 +669,7 @@ redigo
 >
 > * 保存在内存中，重启会丢失。
 
-![image-20200408000714981](images/Redis/image-20200408000714981.png)
+<img src="images/Redis/image-20200408000714981.png" alt="image-20200408000714981" style="zoom:67%;" />
 
 **相关配置**
 
@@ -710,9 +708,9 @@ redigo
 
 ### 发布订阅
 
-![image-20200414231336310](images/Redis/image-20200414231336310.png)
+<img src="images/Redis/image-20200414231336310.png" alt="image-20200414231336310" style="zoom:67%;" />
 
-![image-20200414231407900](images/Redis/image-20200414231407900.png)
+<img src="images/Redis/image-20200414231407900.png" alt="image-20200414231407900" style="zoom:67%;" />
 
 **注意：**
 
@@ -728,7 +726,7 @@ redigo
 
 ### 消息队列
 
-![image-20200414232316419](images/Redis/image-20200414232316419.png)
+<img src="images/Redis/image-20200414232316419.png" alt="image-20200414232316419" style="zoom:67%;" />
 
 ### Bitmap
 
@@ -756,13 +754,13 @@ type hyperloglog_key = string
 | pfcount key [key] ...                    | 计算hyperloglog的独立总数 |
 | pfmerge destkey sourcekey [sourcekey]... | 合并多个hyperloglog       |
 
- ![1586965519036](images/Redis/1586965519036.png)
+ <img src="images/Redis/1586965519036.png" alt="1586965519036" style="zoom:67%;" />
 
-![1586965609890](images/Redis/1586965609890.png)
+<img src="images/Redis/1586965609890.png" alt="1586965609890" style="zoom:67%;" />
 
 **内存消耗**
 
-  ![1586965898833](images/Redis/1586965898833.png)
+  <img src="images/Redis/1586965898833.png" alt="1586965898833" style="zoom:67%;" />
 
 **使用注意:**
 
@@ -786,7 +784,7 @@ type geokey = zset
 | geodist key member1 member2 [unit]         | 获取两个地理位置的距离,unit:m(米)/km(千米)/mi(英里)/ft(尺) |
 | zrem key member                            | 删除member                                                 |
 
-![1586966905520](images/Redis/1586966905520.png)
+<img src="images/Redis/1586966905520.png" alt="1586966905520" style="zoom:67%;" />
 
 ## 5. Redis持久化的取舍和选择
 
@@ -799,7 +797,7 @@ redis所有数据保存在内存中，对数据的更新将异步地保存在磁
 > * 快照
 > * 写日志
 
-![image-20200425173614157](images/Redis/image-20200425173614157.png)
+<img src="images/Redis/image-20200425173614157.png" alt="image-20200425173614157" style="zoom:67%;" />
 
 ### RDB
 
@@ -807,7 +805,7 @@ redis所有数据保存在内存中，对数据的更新将异步地保存在磁
 
 将数据库的快照（snapshot）以二进制的方式保存到磁盘中。
 
-![image-20200425174335629](images/Redis/image-20200425174335629.png)
+<img src="images/Redis/image-20200425174335629.png" alt="image-20200425174335629" style="zoom:67%;" />
 
 #### 主要三种触发方式
 
@@ -818,17 +816,17 @@ redis所有数据保存在内存中，对数据的更新将异步地保存在磁
 | save   | 同步方式 |
 | bgsave | 异步方式 |
 
-![image-20200425175301101](images/Redis/image-20200425175301101.png)
+<img src="images/Redis/image-20200425175301101.png" alt="image-20200425175301101" style="zoom:67%;" />
 
 **save**
 
-![image-20200425174826737](images/Redis/image-20200425174826737.png)
+<img src="images/Redis/image-20200425174826737.png" alt="image-20200425174826737" style="zoom:67%;" />
 
-![image-20200425175039691](images/Redis/image-20200425175039691.png)
+<img src="images/Redis/image-20200425175039691.png" alt="image-20200425175039691" style="zoom:67%;" />
 
 **bgsave**
 
-![image-20200425175125563](images/Redis/image-20200425175125563.png)
+<img src="images/Redis/image-20200425175125563.png" alt="image-20200425175125563" style="zoom:67%;" />
 
 
 
@@ -836,7 +834,7 @@ redis所有数据保存在内存中，对数据的更新将异步地保存在磁
 
 通过在配置文件中添加save配置实现。更新RDB频率无法控制。
 
-![image-20200425175914563](images/Redis/image-20200425175914563.png)
+<img src="images/Redis/image-20200425175914563.png" alt="image-20200425175914563" style="zoom:67%;" />
 
 ```bash
  save 900 1  
@@ -878,25 +876,25 @@ redis所有数据保存在内存中，对数据的更新将异步地保存在磁
 
 以协议文本的方式，将所有对数据库进行过写入的命令（及其参数）记录到 AOF 文件，以此达到记录数据库状态的目的。
 
-![image-20200425191856366](images/Redis/image-20200425191856366.png)
+<img src="images/Redis/image-20200425191856366.png" alt="image-20200425191856366" style="zoom:67%;" />
 
 
 
 #### AOF三种策略
 
-![image-20200425192842092](images/Redis/image-20200425192842092.png)
+<img src="images/Redis/image-20200425192842092.png" alt="image-20200425192842092" style="zoom: 50%;" />
 
 ##### always
 
- ![image-20200425192636892](images/Redis/image-20200425192636892.png)
+ <img src="images/Redis/image-20200425192636892.png" alt="image-20200425192636892" style="zoom:67%;" />
 
 ##### everysec
 
-![image-20200425192727372](images/Redis/image-20200425192727372.png)
+<img src="images/Redis/image-20200425192727372.png" alt="image-20200425192727372" style="zoom:67%;" />
 
 ##### no
 
-![image-20200425192806601](images/Redis/image-20200425192806601.png)
+<img src="images/Redis/image-20200425192806601.png" alt="image-20200425192806601" style="zoom:67%;" />
 
 ### AOF相关配置
 
@@ -936,7 +934,7 @@ AOF重写并不是依据原AOF文件重写，而是通过内存数据进行重�
 
 **bgrewriteaof**
 
-![image-20200425194359587](images/Redis/image-20200425194359587.png)
+<img src="images/Redis/image-20200425194359587.png" alt="image-20200425194359587" style="zoom:67%;" />
 
 **通过配置实现**
 
@@ -991,7 +989,7 @@ aof_base_size
 
 #### AOF追加阻塞
 
-![image-20200504105332017](images/Redis/image-20200504105332017.png![image-20200504105417435](images/Redis/image-20200504105417435.png)
+![image-20200504105332017](images/Redis/image-20200504105332017.png<img src="images/Redis/image-20200504105417435.png" alt="image-20200504105417435" style="zoom:67%;" />
 
 **问题定位**
 
@@ -999,7 +997,7 @@ aof_base_size
 > * info persistence  
 > * top
 
-![image-20200504105457210](images/Redis/image-20200504105457210.png)
+<img src="images/Redis/image-20200504105457210.png" alt="image-20200504105457210" style="zoom:67%;" />
 
 ![image-20200504105650219](images/Redis/image-20200504105650219.png)
 
@@ -1035,7 +1033,7 @@ info server
 
 #### 全量复制
 
-![image-20200505203145491](images/Redis/image-20200505203145491.png)
+<img src="images/Redis/image-20200505203145491.png" alt="image-20200505203145491" style="zoom:67%;" />
 
 **全量复制开销**
 
@@ -1045,7 +1043,7 @@ info server
 > * 从节点rdb文件加载时间
 > * 如果AOF开启，则加载rdb完成后会进行AOF重写
 
-![image-20200505223735401](images/Redis/image-20200505223735401.png)
+<img src="images/Redis/image-20200505223735401.png" alt="image-20200505223735401" style="zoom:67%;" />
 
 ### 故障处理
 
@@ -1085,7 +1083,7 @@ info server
 
 #### 规避复制风暴
 
-![image-20200505231004357](images/Redis/image-20200505231004357.png)
+<img src="images/Redis/image-20200505231004357.png" alt="image-20200505231004357" style="zoom:67%;" />
 
 ## 7. Redis Sentinel
 
@@ -1093,11 +1091,11 @@ info server
 
 ![image-20200517162035909](images/Redis/image-20200517162035909.png)
 
-![image-20200516163835386](images/Redis/image-20200516163835386.png)
+<img src="images/Redis/image-20200516163835386.png" alt="image-20200516163835386" style="zoom:67%;" />
 
 ### 7.2 主从复制高可用
 
-![image-20200516164145550](images/Redis/image-20200516164145550.png)
+<img src="images/Redis/image-20200516164145550.png" alt="image-20200516164145550" style="zoom:67%;" />
 
 #### 安装与配置
 
@@ -1131,7 +1129,7 @@ sentinel failover-timeout mymaster 1 180000
 4. sentinel能感知到redis节点的变化，包括master等，当节点信息变化，通过sentinel发布client订阅的机制，client能感知到redis集群节点的变化。
 ```
 
-![image-20200517004743000](images/Redis/image-20200517004743000.png)
+<img src="images/Redis/image-20200517004743000.png" alt="image-20200517004743000" style="zoom:67%;" />
 
 ### 7.3 三个定时任务
 
@@ -1143,7 +1141,7 @@ sentinel failover-timeout mymaster 1 180000
 >   * 交互对节点的“看法”和自身信息
 > * 3 每1秒每个sentinel对其他sentinel和redis执行ping
 
-![image-20200517145330760](images/Redis/image-20200517145330760.png)
+<img src="images/Redis/image-20200517145330760.png" alt="image-20200517145330760" style="zoom:67%;" />
 
 ![image-20200517145736702](images/Redis/image-20200517145736702.png)
 
@@ -1175,17 +1173,17 @@ sentinel集群选举一个sentinel节点完成故障转移。通过分布式强�
 4. 更新对原来master节点配置为slave,并保持着对其“关注”，当其回复后命令它去复制新的master节点。
 ```
 
- ![image-20200517154641593](images/Redis/image-20200517154641593.png)
+ <img src="images/Redis/image-20200517154641593.png" alt="image-20200517154641593" style="zoom:67%;" />
 
-![image-20200517155110876](images/Redis/image-20200517155110876.png)
+<img src="images/Redis/image-20200517155110876.png" alt="image-20200517155110876" style="zoom:67%;" />
 
 ### 7.6 高可用读写分离
 
-![image-20200517161555822](images/Redis/image-20200517161555822.png)
+<img src="images/Redis/image-20200517161555822.png" alt="image-20200517161555822" style="zoom:67%;" />
 
-![image-20200517161620336](images/Redis/image-20200517161620336.png)
+<img src="images/Redis/image-20200517161620336.png" alt="image-20200517161620336" style="zoom:67%;" />
 
-![image-20200517161216520](images/Redis/image-20200517161216520.png)
+<img src="images/Redis/image-20200517161216520.png" alt="image-20200517161216520" style="zoom:67%;" />
 
 对于客户端需要感知slave节点的变化，需要手动实现对redis资源池监听并关注上述三个“消息”。
 
@@ -1211,30 +1209,300 @@ sentinel集群选举一个sentinel节点完成故障转移。通过分布式强�
 
 ## 9. 源码研究
 
-### 类型定义
+### 9.1 Redis的数据结构
 
-````c
-// 对象编码
-#define REDIS_ENCODING_RAW 0     /* Raw representation */
-#define REDIS_ENCODING_INT 1     /* Encoded as integer */
-#define REDIS_ENCODING_HT 2      /* Encoded as hash table */
-#define REDIS_ENCODING_ZIPMAP 3  /* Encoded as zipmap */
-#define REDIS_ENCODING_LINKEDLIST 4 /* Encoded as regular linked list */
-#define REDIS_ENCODING_ZIPLIST 5 /* Encoded as ziplist */
-#define REDIS_ENCODING_INTSET 6  /* Encoded as intset */
-#define REDIS_ENCODING_SKIPLIST 7  /* Encoded as skiplist */
-#define REDIS_ENCODING_EMBSTR 8  /* Embedded sds string encoding */
+#### 9.1.1 Redis的对象
 
-// 对象类型
-#define REDIS_STRING 0
-#define REDIS_LIST 1
-#define REDIS_SET 2
-#define REDIS_ZSET 3
-````
+| 类型定义     | 对象分类     |
+| ------------ | ------------ |
+| REDIS_STRING | 字符串对象   |
+| REDIS_LIST   | 列表对象     |
+| REDIS_SET    | 集合对象     |
+| REDIS_ZSET   | 有序集合对象 |
+| REDIS_HASH   | 哈希对象     |
 
-### 有序集（zset）
+Redis的每个对象都使用一个redisObject结构来表示，该结构中保存和数据有关的很多属性，包括type属性、encoding属性、lru属性、refcount属性、ptr属性等。
 
-#### zskiplist
+```c
+typedef struct redisObject {
+    // 类型
+    unsigned type:4;
+    // 编码
+    unsigned encoding:4;
+    // 对象最后一次被访问的时间
+    unsigned lru:REDIS_LRU_BITS; /* lru time (relative to server.lruclock) */
+    // 引用计数
+    int refcount;
+    // 指向实际值的指针
+    void *ptr;
+} robj;
+```
+
+**编码方式**
+
+| 类型定义                  | 编码类型       |
+| ------------------------- | -------------- |
+| REDIS_ENCODING_RAW        | 简单动态字符串 |
+| REDIS_ENCODING_INT        | 长整型 |
+| REDIS_ENCODING_HT         | 哈希表 |
+| REDIS_ENCODING_ZIPMAP     |                |
+| REDIS_ENCODING_LINKEDLIST | 双向链表 |
+| REDIS_ENCODING_ZIPLIST    | 压缩列表 |
+| REDIS_ENCODING_INTSET     | 整数集合 |
+| REDIS_ENCODING_SKIPLIST   | 跳跃表 |
+| REDIS_ENCODING_EMBSTR     | embstr编码的简单字符串 |
+
+每种对象类型都至少使用了两种不同的编码：字符串对象可以使用long类型整数、embstr编码的简单动态字符串和简单动态字符串，列表对象可以使用压缩列表和双端链表，哈希对象可以使用压缩列表和字典，集合对象可以使用整数集合和字典，有序集合对象可以使用压缩列表和跳跃表和字典。
+
+#### 9.1.2 简单动态字符串SDS
+
+字符串对象的底层实现可以选择使用SDS，Redis自己构建了一种名为简单动态字符串（SDS）的抽象类型，SDS定义在sds.h中，SDS的各种API在sds.c中实现。
+
+```c
+typedef char *sds;
+
+/* Note: sdshdr5 is never used, we just access the flags byte directly.
+ * However is here to document the layout of type 5 SDS strings. */
+struct __attribute__ ((__packed__)) sdshdr5 {
+    unsigned char flags; /* 3 lsb of type, and 5 msb of string length */
+    char buf[];
+};
+struct __attribute__ ((__packed__)) sdshdr8 {
+    uint8_t len; /* used */
+    uint8_t alloc; /* excluding the header and null terminator */
+    unsigned char flags; /* 3 lsb of type, 5 unused bits */
+    char buf[];
+};
+struct __attribute__ ((__packed__)) sdshdr16 {
+    uint16_t len; /* used */
+    uint16_t alloc; /* excluding the header and null terminator */
+    unsigned char flags; /* 3 lsb of type, 5 unused bits */
+    char buf[];
+};
+struct __attribute__ ((__packed__)) sdshdr32 {
+    uint32_t len; /* used */
+    uint32_t alloc; /* excluding the header and null terminator */
+    unsigned char flags; /* 3 lsb of type, 5 unused bits */
+    char buf[];
+};
+struct __attribute__ ((__packed__)) sdshdr64 {
+    uint64_t len; /* used */
+    uint64_t alloc; /* excluding the header and null terminator */
+    unsigned char flags; /* 3 lsb of type, 5 unused bits */
+    char buf[];
+}；
+```
+
+**空数组（柔性数组）**
+
+* 不需要初始化，数组名直接就是缓冲区数据的起始地址(如果存在数据)。
+* 不占任何空间，指针需要占用4 byte长度空间，空数组不占任何空间，节约了空间，在计算结构体的size时，不会计算最后一个元素，例如上面sizeof(struct sdshdr) = 8。
+* 适合制作动态buffer，一次性分配结构体和缓冲区。为了防止内存泄漏，如果是分两次分配（结构体和缓冲区），那么要是第二次malloc失败了，必须回滚释放第一个分配的结构体。这样带来了编码麻烦。其次，分配了第二个缓冲区以后，如果结构里面用的是指针，还要为这个指针赋值。同样，在free这个buffer的时候，用指针也要两次free。如果用空数组，所有问题一次解决。
+
+**SDS与C字符串的区别：**
+
+* 常数复杂度获取字符串的长度，SDS的字符串长度可以通过len属性获取。
+* 杜绝缓冲区溢出，SDS的API需要对SDS进行修改时，会检查SDS的空间是否满足修改所需的要求，如果不满足，API会自动将SDS空间扩展至执行修改所需的大小。
+* 减少修改字符串带来的内存重新分配次数：
+  * 通过空间预分配，可以减少字符串拼接时内存重分配的次数。当SDS的长度小于1MB时，分配两倍和len属性同样大小的未使用空间。如果SDS的长度大于1MB时，将分配1MB的未使用空间。
+  * 通过惰性空间释放，可以减少字符串缩短时的内存回收的次数。SDS提供了相应的API，让我们在有需要时，真正释放SDS的未使用空间。
+* 二进制安全，SDS的API都会以二进制的方式来处理buf数组中的内容，因此SDS不仅可以保存文本，还可以保存二进制。而对于C的字符串来说，遇到空格就终止了。
+
+**sds相关API**
+
+```c
+sds sdsnewlen(const void *init, size_t initlen);
+sds sdsnew(const char *init);
+sds sdsempty(void);
+sds sdsdup(const sds s);
+void sdsfree(sds s);
+sds sdsgrowzero(sds s, size_t len);
+sds sdscatlen(sds s, const void *t, size_t len);
+sds sdscat(sds s, const char *t);
+sds sdscatsds(sds s, const sds t);
+sds sdscpylen(sds s, const char *t, size_t len);
+sds sdscpy(sds s, const char *t);
+
+sds sdscatvprintf(sds s, const char *fmt, va_list ap);
+#ifdef __GNUC__
+sds sdscatprintf(sds s, const char *fmt, ...)
+    __attribute__((format(printf, 2, 3)));
+#else
+sds sdscatprintf(sds s, const char *fmt, ...);
+#endif
+
+sds sdscatfmt(sds s, char const *fmt, ...);
+sds sdstrim(sds s, const char *cset);
+void sdsrange(sds s, ssize_t start, ssize_t end);
+void sdsupdatelen(sds s);
+void sdsclear(sds s);
+int sdscmp(const sds s1, const sds s2);
+sds *sdssplitlen(const char *s, ssize_t len, const char *sep, int seplen, int *count);
+void sdsfreesplitres(sds *tokens, int count);
+void sdstolower(sds s);
+void sdstoupper(sds s);
+sds sdsfromlonglong(long long value);
+sds sdscatrepr(sds s, const char *p, size_t len);
+sds *sdssplitargs(const char *line, int *argc);
+sds sdsmapchars(sds s, const char *from, const char *to, size_t setlen);
+sds sdsjoin(char **argv, int argc, char *sep);
+sds sdsjoinsds(sds *argv, int argc, const char *sep, size_t seplen);
+
+/* Low level functions exposed to the user API */
+sds sdsMakeRoomFor(sds s, size_t addlen);
+void sdsIncrLen(sds s, ssize_t incr);
+sds sdsRemoveFreeSpace(sds s);
+size_t sdsAllocSize(sds s);
+void *sdsAllocPtr(sds s);
+```
+
+#### 9.1.3 双端链表
+
+```c
+typedef struct listNode {
+    struct listNode *prev;  //! 前驱指针
+    struct listNode *next;  //! 后继指针
+    void *value;            //! 值指针
+} listNode;
+
+typedef struct listIter {
+    listNode *next; //! 用于迭代的指针
+    int direction;  //! 迭代的方向
+} listIter;
+
+//! 双向链表定义
+typedef struct list {
+    listNode *head; //! 头指针
+    listNode *tail; //! 尾指针
+    void *(*dup)(void *ptr);    //! 拷贝函数
+    void (*free)(void *ptr);    //! 节点释放函数
+    int (*match)(void *ptr, void *key); //! 节点值对比函数
+    unsigned long len;  //! 链表长度
+} list;
+```
+
+**双向链表的特性：**
+
+- 双端：链表节点带有prev和next指针
+- 无环
+- 带表头指针和表尾指针
+- 带链表长度计数器
+- 多态 ：链表节点使用void *指针来保存节点值，并且可以通过list结构的dup、free和match三个属性为节点值设置类型特定函数，所以链表可以用于保存各种不同类型的值。
+
+**双向链表相关API**
+
+```c
+/* Functions implemented as macros */
+#define listLength(l) ((l)->len)    //! 获取链表长度
+#define listFirst(l) ((l)->head)    //! 获取头指针
+#define listLast(l) ((l)->tail)     //! 获取尾指针
+#define listPrevNode(n) ((n)->prev) //! 获取当前节点的前驱指针
+#define listNextNode(n) ((n)->next) //! 获取当前节点的后继指针
+#define listNodeValue(n) ((n)->value)   //! 获取当前节点的值
+
+#define listSetDupMethod(l,m) ((l)->dup = (m))      //! 设置节点拷贝函数
+#define listSetFreeMethod(l,m) ((l)->free = (m))    //! 设置节点释放函数
+#define listSetMatchMethod(l,m) ((l)->match = (m))  //! 设置节点对比函数
+
+#define listGetDupMethod(l) ((l)->dup)  //! 获取节点拷贝函数
+#define listGetFree(l) ((l)->free)      //! 获取节点释放函数
+#define listGetMatchMethod(l) ((l)->match)  //! 获取节点对比函数
+
+/* Prototypes */
+list *listCreate(void);			//! 创建链表
+void listRelease(list *list);	//! 删除链表
+void listEmpty(list *list);		//! 清空链表
+list *listAddNodeHead(list *list, void *value);	//! 头部插入节点
+list *listAddNodeTail(list *list, void *value);	//! 尾部插入节点
+list *listInsertNode(list *list, listNode *old_node, void *value, int after); //! 插入节点至给定节点前或后
+void listDelNode(list *list, listNode *node);	//! 删除给定节点
+listIter *listGetIterator(list *list, int direction);	//! 生成链表迭代器（跟迭代器方向有关）
+listNode *listNext(listIter *iter);	//! 返回迭代器next属性
+void listReleaseIterator(listIter *iter);	//! 释放给定迭代器
+list *listDup(list *orig);	//! 拷贝整个链表
+listNode *listSearchKey(list *list, void *key);	//! 查找保存给定key值的节点
+listNode *listIndex(list *list, long index);	//! 获取指定索引位置的节点，支持负索引
+void listRewind(list *list, listIter *li);		//! 创建一个迭代器，默认前向
+void listRewindTail(list *list, listIter *li);	//! 创建一个反向迭代器
+void listRotate(list *list);	//! 旋转链表（删除尾结点并插入至头部）
+void listJoin(list *l, list *o);	//! 将o链表合并至l链表末尾，将o置为空
+```
+
+#### 9.1.4 字典
+
+```c
+//! 哈希表节点
+typedef struct dictEntry {
+    void *key;      //! 键
+    union {         //! 值
+        void *val;
+        uint64_t u64;
+        int64_t s64;
+        double d;
+    } v;
+    struct dictEntry *next; //! 后继节点
+} dictEntry;
+
+/*
+ * 特定于类型的处理函数
+ */
+typedef struct dictType {
+    uint64_t (*hashFunction)(const void *key);
+    void *(*keyDup)(void *privdata, const void *key);
+    void *(*valDup)(void *privdata, const void *obj);
+    int (*keyCompare)(void *privdata, const void *key1, const void *key2);
+    void (*keyDestructor)(void *privdata, void *key);
+    void (*valDestructor)(void *privdata, void *obj);
+} dictType;
+
+/* 
+ * 哈希表 
+ */
+typedef struct dictht {
+    dictEntry **table;  //! 哈希表节点指针数组（俗称桶，bucket）
+    unsigned long size; //! 指针数组的大小
+    unsigned long sizemask; //! 针数组的长度掩码，用于计算索引值
+    unsigned long used; //! 哈希表现有的节点数量
+} dictht;
+
+/*
+ * 字典
+ * 每个字典使用两个哈希表，用于实现渐进式 rehash
+ */
+typedef struct dict {
+    dictType *type;	//! 特定类型的处理函数
+    void *privdata;	//! 类型处理函数的私有数据
+    dictht ht[2];	//! 哈希表
+    long rehashidx; //! 记录 rehash 进度的标志，值为 -1 表示 rehash 未进行
+    unsigned long iterators; //! 当前正在运作的安全迭代器数量
+} dict;
+
+/* If safe is set to 1 this is a safe iterator, that means, you can call
+ * dictAdd, dictFind, and other functions against the dictionary even while
+ * iterating. Otherwise it is a non safe iterator, and only dictNext()
+ * should be called while iterating. */
+typedef struct dictIterator {
+    dict *d;    //! 正在迭代的字典
+    long index; //! 正在迭代的哈希表数组索引
+    int table, safe;    //! 正在迭代的哈希表的号码（0 或者 1）、是否安全？
+    dictEntry *entry, *nextEntry; //! 当前哈希节点、当前哈希节点的后继节点
+    /* unsafe iterator fingerprint for misuse detection. */
+    long long fingerprint;
+} dictIterator;
+
+typedef void (dictScanFunction)(void *privdata, const dictEntry *de);
+typedef void (dictScanBucketFunction)(void *privdata, dictEntry **bucketref);
+```
+
+**注意：**`dict` 类型使用了两个指针，分别指向两个哈希表。其中， 0 号哈希表（`ht[0]`）是字典主要使用的哈希表， 而 1 号哈希表（`ht[1]`）则只有在程序对 0 号哈希表进行 rehash 时才使用。
+
+#### 9.1.5 整数集合
+
+#### 9.1.6 跳跃表
+
+#### 9.1.7 压缩列表
+
+
 
 ## 10. 实践
 
@@ -1266,7 +1534,6 @@ docker容器ping不通docker0
 route add 134.105.0.0 mask 255.255.0.0 134.105.64.1
 
 网关是邮电局,所有的信息必须通过这里的打包、封箱、寻址，才能发出去与收进来；网卡是设备，也就是邮电局邮筒，你家的信箱；而网桥是邮递员，但他只负责一个镇里面(局域网)不负责广域网。
-
 
 #用localhost就会报如下错误
 slaveof 192.168.206.105 6379 

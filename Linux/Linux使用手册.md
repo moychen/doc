@@ -1020,11 +1020,13 @@ c++filt + <symbol> -- 查看符号的原型
 
 ![img](images/Linux使用手册/201102201750352698.png)
 
-### 
+### size
 
 ### ipcs
 
 ### ipcrm
+
+### file
 
 ## 4. 查漏补缺
 

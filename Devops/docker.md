@@ -16,7 +16,7 @@ systemctl daemon-reload
 systemctl restart docker
 ```
 
-## 2 配置Docker服务
+## 2 配置Docker
 
 **避免每次使用docker命令时都需要切换到特权身份，将当前用户加入安装中自动创建的docker用户组。**
 
@@ -322,7 +322,13 @@ RUN  apt-get update && \
 
 ## 4 操作Docker容器
 
+容器时镜像的一个运行实例。镜像是静态只读文件，而容器带有运行时所需的可写文件层，同时，容器中的应用进程处于运行状态。
+
 ### 4.1 创建容器
+
+命令：**docker **
+
+![image-20210508175004975](images/docker/image-20210508175004975.png)
 
 ### 4.2 终止容器
 

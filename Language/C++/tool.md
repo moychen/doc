@@ -333,6 +333,14 @@ gdb(选项)(参数)
 set args 可指定运行时参数（如：set args 10 20 30）
 show args 命令可以查看设置好的运行参数。
 
+设置动态库路径
+info sharedlibrary  查看so库的加载路径是否正确
+可以使用set sysroot、set solib-absolute-prefix、set solib-search-path来指定库搜索路径
+1. set sysroot 与 set solib-absolute-prefix 是同一条命令，实际上，set sysroot是set solib-absolute-prefix 的别名。
+2. set solib-search-path设置动态库的搜索路径，该命令可设置多个搜索路径，路径之间使用“:”隔开（在linux中为冒号，DOS和Win32中为分号）。
+3. set solib-absolute-prefix 与 set solib-search-path 的区别：
+在设置了搜索路路径后，最好先用file命令载入主执行文件，再用core命令载入Coredump文件，这样才能保证正确载入库的符号表
+
 断点：
 a. 设置断点
 break [function] 在进入函数时停住，c++中可以使用class::function或者function(type,type)格式指定函数名。
@@ -478,9 +486,10 @@ print /[f] [expr] f是输出的格式
 查看内存
 x /[n/f/u] [addr] n、f、u为可选参数
 n: 表示显示内存的长度，即从当前地址向后显示几个地址的内容
-f: 表示显示的格式，参见上面，如果是字符串，则可以是s，如果是指令地址，可以是i
+f: 表示显示的格式，参见上面，如果是字符串，则可以是s，如果是指令地址，可以是i，x, a
 u: 表示从当前地址往后请求的字节数，不指定默认4个字节，b表示单字节，h表示双字节，w表示4字节，g表示8字节，当我们指定了字节长度后，GDB会从指定内存地址开始，读取指定字节，并当做一个值取出来
 addr 表示内存地址
+
 示例：x/3uh 0x54320表示从内存地址0x54320开始读取内容，h表示以双字节为单位，3表示三个单位，u表示按十六进制显示。 
 
 自动显示
@@ -531,6 +540,7 @@ info registers [regname ...] 查看指定寄存器的情况
 修改变量值
 whatis + 变量名 查看变量类型
 set var 变量名=值  设置程序的变量值
+ptype + 变量类型 查看类型定义
 
 跳转执行
 一般来说，被调试程序会按照程序代码的运行顺序依次执行。GDB提供了乱序执行的功能，也就是说，GDB可以修改程序的执行顺序，可以让程序执行随意跳跃。这个功能可以由GDB的jump命令来完：
@@ -587,6 +597,8 @@ list 打印程序源代码
     <function>  函数名。
     <filename:function> 哪个文件中的哪个函数。
     <*address>  程序运行时的语句在内存中的地址。
+set listsize count 设置显示的行数，默认10
+show listsize
 
 在其他语言中使用gdb
 show language 查看当前的语言环境。如果GDB不能识为你所调试的编程语言，那么，C语言被认为是默认的环境。
@@ -1203,17 +1215,29 @@ set print sevenbit-strings off
 
 ### 多线程
 
-```bash
+```
 info threads 查看当前进程的线程
 thread <ID>  切换调试的线程为指定ID的线程
 break test.c:100 thread all   在所有线程中相应的行上设置断点
 
-set scheduler-locking off|on
+set scheduler-locking off|on|step
   off   默认值，不锁定任何线程，所有线程都执行
   on    只有当前被调试程序会执行
+  step  表示在单步执行的时候，只有当前线程会执行；
 ```
 
 ### 多进程
+
+```
+单独调试子进程：
+用attach命令将子进程的ID附加到gdb调试器上；
+
+使用调试器选项follow-fork-mode
+gdb调试器的选项follow-fork-mode允许我们选择程序在执行了fork调用后继续执行父进程还是子进程
+set follow-fork-mode mode mode选项值可以是parent和child;该命令可以进入到子进程或者父进程；
+```
+
+
 
 ###  问题
 
@@ -1262,6 +1286,38 @@ $(@F) 表示"$@"的文件部分，如果"$@"值是"dir/foo.o"，那么"$(@F)"就
 
 
 ## CMake
+
+### 常用变量
+
+| 变量                           | 说明                         |
+| ------------------------------ | ---------------------------- |
+|                                |                              |
+| CMAKE_CURRRENT_BINARY_DIR      |                              |
+| CMAKE_CURRENT_SOURCE_DIR       |                              |
+| CMAKE_BINARY_DIR               |                              |
+| CMAKE_SOURCE_DIR               |                              |
+| CMAKE_VERBOSE_MAKEFILE         | 启用Makefile版本中的详细输出 |
+| CMAKE_ARCHIVE_OUTPUT_DIRECTORY | 静态库输出路径               |
+| CMAKE_LIBRARY_OUTPUT_DIRECTORY | 动态库输出路径               |
+| CMAKE_RUNTIME_OUTPUT_DIRECTORY | 可执行文件输出路径           |
+|                                |                              |
+
+### 操作说明
+
+| 操作                                                         | 说明                                                         |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| add_library(<name> [STATIC \|SHARED \|MODULE] [EXCLUDE_FROM_ALL] [source1] [source2 ...]) | 生成库文件。如果指定了`STATIC`，就是生成静态库；如果指定了`SHARED`，就是生成动态库；如果指定了`MODULE`，就是使用类dl-open函数加载的动态库； |
+| aux_source_directory(<dir> <variable>)                       | 收集指定目录中所有**源文件**的名称，并将列表存储在提供的<variable>变量中 |
+| link_directories（<dir>）                                    | 指定库文件的路径                                             |
+| include_directories(<dir>)                                   | 指定头文件的路径                                             |
+| add_subdirectory(source_dir [binary_dir] [EXCLUDE_FROM_ALL]) | 将一个子目录添加到构建中                                     |
+| target_link_libraries                                        |                                                              |
+| add_dependencies                                             |                                                              |
+| link_libraries([item1 [item2 [...]]]                [[debug\|optimized\|general] <item>] ...) |                                                              |
+|                                                              |                                                              |
+|                                                              |                                                              |
+
+
 
 ```cmake
 # CMakeList.txt: demo 的 CMake 项目，在此处包括源代码并定义
@@ -1314,7 +1370,7 @@ endforeach( testsourcefile ${APP_SOURCES} )
 
 ### 建议
 
-### 新建build目录执行cmake构建
+#### 新建build目录执行cmake构建
 
 有时候为了不让cmake生成的文件污染我们的目录，我们可以在项目中新建一个build目录，然后在build目录中执行cmake构建，如下：
 

@@ -1448,6 +1448,10 @@ void f(T param); // param is now passed by value
 
 #### decltype
 
+### 4. 异常安全
+
+### 5. 内存管理
+
 
 
 ## RAII
@@ -1928,6 +1932,7 @@ Grand* GetOne()
 
 使用STL时，迭代器失效是一个很重要的问题，也是一个非常需要注意的地方，
 **vector**
+
 >* 插入操作如果导致vector扩容，所有迭代器均失效，还有引用
 >* 删除操作，会导致当前迭代器及以后所有迭代器失效。
 
@@ -1947,21 +1952,21 @@ Grand* GetOne()
 
 ### auto_ptr 
 
-std::auto_ptr 是C++98的遗留物，它是⼀次标准化的尝试，后来变成了C++11的 std::unique_ptr 。要正确的模拟原⽣制作需要移动语义，但是C++98没有这个东西。取而代之， std::auto_ptr 拉拢拷⻉操作来达到⾃⼰的移动意图。这导致了令⼈奇怪的代码（拷贝⼀个std::auto_ptr 会将它本⾝设置为null！）和令⼈沮丧的使⽤限制（⽐如不能将 std::auto_ptr 放⼊容器）。 
+std::auto_ptr 是C++98的遗留物，它是⼀次标准化的尝试，后来变成了C++11的 std::unique_ptr 。要正确的模拟原⽣制作需要移动语义，但是C++98没有这个东西。取而代之， std::auto_ptr 拉拢拷⻉操作来达到⾃⼰的移动意图。这导致了令⼈奇怪的代码（拷贝⼀个std::auto_ptr 会将它本⾝设置为null！）和令⼈沮丧的使⽤限制（比如不能将 std::auto_ptr 放⼊容器）。 
 
-std::unique_ptr 能做 std::auto_ptr 可以做的所有事情以及更多。它能⾼效完成任务，而且不会扭 曲拷⻉语义。在所有⽅⾯它都⽐ std::unique_ptr 好。现在 std::auto_ptr 唯⼀合法的使⽤场景就是代码使⽤C++98编译器编译。除⾮你有上述限制，否则你就该把 std::auto_ptr 替换为std::unique_ptr 而且绝不回头。
+std::unique_ptr 能做 std::auto_ptr 可以做的所有事情以及更多。它能⾼效完成任务，而且不会扭曲拷贝语义。在所有方面它都比std::auto_ptr好。现在 std::auto_ptr 唯⼀合法的使⽤场景就是代码使⽤C++98编译器编译。除非你有上述限制，否则你就该把 std::auto_ptr 替换为std::unique_ptr 而且绝不回头。
 
 ### unique_ptr
 
-std::unique_ptr 有两种形式，⼀种用于单个对象（ std::unique_ptr<T> ），⼀种用于数组（ std::unique_ptr<T[]> ）。结果就是，指向哪种形式没有歧义。 std::unique_ptr 的API设计会自动匹配你的⽤法，⽐如[]操作符就是数组对象，*和->就是单个对象专有。 
+std::unique_ptr 有两种形式，⼀种用于单个对象（ std::unique_ptr<T> ），⼀种用于数组（ std::unique_ptr<T[]> ）。结果就是，指向哪种形式没有歧义。 std::unique_ptr 的API设计会自动匹配你的⽤法，比如[]操作符就是数组对象，*和->就是单个对象专有。 
 
-数组的 std::unique_ptr 的存在应该不被使⽤，因为 std::array , std::vector , std::string 这些更好⽤的数据容器应该取代原始数组。原始数组的使⽤唯⼀情况是你使⽤类似C的API返回⼀个指向堆数组的原始指针。 
+数组的 std::unique_ptr 的存在应该不被使⽤，因为 std::array , std::vector , std::string 这些更好⽤的数据容器应该取代原始数组。原始数组的使⽤唯⼀情况是你使用类似C的API返回⼀个指向堆数组的原始指针。 
 
-std::unique_ptr 是C++11中表⽰专有所有权的⽅法，但是其最吸引⼈的功能之⼀是它可以轻松⾼效的转换为 std::shared_ptr ： 
+std::unique_ptr 是C++11中表示专有所有权的方法，但是其最吸引⼈的功能之⼀是它可以轻松高效的转换为 std::shared_ptr ： 
 
-这就是为什么 std::unique_ptr ⾮常适合⽤作工厂函数返回类型的关键部分。 工厂函数⽆法知道调⽤者是否要对它们返回的对象使⽤专有所有权语义，或者共享所有权（即 std::shared_ptr ）是否更合适。 通过返回 std::unique_ptr ，工厂为调⽤者提供了最有效的智能指针，但它们并不妨碍调⽤者用其更灵活的兄弟替换它。
+这就是为什么 std::unique_ptr非常适合⽤作工厂函数返回类型的关键部分。 工厂函数无法知道调用者是否要对它们返回的对象使用专有所有权语义，或者共享所有权（即 std::shared_ptr ）是否更合适。 通过返回 std::unique_ptr ，工厂为调用者提供了最有效的智能指针，但它们并不妨碍调用者用其更灵活的兄弟替换它。
 
-默认情况下，销毁将通过delete进⾏，但是在构造过程中，可以⾃定义 std::unique_ptr 指向对象的析 构函数：任意函数（或者函数对象，包括lambda）。 
+默认情况下，销毁将通过delete进⾏，但是在构造过程中，可以自定义 std::unique_ptr 指向对象的析构函数：任意函数（或者函数对象，包括lambda）。 
 
 ```c++
 auto delInvmt = [](Investment* pInvestment) {
@@ -2015,7 +2020,7 @@ template<typename... Ts>
 std::unique_ptr<Investment, void(*)(Investment*)> makeInvestment(Ts&&... params); //返回Investment*的指针加⾄少⼀个函数指针的⼤小
 ```
 
-具有很多状态的⾃定义删除器会产⽣⼤尺⼨ std::unique_ptr 对象。如果你发现⾃定义删除器使得你的 std::unique_ptr 变得过大，你需要审视修改你的设计。
+具有很多状态的自定义删除器会产⽣⼤尺⼨ std::unique_ptr 对象。如果你发现⾃定义删除器使得你的 std::unique_ptr 变得过大，你需要审视修改你的设计。
 
 #### 小结
 
@@ -2024,6 +2029,8 @@ std::unique_ptr<Investment, void(*)(Investment*)> makeInvestment(Ts&&... params)
 > * 将 std::unique_ptr 转化为 std::shared_ptr 是简单的 
 
 ### shared_ptr
+
+https://www.geeksforgeeks.org/auto_ptr-unique_ptr-shared_ptr-weak_ptr-2/
 
 ### weak_ptr
 

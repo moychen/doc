@@ -1,4 +1,4 @@
-# hash_map
+# hash_map和hash_set
 
 ```C++
 template <class Value, class Key, class HashFcn,

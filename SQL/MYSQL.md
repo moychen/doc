@@ -422,7 +422,7 @@ e. HAVING 子句，条件子句
     having 对筛选出的结果再次进行过滤。
     having 字段必须是查询出来的，where 字段必须是数据表存在的。
     where 不可以使用字段的别名，having 可以。因为执行WHERE代码时，可能尚未确定列值。
-    where 不可以使用合计函数。一般需用合计函数才会用 having
+    where 不可以使用聚合函数（SUM, COUNT, MAX, AVG）。一般需用聚合函数才会用 having
     SQL标准要求HAVING必须引用GROUP BY子句中的列或用于合计函数中的列。
 f. ORDER BY 子句，排序子句
     order by 排序字段/别名 排序方式 [,排序字段/别名 排序方式]...
@@ -438,8 +438,6 @@ h. DISTINCT, ALL 选项
 ```
 
 ### UNION
-
-
 
 ```sql
     将多个select查询的结果组合成一个结果集合。
@@ -1777,6 +1775,12 @@ show status like 'innodb_row_lock%';
 ```
 
 ## 5. 索引
+
+> * 普通索引
+> * 唯一索引
+> * 主键索引
+> * 组合索引
+> * 全文索引
 
 ### hash索引
 
