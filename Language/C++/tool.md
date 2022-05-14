@@ -1312,7 +1312,7 @@ $(@F) 表示"$@"的文件部分，如果"$@"值是"dir/foo.o"，那么"$(@F)"就
 | include_directories(<dir>)                                   | 指定头文件的路径                                             |
 | add_subdirectory(source_dir [binary_dir] [EXCLUDE_FROM_ALL]) | 将一个子目录添加到构建中                                     |
 | target_link_libraries                                        |                                                              |
-| add_dependencies                                             |                                                              |
+| add_dependencies                                             | add_dependencies可以在直接编译上层target时，自动检查下层依赖库是否已经生成。没有的话先编译下层依赖库，然后再编译上层target，最后link depend target。 |
 | link_libraries([item1 [item2 [...]]]                [[debug\|optimized\|general] <item>] ...) |                                                              |
 |                                                              |                                                              |
 |                                                              |                                                              |
