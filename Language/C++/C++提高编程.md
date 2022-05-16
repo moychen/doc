@@ -2322,10 +2322,6 @@ int main() {
 * `string& insert(int pos, int n, char c);`                //在指定位置插入n个字符c
 * `string& erase(int pos, int n = npos);`                    //删除从Pos开始的n个字符 
 
-
-
-
-
 **示例：**
 
 ```C++

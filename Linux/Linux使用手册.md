@@ -7,13 +7,13 @@
 ```
 # 总核数 = 物理CPU个数 X 每颗物理CPU的核数 
 # 总逻辑CPU数 = 物理CPU个数 X 每颗物理CPU的核数 X 超线程数
- 
+
 # 查看物理CPU个数
 cat /proc/cpuinfo | grep "physical id" | sort | uniq | wc -l
- 
+
 # 查看每个物理CPU中core的个数(即核数)
 cat /proc/cpuinfo | grep "cpu cores" | uniq
- 
+
 # 查看逻辑CPU的个数
 cat /proc/cpuinfo | grep "processor" | wc -l
 
@@ -25,6 +25,7 @@ cat /proc/cpuinfo | grep "processor" | wc -l
 setenv/export/env/set/export -p 环境变量相关
 
 ### useradd/password
+
 > * useradd 添加用户
 > * passwd+用户名 修改用户密码
 
@@ -32,13 +33,14 @@ setenv/export/env/set/export -p 环境变量相关
 
 ### groupadd
 
-### ll 
+### ll
 
 **文件类型：**
 
 ```
 “-”表示普通文件；“d”表示目录；“l”表示链接文件；“p”表示管理文件；“b”表示块设备文件；“c”表示字符设备文件；“s”表示套接字文件；
 ```
+
 **权限：**
 
 ```​
@@ -55,6 +57,7 @@ x（eXecute，执行权限）：对文件而言，具有执行文件的权限；
     s或S（SUID,Set UID）：可执行的文件搭配这个权限，便能得到特权，任意存取该文件的所有者能使用的全部系统资源。请注意具备SUID权限的文件，黑客经常利用这种权限，以SUID配上root帐号拥有者，无声无息地在系统中开扇后门，供日后进出使用。
     t或T（Sticky）：/tmp和 /var/tmp目录供所有用户暂时存取文件，亦即每位用户皆拥有完整的权限进入该目录，去浏览、删除和移动文件。
 ```
+
 **目录/链接个数**
 
 对于目录文件，表示它的第一级子目录的个数。注意此处看到的值要减2才等于该目录下的子目录的实际个数。这是因为要去掉.目录和..目录。在linux下，.目录表示当前目录，..目录表示上一级目录。
@@ -69,7 +72,7 @@ x（eXecute，执行权限）：对文件而言，具有执行文件的权限；
 
 带‘*’的文件是linux系统下用于标记可执行文件的一种方式。
 
-### ps 
+### ps
 
 ### find
 
@@ -84,6 +87,11 @@ find lib -type f  -a -newer lib/xxxx -o -type l -a -newer lib/xxxx |xargs tar -c
 
 ### grep
 
+```
+```
+
+
+
 ```bash
 # 去除配置中的注释和所有的空行
 $ cat sentinel.conf | grep -v "#" | grep -v "^$" > sentinel-26379.conf
@@ -97,13 +105,11 @@ $ cat sentinel.conf | grep -v "#" | grep -v "^$" > sentinel-26379.conf
 
 ### awk
 
-
-
 **示例：**
 
 ```
 awk -F ";" '{subfix=substr($23,length($23)-3,length($23)-1); if(length(subfix) < 4){subfix="OTHER"}; print $0 >> "'$GROUPBY'de_wlan"subfix".s" }'  
-$0	表示整个当前行 
+$0    表示整个当前行 
 $1  每行第一个字段 
 NF  字段数量变量
 ```
@@ -115,7 +121,7 @@ NF  字段数量变量
 $ sed "s/26379/26380/g" redis-sentinel-26379.conf > redis-sentinel-26380.conf
 ```
 
-### top 
+### top
 
 ![image-20200227155436241](images\Linux使用手册\image-20200227155436241.png)
 
@@ -131,85 +137,85 @@ $ sed "s/26379/26380/g" redis-sentinel-26379.conf > redis-sentinel-26380.conf
 top命令输出结果中，统计信息区前五行是系统整体的统计信息。
  第一行是任务队列信息，同 uptime 命令的执行结果。其内容如下：
 
-| 符号                           | 含义                                                         |
-| :----------------------------- | :----------------------------------------------------------- |
-| 18:52:04                       | 当前时间                                                     |
-| up 10days, 3:49                | 系统运行时间，格式为：天，时:分                              |
-| 1 user                         | 当前登录用户数                                               |
+| 符号                             | 含义                                           |
+|:------------------------------ |:-------------------------------------------- |
+| 18:52:04                       | 当前时间                                         |
+| up 10days, 3:49                | 系统运行时间，格式为：天，时:分                             |
+| 1 user                         | 当前登录用户数                                      |
 | load average: 0.00, 0.01, 0.05 | 系统负载，即任务队列的平均长度。三个数值分别为 1分钟、5分钟、15分钟前到现在的平均值 |
 
 第二、三行为进程和CPU的信息。当有多个CPU时，这些内容可能会超过两行。内容如下：
 
-|   符号   | 含义                                          |
-| :------: | :-------------------------------------------- |
-|  total   | 进程总数                                      |
-| running  | 正在运行的进程数                              |
-| sleeping | 睡眠的进程数                                  |
-| stopped  | 停止的进程数                                  |
-|  zombie  | 僵尸进程数                                    |
-| %Cpu(s)  |                                               |
-|  0.0 us  | 用户空间占用CPU百分比                         |
-|  0.1 sy  | 内核空间占用CPU百分比                         |
-|  0.0 ni  | 用户进程空间内改变过优先级的进程占用CPU百分比 |
-| 98.7 id  | 空闲CPU百分比;                                |
-|  0.0 wa  | 等待输入输出的CPU时间百分比                   |
-|  0.0 hi  | 硬件CPU中断占用百分比                         |
-|  0.0 si  | 软中断占用百分比                              |
-|  0.0 st  | 虚拟机占用百分比                              |
+| 符号       | 含义                       |
+|:--------:|:------------------------ |
+| total    | 进程总数                     |
+| running  | 正在运行的进程数                 |
+| sleeping | 睡眠的进程数                   |
+| stopped  | 停止的进程数                   |
+| zombie   | 僵尸进程数                    |
+| %Cpu(s)  |                          |
+| 0.0 us   | 用户空间占用CPU百分比             |
+| 0.1 sy   | 内核空间占用CPU百分比             |
+| 0.0 ni   | 用户进程空间内改变过优先级的进程占用CPU百分比 |
+| 98.7 id  | 空闲CPU百分比;                |
+| 0.0 wa   | 等待输入输出的CPU时间百分比          |
+| 0.0 hi   | 硬件CPU中断占用百分比             |
+| 0.0 si   | 软中断占用百分比                 |
+| 0.0 st   | 虚拟机占用百分比                 |
 
 ```
 I/O wait time:
-	For a given CPU, the I/O wait time is the time during which that CPU was idle (i.e. didn’t execute any tasks) and there was at least one outstanding disk I/O operation requested by a task scheduled on that CPU (at the time it generated that I/O request).
-	Note that the nuance is not innocent and has practical consequences. For example, on a system with many CPUs, even if there is a problem with I/O performance, the observed overall I/O wait time may still be small if the problem only affects a single task. It also means that while it is generally correct to say that faster CPUs tend to increase I/O wait time (simply because a faster CPU tends to be idle more often), that statement is no longer true if one replaces “faster” by “more”.
+    For a given CPU, the I/O wait time is the time during which that CPU was idle (i.e. didn’t execute any tasks) and there was at least one outstanding disk I/O operation requested by a task scheduled on that CPU (at the time it generated that I/O request).
+    Note that the nuance is not innocent and has practical consequences. For example, on a system with many CPUs, even if there is a problem with I/O performance, the observed overall I/O wait time may still be small if the problem only affects a single task. It also means that while it is generally correct to say that faster CPUs tend to increase I/O wait time (simply because a faster CPU tends to be idle more often), that statement is no longer true if one replaces “faster” by “more”.
 
 来自：http://veithen.io/2013/11/18/iowait-linux.html
 ```
 
 最后两行为内存信息。内容如下：
 
-|         符号         | 含义                                                         |
-| :------------------: | :----------------------------------------------------------- |
-|       KiB Mem        |                                                              |
-|    7993560 total     | 物理内存总量                                                 |
-|     207064 free      | 空闲内存总量                                                 |
-|     723688 used      | 使用的物理内存总量                                           |
-| 7062808 buffer/cache | 用作内核缓存的内存量                                         |
-|       KiB Swap       |                                                              |
-|    8257532 total     | 交换区总量                                                   |
-|     8257356 free     | 空闲交换区总量                                               |
-|       176 used       | 使用的交换区总量                                             |
-|  6479580  avail Mem  | 缓冲的交换区总量,内存中的内容被换出到交换区，而后又被换入到内存，但使用过的交换区尚未被覆盖，该数值即为这些内容已存在于内存中的交换区的大小,相应的内存再次被换出时可不必再对交换区写入 |
+| 符号                   | 含义                                                                                           |
+|:--------------------:|:-------------------------------------------------------------------------------------------- |
+| KiB Mem              |                                                                                              |
+| 7993560 total        | 物理内存总量                                                                                       |
+| 207064 free          | 空闲内存总量                                                                                       |
+| 723688 used          | 使用的物理内存总量                                                                                    |
+| 7062808 buffer/cache | 用作内核缓存的内存量                                                                                   |
+| KiB Swap             |                                                                                              |
+| 8257532 total        | 交换区总量                                                                                        |
+| 8257356 free         | 空闲交换区总量                                                                                      |
+| 176 used             | 使用的交换区总量                                                                                     |
+| 6479580  avail Mem   | 缓冲的交换区总量,内存中的内容被换出到交换区，而后又被换入到内存，但使用过的交换区尚未被覆盖，该数值即为这些内容已存在于内存中的交换区的大小,相应的内存再次被换出时可不必再对交换区写入 |
 
 进程信息区统计信息区域的下方显示了各个进程的详细信息。首先来认识一下各列的含义。
 
-| 序号 | 列名    | 含义                                                         |
-| :--: | :------ | :----------------------------------------------------------- |
-|  a   | PID     | 进程id                                                       |
-|  b   | PPID    | 父进程id                                                     |
-|  c   | RUSER   | Real user name                                               |
-|  d   | UID     | 进程所有者的用户id                                           |
-|  e   | USER    | 进程所有者的用户名                                           |
-|  f   | GROUP   | 进程所有者的组名                                             |
-|  g   | TTY     | 启动进程的终端名。不是从终端启动的进程则显示为 ?             |
-|  h   | PR      | 优先级                                                       |
-|  i   | NI      | nice值。负值表示高优先级，正值表示低优先级                   |
-|  j   | P       | 最后使用的CPU，仅在多CPU环境下有意义                         |
-|  k   | %CPU    | 上次更新到现在的CPU时间占用百分比                            |
-|  l   | TIME    | 进程使用的CPU时间总计，单位秒                                |
-|  m   | TIME+   | 进程使用的CPU时间总计，单位1/100秒                           |
-|  n   | %MEM    | 进程使用的物理内存百分比                                     |
-|  o   | VIRT    | 进程使用的虚拟内存总量，单位kb。VIRT=SWAP+RES                |
-|  p   | SWAP    | 进程使用的虚拟内存中，被换出的大小，单位kb。                 |
-|  q   | RES     | 进程使用的、未被换出的物理内存大小，单位kb。RES=CODE+DATA    |
-|  r   | CODE    | 可执行代码占用的物理内存大小，单位kb                         |
-|  s   | DATA    | 可执行代码以外的部分(数据段+栈)占用的物理内存大小，单位kb    |
-|  t   | SHR     | 共享内存大小，单位kb                                         |
-|  u   | nFLT    | 页面错误次数                                                 |
-|  v   | nDRT    | 最后一次写入到现在，被修改过的页面数。                       |
-|  w   | S       | 进程状态(D=不可中断的睡眠状态,R=运行,S=睡眠,T=跟踪/停止,Z=僵尸进程) |
-|  x   | COMMAND | 命令名/命令行                                                |
-|  y   | WCHAN   | 若该进程在睡眠，则显示睡眠中的系统函数名                     |
-|  z   | Flags   | 任务标志，参考 sched.h                                       |
+| 序号  | 列名      | 含义                                         |
+|:---:|:------- |:------------------------------------------ |
+| a   | PID     | 进程id                                       |
+| b   | PPID    | 父进程id                                      |
+| c   | RUSER   | Real user name                             |
+| d   | UID     | 进程所有者的用户id                                 |
+| e   | USER    | 进程所有者的用户名                                  |
+| f   | GROUP   | 进程所有者的组名                                   |
+| g   | TTY     | 启动进程的终端名。不是从终端启动的进程则显示为 ?                  |
+| h   | PR      | 优先级                                        |
+| i   | NI      | nice值。负值表示高优先级，正值表示低优先级                    |
+| j   | P       | 最后使用的CPU，仅在多CPU环境下有意义                      |
+| k   | %CPU    | 上次更新到现在的CPU时间占用百分比                         |
+| l   | TIME    | 进程使用的CPU时间总计，单位秒                           |
+| m   | TIME+   | 进程使用的CPU时间总计，单位1/100秒                      |
+| n   | %MEM    | 进程使用的物理内存百分比                               |
+| o   | VIRT    | 进程使用的虚拟内存总量，单位kb。VIRT=SWAP+RES             |
+| p   | SWAP    | 进程使用的虚拟内存中，被换出的大小，单位kb。                    |
+| q   | RES     | 进程使用的、未被换出的物理内存大小，单位kb。RES=CODE+DATA       |
+| r   | CODE    | 可执行代码占用的物理内存大小，单位kb                        |
+| s   | DATA    | 可执行代码以外的部分(数据段+栈)占用的物理内存大小，单位kb            |
+| t   | SHR     | 共享内存大小，单位kb                                |
+| u   | nFLT    | 页面错误次数                                     |
+| v   | nDRT    | 最后一次写入到现在，被修改过的页面数。                        |
+| w   | S       | 进程状态(D=不可中断的睡眠状态,R=运行,S=睡眠,T=跟踪/停止,Z=僵尸进程) |
+| x   | COMMAND | 命令名/命令行                                    |
+| y   | WCHAN   | 若该进程在睡眠，则显示睡眠中的系统函数名                       |
+| z   | Flags   | 任务标志，参考 sched.h                            |
 
 默认情况下仅显示比较重要的 PID、USER、PR、NI、VIRT、RES、SHR、S、%CPU、%MEM、TIME+、COMMAND 列。可以通过下面的快捷键来更改显示内容。
 
@@ -266,8 +272,6 @@ sort -n -k 22 -t ";" 文件名 -o 排序后的文件名
 ```
 
 ### crontab
-
-
 
 ### wget
 
@@ -333,13 +337,11 @@ $ tar -zvf tool.rar tools/
 
 ### nano
 
-
-
 ## 2. 网络工具
 
 ### netstat
 
-​		netstat命令用于显示与IP、TCP、UDP和ICMP协议相关的统计数据，一般用于检验本机各端口的网络连接情况。netstat是在内核中访问网络及相关信息的程序，它能提供TCP连接，TCP和UDP监听，进程内存管理的相关报告。
+​        netstat命令用于显示与IP、TCP、UDP和ICMP协议相关的统计数据，一般用于检验本机各端口的网络连接情况。netstat是在内核中访问网络及相关信息的程序，它能提供TCP连接，TCP和UDP监听，进程内存管理的相关报告。
 
 **netstat  [-acCeFghilMnNoprstuvVwx] [-A<网络类型>] [--ip]**
 
@@ -406,9 +408,9 @@ LAST_ACK -- 在TCP四次挥手时，被动关闭端发送FIN包后，进入LAST_
 ```
 
 **netstat的输出结果可以分为两个部分：**
-		一个是Active Internet connections，称为有源TCP连接，其中"Recv-Q"和"Send-Q"指的是接收队列和发送队列。这些数字一般都应该是0。如果不是则表示软件包正在队列中堆积。这种情况只能在非常少的情况见到。
-		另一个是Active UNIX domain sockets，称为有源Unix域套接口(和网络套接字一样，但是只能用于本机通信，性能可以提高一倍)。
-		Proto显示连接使用的协议,RefCnt表示连接到本套接口上的进程号,Types显示套接口的类型,State显示套接口当前的状态,Path表示连接到套接口的其它进程使用的路径名。
+        一个是Active Internet connections，称为有源TCP连接，其中"Recv-Q"和"Send-Q"指的是接收队列和发送队列。这些数字一般都应该是0。如果不是则表示软件包正在队列中堆积。这种情况只能在非常少的情况见到。
+        另一个是Active UNIX domain sockets，称为有源Unix域套接口(和网络套接字一样，但是只能用于本机通信，性能可以提高一倍)。
+        Proto显示连接使用的协议,RefCnt表示连接到本套接口上的进程号,Types显示套接口的类型,State显示套接口当前的状态,Path表示连接到套接口的其它进程使用的路径名。
 
 ```bash
 Active Internet connections (w/o servers)
@@ -429,9 +431,9 @@ unix  3      [ ]         STREAM     CONNECTED     17474862 /usr/local/sa/agent/s
 
 **Active Internet connections (w/o servers)**
 
-| Proto    | Recv-Q   | Send-Q   | Local Address | Foreign Address | State |
-| -------- | -------- | -------- | ------------- | --------------- | ----- |
-| 协议类型 | 接收队列 | 发送队列 | 本地地址      | 外部地址        | 状态  |
+| Proto | Recv-Q | Send-Q | Local Address | Foreign Address | State |
+| ----- | ------ | ------ | ------------- | --------------- | ----- |
+| 协议类型  | 接收队列   | 发送队列   | 本地地址          | 外部地址            | 状态    |
 
 > * 协议类型: 这里会出现  UDP、TCP、SCTP、ICMP 和 IP 协议 ， 最常见的应该就是TCP和UDP
 > * 接收队列: 一般都是0，表示没有堆积的数据包
@@ -442,9 +444,10 @@ unix  3      [ ]         STREAM     CONNECTED     17474862 /usr/local/sa/agent/s
 
 **Active UNIX domain sockets (w/o servers)**
 
-| Proto    | RefCnt   | Flags | Type         | State      | I-Node              | Path       |
-| -------- | -------- | ----- | ------------ | ---------- | ------------------- | ---------- |
-| 协议类型 | 引用次数 | TODO  | 数据传输类型 | 连接的状态 | Linux中的文件标识号 | 使用的路径 |
+| Proto | RefCnt | Flags | Type   | State | I-Node       | Path  |
+| ----- | ------ | ----- | ------ | ----- | ------------ | ----- |
+| 协议类型  | 引用次数   | TODO  | 数据传输类型 | 连接的状态 | Linux中的文件标识号 | 使用的路径 |
+
 > * 协议类型: 这里可以看见只有unix,表示这是一个unix socket
 > * 引用次数: 被程序引用的次数，不同的程序或者同一个程序中可以使用同一个管道来交换数据。
 > * Flags : 未查到，TODO
@@ -538,8 +541,6 @@ netstat -n|find  "ESTABLISH"|find  ":80" /c
 $ tcpdump -i bond0 -s 0 tcp port 38910 -G 3000000 -Z billapp -w  /data01/billapp/users/yujm/5g_sa/jiangxi%Y%m%d_%H%M%S_00000008.cap
 ```
 
-
-
 ### nc(netcat)
 
 ### telnet
@@ -554,9 +555,9 @@ $ tcpdump -i bond0 -s 0 tcp port 38910 -G 3000000 -Z billapp -w  /data01/billapp
 
 curl 是常用的命令行工具，用来请求 Web 服务器。它的功能非常强大，命令行参数多达几十种。如果熟练的话，完全可以取代 Postman 这一类的图形界面工具。不带有任何参数时，curl 就是发出 GET 请求，服务器返回的内容会在命令行输出。
 
-````bash
+```bash
 $ curl https://www.example.com
-````
+```
 
 **-A**
 
@@ -565,10 +566,6 @@ $ curl https://www.example.com
 ```bash
 $ curl -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36' https://google.com
 ```
-
-
-
-
 
 ## 3. 实用工具
 
@@ -823,8 +820,6 @@ await：每一个IO请求的处理的平均时间（单位是微秒毫秒）。�
 %util：在统计时间内所有处理IO时间，除以总共统计时间。例如，如果统计间隔1秒，该设备有0.8秒在处理IO，而0.2秒闲置，那么该设备的%util = 0.8/1 = 80%，所以该参数暗示了设备的繁忙程度。一般地，如果该参数是100%表示设备已经接近满负荷运行了 （当然如果是多磁盘，即使%util是100%，因为磁盘的并发能力，所以磁盘使用未必就到了瓶颈）。
 ```
 
-
-
 **3.-c 参数**
 
 iostat还可以用来获取cpu部分状态值：
@@ -926,8 +921,6 @@ d.wa列表示IO等待所占的CPU时间百分比。wa值越高，说明IO等待�
 e.st列一般不关注，虚拟机占用的时间百分比。 （Linux 2.6.11）
 ```
 
-
-
 ### perf
 
 ### lsof
@@ -951,27 +944,25 @@ sshd 24927 root 3u IPv6 62643 TCP *:22 (LISTEN)
 
 ```
 选项：
--x, --extended	    Show the extended format.
--d, --device		Show the device format.
--q, --quiet			Do not display some header or footer lines.
--A, --range low,high	Limit  results  to  the given range to low and high address range.  Notice that the 						low and high arguments are single string separated with comma.
--X     				Show even more details than the -x option. WARNING: format changes according to 							/proc/PID/smaps
--XX    				Show everything the kernel provides
--p, --show-path		Show full path to files in the mapping column
--c, --read-rc				Read the default configuration
--C, --read-rc-from file		Read the configuration from file
--n, --create-rc 			Create new default configuration
--N, --create-rc-to file		Create new configuration to file
+-x, --extended        Show the extended format.
+-d, --device        Show the device format.
+-q, --quiet            Do not display some header or footer lines.
+-A, --range low,high    Limit  results  to  the given range to low and high address range.  Notice that the                         low and high arguments are single string separated with comma.
+-X                     Show even more details than the -x option. WARNING: format changes according to                             /proc/PID/smaps
+-XX                    Show everything the kernel provides
+-p, --show-path        Show full path to files in the mapping column
+-c, --read-rc                Read the default configuration
+-C, --read-rc-from file        Read the configuration from file
+-n, --create-rc             Create new default configuration
+-N, --create-rc-to file        Create new configuration to file
 
 EXIT STATUS
-	0      Success.
+    0      Success.
     1      Failure.          
     42     Did not find all processes asked for.
 ```
 
 pmap -x <pid> 可以查看进程的内存占用信息 最后一行的值 mapped 表示该进程映射的虚拟地址空间大小，也就是该进程预先分配的虚拟内存大小，即ps出的vsz writeable/private 表示进程所占用的私有地址空间大小，也就是该进程实际使用的内存大小    shared 表示进程和其他进程共享的内存大小
-
-
 
 ### ipcs/ipcrm
 
@@ -989,10 +980,28 @@ nm用于显示二进制目标文件的符号表
 -g：仅显示外部符号
 -r：反序显示符号表
 
-例如:	
-	nm -D libuser_mdbD.so | grep freeResTime_cell_info
-	nm -A [libsesmgr_svrD.so](http://libsesmgr_svrD.so) | grep query_number | c++filt
+例如:    
+    nm -D libuser_mdbD.so | grep freeResTime_cell_info
+    nm -A [libsesmgr_svrD.so](http://libsesmgr_svrD.so) | grep query_number | c++filt
 ```
+
+| **符号 类型** | **说明**                                                                                                                                                                                                                                                                                                                                                      |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A         | 该符号的值是绝对的，在以后的链接过程中，不允许进行改变。这样的符号值，常常出现在中断向量表中，例如用符号来表示各个中断向量函数在中断向量表中的位置。                                                                                                                                                                                                                                                                                  |
+| B         | 该符号的值出现在非初始化数据段(bss)中。例如，在一个文件中定义全局static int test。则该符号test的类型为b，位于bss section中。其值表示该符号在bss段中的偏移。一般而言，bss段分配于RAM中                                                                                                                                                                                                                                           |
+| C         | 该符号为common。common symbol是未初始话数据段。该符号没有包含于一个普通section中。只有在链接过程中才进行分配。符号的值表示该符号需要的字节数。例如在一个c文件中，定义int test，并且该符号在别的地方会被引用，则该符号类型即为C。否则其类型为B。                                                                                                                                                                                                                  |
+| D         | 该符号位于初始话数据段中。一般来说，分配到data section中。例如定义全局int baud_table[5] = {9600, 19200, 38400, 57600, 115200}，则会分配于初始化数据段中。                                                                                                                                                                                                                                              |
+| G         | 该符号也位于初始化数据段中。主要用于small object提高访问small data object的一种方式。                                                                                                                                                                                                                                                                                                   |
+| I         | 该符号是对另一个符号的间接引用。                                                                                                                                                                                                                                                                                                                                            |
+| N         | 该符号是一个debugging符号。                                                                                                                                                                                                                                                                                                                                          |
+| R         | 该符号位于只读数据区。例如定义全局const int test[] = {123, 123};则test就是一个只读数据区的符号。注意在cygwin下如果使用gcc直接编译成MZ格式时，源文件中的test对应_test，并且其符号类型为D，即初始化数据段中。但是如果使用m6812-elf-gcc这样的交叉编译工具，源文件中的test对应目标文件的test,即没有添加下划线，并且其符号类型为R。一般而言，位于rodata section。值得注意的是，如果在一个函数中定义const char *test = “abc”, const char test_int = 3。使用nm都不会得到符号信息，但是字符串“abc”分配于只读存储器中，test在rodata section中，大小为4。 |
+| S         | 符号位于非初始化数据区，用于small object。                                                                                                                                                                                                                                                                                                                                 |
+| T         | 该符号位于代码区text section。                                                                                                                                                                                                                                                                                                                                       |
+| U         | 该符号在当前文件中是未定义的，即该符号的定义在别的文件中。例如，当前文件调用另一个文件中定义的函数，在这个被调用的函数在当前就是未定义的；但是在定义它的文件中类型是T。但是对于全局变量来说，在定义它的文件中，其符号类型为C，在使用它的文件中，其类型为U。                                                                                                                                                                                                                             |
+| V         | 该符号是一个weak object。                                                                                                                                                                                                                                                                                                                                          |
+| W         | The symbol is a weak symbol that has not been specifically tagged as a weak object symbol.                                                                                                                                                                                                                                                                  |
+| -         | 该符号是a.out格式文件中的stabs symbol。                                                                                                                                                                                                                                                                                                                                |
+| ?         | 该符号类型没有定义                                                                                                                                                                                                                                                                                                                                                   |
 
 ### ldd
 
@@ -1040,7 +1049,7 @@ c++filt + <symbol> -- 查看符号的原型
    在用户模式下，执行代码无法直接访问硬件或参考存储器。在用户模式下运行的代码必须委托给系统API才能访问硬件或内存。由于这种隔离提供了保护，因此用户模式下的崩溃总是可以恢复的。您计算机上运行的大多数代码都将在用户模式下执行。
 
 3. 切换如何发生?
-	CPU不会自动完成从用户模式到内核模式的切换。CPU被中断（定时器，键盘，I / O）中断。发生中断时，CPU停止执行当前正在运行的程序，切换到内核模式，执行中断处理程序。该处理程序保存CPU的状态，执行其操作，恢复状态并返回到用户模式。
+    CPU不会自动完成从用户模式到内核模式的切换。CPU被中断（定时器，键盘，I / O）中断。发生中断时，CPU停止执行当前正在运行的程序，切换到内核模式，执行中断处理程序。该处理程序保存CPU的状态，执行其操作，恢复状态并返回到用户模式。
 ```
 
 ### 软连接和硬链接
@@ -1048,7 +1057,7 @@ c++filt + <symbol> -- 查看符号的原型
 在Linux的文件系统中，保存在磁盘分区中的文件不管是什么类型都给它分配一个inode 索引节点。
 
 - **软连接**  软链接产生的是一个新的文件，但这个文件的作用就是专门指向某个文件的，删了这个软连接文件，那就等于不需要这个连接，和原来的存在的实体原文件没有任何关系，但删除原来的文件，则相应的软连接不可用（cat那个软链接文件，则提示“没有该文件或目录“）。
-
+  
   软连接可以对目录连接，硬链接不可以。
 
 - **硬连接** 硬链接是不会建立inode的，他、只是在文件原来的inode link count域再增加1而已，也因此硬链接是**不可以跨越文件系统**的。相反是软连接会重新建立一个inode，当然inode的结构跟其他的不一样，只是一个指明源文件的字符串信息。一旦删除源文件，那么软连接将变得毫无意义。而硬链接删除的时候，系统调用会检查inode link count的数值，如果他大于等于1，那么inode不会被回收。因此文件的内容不会被删除，类似于引用计数的概念。可以通过ls -i来查看一下，这两个文件的inode号是同一个，说明它们是同一个文件。
@@ -1058,10 +1067,10 @@ c++filt + <symbol> -- 查看符号的原型
 - 软连接可以对目录连接，硬链接不可以。
 
 - 两种链接都可以通过命令 ln 来创建。ln 默认创建的是硬链接。
-
+  
   ```
   ln [参数] [源文件或目录] [目标文件或目录]
-  -s 软链接(符号链接)	-f 强制执行		-v 显示详细的处理过程    
+  -s 软链接(符号链接)    -f 强制执行        -v 显示详细的处理过程    
   -n 将指向目录的链接视为普通文件
   ```
 
@@ -1089,7 +1098,7 @@ $ ls -l bar
 
 **僵尸进程**
 
-​		在UNIX 系统中，一个进程结束了，但是他的父进程没有等待(调用wait / waitpid)他， 那么他将变成一个僵尸进程。
+​        在UNIX 系统中，一个进程结束了，但是他的父进程没有等待(调用wait / waitpid)他， 那么他将变成一个僵尸进程。
 
 ​        在每个进程退出的时候，内核释放该进程所有的资源，包括打开的文件，占用的内存等。但是仍然为其保留一定的信息（包括进程号the process ID，退出状态the termination status of the process，运行时间the amount of CPU time taken by the process等）。直到父进程通过wait / waitpid来取时才释放. 但这样就导致了问题，如果进程不调用wait / waitpid的话，那么保留的那段信息就不会释放，其进程号就会一直被占用，但是系统所能使用的进程号是有限的，如果大量的产生僵尸进城，将因为没有可用的进程号而导致系统不能产生新的进程. 此即为僵尸进程的危害，应当避免。
 
@@ -1122,11 +1131,11 @@ Change: 2016-04-17 16:04:17.023206128 +0800
 
 **软连接**
 
-  ```
+```
 - 软链接可以跨文件系统，并且inode、属性都和源文件的不同没有规律可以寻
 - 当我们使用ls –l命令查看链接文件的时候，它都会以：filename -> link filename方式显示。
 - 我们寻找当前系统内所有的链接文件，然后过滤我们要找的源文件名n，就能查看有哪些文件指向了源文件。
-  ```
+```
 
 ```bash
 [root@lixin oldboy]# find -type l -exec ls -l {} \;        
@@ -1139,17 +1148,13 @@ lrwxrwxrwx 1 root root 10 Apr 17 16:16./oldgirl.txt -> oldboy.txt
 
 ### Linux中的文件标识号inode
 
-
-
 ## 5. 性能优化
-
-
 
 ## 6. 问题分析
 
 ### CPU过高问题排查
 
-> * top	查看占用cpu高的进程
+> * top    查看占用cpu高的进程
 > * top -H -p + 进程号      查看进程下哪个线程的cpu占用高
 > * pstack/jstack + 进程号     查看进程下各线程调用栈，找到对应的cpu占用高的线程
 

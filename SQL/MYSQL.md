@@ -35,6 +35,16 @@ lower_case_file_system  表示当前系统文件是否大小写敏感，只读�
 lower_case_table_names  表示表名是否大小写敏感，可以修改。
 lower_case_table_names = 0时，mysql会根据表名直接操作，大小写敏感。
 lower_case_table_names = 1时，mysql会先把表名转为小写，再执行操作。
+
+innodb_buffer_pool_size
+innodb_buffer_pool_instances
+
+innodb_flush_log_at_trx_commit:
+	0-大约每秒(考虑程序调度，不保证每秒)都将log buffer的内容写到（write out）log file，并做刷写(flush to disk)操作（保证数据持久化)。但执行事务提交（commit）时，不会做任何写和刷写操作（可以理解为忽略commit对刷新的行为）。
+	1-默认值，每次事务提交（commit），都会将log buffer的内容写到（write out）log file，并做刷写(flush to disk)操作（保证数据持久化)
+	2-每次事务提交（commit），都会将log buffer的内容写到（write out）log file。大概每秒(考虑程序调度，不保证每秒)进行刷写(flush to disk)操作（保证数据持久化)。
+
+sort_buffer_size
 ```
 
 ### 表的操作
@@ -77,6 +87,8 @@ lower_case_table_names = 1时，mysql会先把表名转为小写，再执行操�
     SHOW CREATE TABLE 表名 （信息更详细）
     DESC 表名 / DESCRIBE 表名 / EXPLAIN 表名 / SHOW COLUMNS FROM 表名 [LIKE 'PATTERN']
     SHOW TABLE STATUS [FROM db_name] [LIKE 'pattern']
+-- 查看索引
+	show index from 表名
 -- 修改表
     -- 修改表本身的选项
         ALTER TABLE 表名 表的选项
@@ -95,12 +107,17 @@ lower_case_table_names = 1时，mysql会先把表名转为小写，再执行操�
             ADD UNIQUE [索引名] (字段名)-- 创建唯一索引
             ADD INDEX [索引名] (字段名) -- 创建普通索引
             ADD INDEX 索引名 (字段名) USING 索引类型 --有时候需要指定索引类型
-            DROP[ COLUMN] 字段名      -- 删除字段
+            DROP[ COLUMN] 字段名      -- 删除字段，删除多列用多个drop语句
             MODIFY[ COLUMN] 字段名 字段属性     -- 支持对字段属性进行修改，不能修改字段名(所有原有属性也需写上)
             CHANGE[ COLUMN] 原字段名 新字段名 字段属性      -- 支持对字段名修改
             DROP PRIMARY KEY    -- 删除主键(删除主键前需删除其AUTO_INCREMENT属性)
             DROP INDEX 索引名 -- 删除索引
             DROP FOREIGN KEY 外键    -- 删除外键
+      -- 删除多列
+      ALTER TABLE 表名
+      		DROP COLUMN 字段名1,
+      		DROP COLUMN 字段名2
+            
 -- 删除表
     DROP TABLE[ IF EXISTS] 表名 ...
 -- 清空表数据
@@ -118,7 +135,7 @@ lower_case_table_names = 1时，mysql会先把表名转为小写，再执行操�
 -- 分析表
     ANALYZE [LOCAL | NO_WRITE_TO_BINLOG] TABLE tbl_name [, tbl_name] ...
     
--- 统计表数据（不要用count(*) 或 count(1)）
+-- 统计表数据（不要用count(*) 或 count(1)）待定
 
 ```
 
@@ -716,7 +733,7 @@ set global transaction isolation level read committed;
 
 > * `Read uncommitted`(未提交读) ： 没有解决任何问题
 > * `Read Committed`(提交读) ：解决了脏读问题
-> * `Repeatable Read`(可重复读)： 解决了不可重复读和脏读问题（ps:在Innodb情况下，也不可能发生幻读问题）
+> * `Repeatable Read`(可重复读)： 解决了不可重复读和脏读问题（ps:在Innodb情况下，也不可能发生幻读问题，因为MVCC）
 > * `Serializable`(串行化) ：脏读、幻读、不可重复读三个问题全部解决了。将当前会话的隔离级别设置为serializable的时候，其他会话对该表的写操作将被挂起。这是隔离级别中最严格的，但是这样做势必对性能造成影响。
 
 ![img](.\images\MYSQL\transction.png)
@@ -1124,6 +1141,13 @@ mysqldumpslow -s -r -t 10 /var/lib/mysql/aiguigu-slow.log | more
 
 #### 使用EXPLAIN优化查询
 
+```sql
+explain + sql
+explain for connection connectino_id;
+show explain for thread_id;
+show WARNINGS; -- 和explain一起执行可以查看优化器优化后的sql
+```
+
 ​	当[`EXPLAIN`](https://dev.mysql.com/doc/refman/8.0/en/explain.html)与可解释的语句一起使用时，MySQL将显示来自优化器的有关语句执行计划的信息。也就是说，MySQL解释了它将如何处理该语句，包括有关如何连接表以及以何种顺序连接表的信息。
 
 ![image-20200302182905055](.\images\MYSQL\image-20200302182905055.png)
@@ -1239,8 +1263,6 @@ select * from mysql.general_log;
 > * 在选择组合索引时，尽量选择可以能够包含当前query中的where子句中更多的字段
 > * 尽可能通过分析统计信息和调整query的写法来达到选择合适索引的目的。
 
-
-
 ### SQL语句性能优化
 
 ```sql
@@ -1270,7 +1292,7 @@ select * from mysql.general_log;
 
 13，尽可能的使用 varchar/nvarchar 代替 char/nchar ， 因为首先变长字段存储空间小，可以节省存储空间，其次对于查询来说，在一个相对较小的字段内搜索效率显然要高些。
 
-14，最好不要使用”“返回所有： select from t ，用具体的字段列表代替“*”，不要返回用不到的任何字段。
+14，最好不要使用”*“返回所有： select * from t ，用具体的字段列表代替“*”，不要返回用不到的任何字段。
 
 15，尽量避免向客户端返回大数据量，若数据量过大，应该考虑相应需求是否合理。
 
@@ -1886,4 +1908,93 @@ c. 每个master可以有多个slave
 ![image-20201110233101735](images/MYSQL/image-20201110233101735.png)
 
 ### 编写一个自定义插件
+
+## 8. SQL规范
+
+#### 事务隔离级别是READ COMMITTED 读已提交
+
+```sql
+show global variables like '%iso';
+```
+
+#### 字符集统一使用UTF8MB4
+
+```
+character-set-server = utf8mb4
+collation-server = utf8mb4_bin
+
+Alter table t1 default character set utf8mb4 modify col1 char(10) character set utf8mb4_bin not null;
+```
+
+#### 表必须要有主键
+
+​	所有表必须有主键，最好与业务无关的自增主键，MySQL一定要用是innodb引擎，根据原理上判断，如果表没有主键，非空的唯一索引也认可。
+
+#### 不得使用外键与级联，一切外键概念必须在应用层解决
+
+#### 禁止在系统的生产状态执行 DDL (包括加索引)
+
+DDL会产生表级锁，影响业务处理。
+
+#### 谨慎更新主键
+
+#### 大批量数据导入使用 load data，或是 insert into values。以提升效率
+
+#### 禁止使用浮点类型 FLOAT 和 DOUBLE
+
+#### 不允许在表中使用text、lob、blob等字段
+
+#### 不允许使用存储过程/函数/触发器
+
+#### 禁止大事务，大于10w行进行拆分
+
+#### 慎用子查询，尽量使用join
+
+#### 对于实时查询，查询条件要求都要使用到索引
+
+#### 平衡范式和冗余
+
+适当的在表中冗余字段，可以减少关联查询
+
+#### 所有的查询都限制记录数不超过1000条
+
+#### 所有数据量会随时间明显增长表都应该设计历史表
+
+数据随着时间的增长，如果不设计历史表进行归档，会非常影响当前数据的查询性能，并且会越来越慢。字典表、配置表之类数据很少增长的表除外。
+
+#### 同一个事务多表更新时，需要依照约定的表更新顺序处理，避免死锁
+
+#### 禁止 select *，必须将字段名一一列出。
+
+#### 对于不需要查询的字段，不要放在 select 子句中
+
+#### 当 SQL 涉及多个表时，必须为每个字段指定表名前缀，定义表和子查询的别名不能重复。
+
+#### 合并多个表的数据时，如果不需要去除重复数据，应该使用 union all, 而不是 union
+
+#### 开发人员禁止私自使用 hint
+
+#### 超过三个表禁止 join
+
+需要join的字段数据类型必须绝对一致，多表关联查询时，保证被关联的字段需要有索引。
+
+#### 外连接一律用 left join，禁止使用 right join
+
+#### 利用延迟关联或者子查询优化超多分页场景
+
+MYSQL 并不是跳过 offset 行，而是取 offset+N 行，然后返回放弃前 offset 行，返回 N 行，那当 offset 特别大的时候，效率就非常的底下，要么控制返回的总页数，要么对超过特定阈值的页数进行 SQL 改写，正例：先快速定位需要获取的 id 段，然后再关联。
+
+```
+select a.* from 表 1 a,(select id 表 1 where 条件 LIMIT 100000, 20) b where a.id = b.id
+```
+
+#### SQL 语法必须遵循 SQL 99 的标准，方便兼容
+
+
+
+
+
+
+
+
 

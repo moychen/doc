@@ -1,5 +1,7 @@
 # Redis手册
 
+<img src="images/Redis/image-20210903163617519.png" alt="image-20210903163617519" style="zoom: 67%;" />
+
 ## 1.Redis初识
 
 ### 配置说明
@@ -397,13 +399,11 @@ activerehashing yes
 # include /path/to/other.conf
 ```
 
-
-
 ## 2. API的理解和使用
 
 ### 2.1 通用命令
 
-**keys [pattern]**	
+**keys [pattern]**    
 
 遍历符合pattern的key
 
@@ -450,15 +450,11 @@ keys一般不在生产环境使用.一般生产环境键值对多,keys命令时�
 
 返回key对应的value的类型, 返回none代表key不存在,O(1).
 
-
-
 ### 2.2 数据结构和内部编码
 
 <img src="images/Redis/1585151749392.png" alt="1585151749392" style="zoom:67%;" />
 
 <img src="images/Redis/1585152109365.png" alt="1585152109365" style="zoom:67%;" />
-
-
 
 ### 2.3 单线程
 
@@ -472,61 +468,61 @@ keys一般不在生产环境使用.一般生产环境键值对多,keys命令时�
 
 #### string
 
-| 命令                                           | 含义                                                         | 复杂度 |
-| :--------------------------------------------- | ------------------------------------------------------------ | :----- |
-| set [key] [value]                              | 设置key-value                                                | O(1)   |
-| get/del [key]                                  | 获取key对应的value/删除key-value                             | O(1)   |
-| mget [k1] [k2].../mset [k1] [v1] [k2] [v2] ... | 批量操作KV                                                   | O(n)   |
-| setnx [key] [value]                            | key不存在时设置KV                                            | O(1)   |
-| set [key] [value] xx                           | key存在时,才更新KV                                           | O(1)   |
-| incr/decr [key]                                | 计数(+1/-1),若key不存在,自增或自减后get key=1/-1             | O(1)   |
-| incrby/decrby [key] [step]                     | 计数(+step/-step),如果key不存在,自增或自减后get key=step/-step | O(1)   |
-| getset [key] [new value]                       | set [key] [new value] 并返回旧value                          | O(1)   |
-| append [key] [value]                           | set [key] [old value + value]     拼接                       | O(1)   |
-| strlen [key]                                   | 返回key对应的value的长度,注意中文(一个字可能3个字节)         | O(1)   |
-| incrbyfloat [key] [step]                       | 计数(+step),如果key不存在,自增或自减后get key=step           | O(1)   |
-| getrange [key] [start] [end]                   | 获取字符串指定下标所有的值,类似取子串                        | O(1)   |
-| setrange [key] [index] [value]                 | 设置指定下标所对应的值                                       | O(1)   |
+| 命令                                             | 含义                                                | 复杂度  |
+|:---------------------------------------------- | ------------------------------------------------- |:---- |
+| set [key] [value]                              | 设置key-value                                       | O(1) |
+| get/del [key]                                  | 获取key对应的value/删除key-value                         | O(1) |
+| mget [k1] [k2].../mset [k1] [v1] [k2] [v2] ... | 批量操作KV                                            | O(n) |
+| setnx [key] [value]                            | key不存在时设置KV                                       | O(1) |
+| set [key] [value] xx                           | key存在时,才更新KV                                      | O(1) |
+| incr/decr [key]                                | 计数(+1/-1),若key不存在,自增或自减后get key=1/-1              | O(1) |
+| incrby/decrby [key] [step]                     | 计数(+step/-step),如果key不存在,自增或自减后get key=step/-step | O(1) |
+| getset [key] [new value]                       | set [key] [new value] 并返回旧value                   | O(1) |
+| append [key] [value]                           | set [key] [old value + value]     拼接              | O(1) |
+| strlen [key]                                   | 返回key对应的value的长度,注意中文(一个字可能3个字节)                  | O(1) |
+| incrbyfloat [key] [step]                       | 计数(+step),如果key不存在,自增或自减后get key=step             | O(1) |
+| getrange [key] [start] [end]                   | 获取字符串指定下标所有的值,类似取子串                               | O(1) |
+| setrange [key] [index] [value]                 | 设置指定下标所对应的值                                       | O(1) |
 
-​		设置多个KV串时,使用set/get操作时,客户端多次会发送请求,消耗的时间为n次网络延时+n次命令执行时间, mget/mset相对来说会好很多,消耗的时间为1次网络延时+n次命令执行时间.
+​        设置多个KV串时,使用set/get操作时,客户端多次会发送请求,消耗的时间为n次网络延时+n次命令执行时间, mget/mset相对来说会好很多,消耗的时间为1次网络延时+n次命令执行时间.
 
 #### hash
 
-| 命令                                                         | 含义                                 | 复杂度 |
-| :----------------------------------------------------------- | ------------------------------------ | ------ |
-| hget [key] [field]/hgetall [key]                             | 获取hash key对应的field的value       | O(1)   |
-| hset [key] [field]                                           | 设置hash key对应的field的value       | O(1)   |
-| hdel [key] [field]                                           | 删除hash key对应的field和value       | O(1)   |
-| hexists [key] [field]                                        | 判断hash key是否存在field字段        | O(1)   |
-| hlen [key]                                                   | 获取hash key field的数量             | O(1)   |
-| hmget [key] [f1] [f2]... /hmset [key] [f1] [v1] [f2] [v2]... | 批量操作hash                         | O(n)   |
-| hincrby [key] [f1] [count]                                   | 设置f1对应的字段递增count            | O(1)   |
-| hgetall [key]                                                | 返回hash key对应的所有的field和value | O(n)   |
-| hvals [key]                                                  | 返回hash key对应的所有field的value   | O(n)   |
-| hkeys [key]                                                  | 返回hash key 对应的所有field         | O(n)   |
-| hsetnx [key] [f] [v]                                         | 如果f已存在,则失败                   | O(1)   |
-| hincrbyfloat                                                 | hincrby浮点数版本                    | O(1)   |
+| 命令                                                           | 含义                          | 复杂度  |
+|:------------------------------------------------------------ | --------------------------- | ---- |
+| hget [key] [field]/hgetall [key]                             | 获取hash key对应的field的value    | O(1) |
+| hset [key] [field]                                           | 设置hash key对应的field的value    | O(1) |
+| hdel [key] [field]                                           | 删除hash key对应的field和value    | O(1) |
+| hexists [key] [field]                                        | 判断hash key是否存在field字段       | O(1) |
+| hlen [key]                                                   | 获取hash key field的数量         | O(1) |
+| hmget [key] [f1] [f2]... /hmset [key] [f1] [v1] [f2] [v2]... | 批量操作hash                    | O(n) |
+| hincrby [key] [f1] [count]                                   | 设置f1对应的字段递增count            | O(1) |
+| hgetall [key]                                                | 返回hash key对应的所有的field和value | O(n) |
+| hvals [key]                                                  | 返回hash key对应的所有field的value  | O(n) |
+| hkeys [key]                                                  | 返回hash key 对应的所有field       | O(n) |
+| hsetnx [key] [f] [v]                                         | 如果f已存在,则失败                  | O(1) |
+| hincrbyfloat                                                 | hincrby浮点数版本                | O(1) |
 
 #### list
 
 > * 有序
 > * 可重复
 
-| 命令                                         | 含义                                                         | 复杂度    |
-| :------------------------------------------- | ------------------------------------------------------------ | --------- |
-| rpush [key] [v1] [v2]...[vn]                 | 从列表右边插入值                                             | O(1)~O(n) |
-| lpush [key] [v1] [v2]...[vn]                 | 从列表左边插入值                                             | O(1)~(On) |
-| linsert [key] [before\|after] value newvalue | 在list指定的值前\|后插入newvalue                             | O(n)      |
-| lpop [key]                                   | 从列表左侧弹出一个item                                       | O(1)      |
-| rpop [key]                                   | 从列表右侧弹出一个item                                       | O(1)      |
+| 命令                                           | 含义                                                                                                                                  | 复杂度       |
+|:-------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| rpush [key] [v1] [v2]...[vn]                 | 从列表右边插入值                                                                                                                            | O(1)~O(n) |
+| lpush [key] [v1] [v2]...[vn]                 | 从列表左边插入值                                                                                                                            | O(1)~(On) |
+| linsert [key] [before\|after] value newvalue | 在list指定的值前\|后插入newvalue                                                                                                             | O(n)      |
+| lpop [key]                                   | 从列表左侧弹出一个item                                                                                                                       | O(1)      |
+| rpop [key]                                   | 从列表右侧弹出一个item                                                                                                                       | O(1)      |
 | lrem [key] [count] [value]                   | 根据count值从列表中删除所有value相等的项：（1）count>0：从左到右，删除最多count个value相等的项；（2）count<0，从右到左删除最多Math.abs(count)个value相等的项；（3）count=0,删除所有value相等的项 | O(n)      |
-| ltrim [key] [start] [end]                    | 按照索引范围修剪列表，即保留列表[start, end]，其他删除       | O(n)      |
-| lrange key [start] [end]                     | 获取列表指定索引范围[start, end]的所有item.如lrange key 0 2，lrange key 1 -1 | O(n)      |
-| lindex [key] [index]                         | 获取列表指定索引的item                                       | O(n)      |
-| llen [key]                                   | 获取列表长度                                                 | O(1)      |
-| lset [key] [index] [newvalue]                | 设置列表指定索引对应的值为newvalue                           | O(n)      |
-| blpop [key] [timeout]                        | lpop阻塞版本，timeout是阻塞超时时间，timeout=0一直等待，直到有值插入 | O(1)      |
-| brpop [key] [timeout]                        | rpop阻塞版本，timeout是阻塞超时时间，timeout=0一直等待，直到有值插入 | O(1)      |
+| ltrim [key] [start] [end]                    | 按照索引范围修剪列表，即保留列表[start, end]，其他删除                                                                                                   | O(n)      |
+| lrange key [start] [end]                     | 获取列表指定索引范围[start, end]的所有item.如lrange key 0 2，lrange key 1 -1                                                                       | O(n)      |
+| lindex [key] [index]                         | 获取列表指定索引的item                                                                                                                       | O(n)      |
+| llen [key]                                   | 获取列表长度                                                                                                                              | O(1)      |
+| lset [key] [index] [newvalue]                | 设置列表指定索引对应的值为newvalue                                                                                                               | O(n)      |
+| blpop [key] [timeout]                        | lpop阻塞版本，timeout是阻塞超时时间，timeout=0一直等待，直到有值插入                                                                                        | O(1)      |
+| brpop [key] [timeout]                        | rpop阻塞版本，timeout是阻塞超时时间，timeout=0一直等待，直到有值插入                                                                                        | O(1)      |
 
 注意列表可以反向操作：
 
@@ -542,20 +538,20 @@ keys一般不在生产环境使用.一般生产环境键值对多,keys命令时�
 > * 无序
 > * 集合间操作
 
-| 命令                                 | 含义                                               | 复杂度 |
-| :----------------------------------- | -------------------------------------------------- | ------ |
-| sadd [key] [element]                 | 向集合中添加element(如果element已存在，则添加失败) | O(1)   |
-| srem [key] [element]                 | 将集合key中的element移除                           | O(1)   |
-| scard [key]                          | 计算集合key的大小                                  | O(1)   |
-| sismember [key] [it]                 | 判断it是否在集合key中                              | O(1)   |
-| srandmember [key] [count]            | 随机取出集合key中的count个元素，不会删除集合数据   | O( )   |
-| smembers [key]                       | 取出集合中所有元素，结果无序                       | O(n)   |
-| spop [key]                           | 从集合中随机弹出一个元素，会删除集合数据           | O()    |
-| sscan                                |                                                    |        |
-| sdiff [key1] [key2]                  | 差集                                               |        |
-| sinter [key1] [key2]                 | 交集                                               |        |
-| sunion [key1] [key2]                 | 并集                                               |        |
-| sdiff\|sinter\|suion + store destkey | 将差集、交集、并集结果保存于destkey中              |        |
+| 命令                                   | 含义                                | 复杂度  |
+|:------------------------------------ | --------------------------------- | ---- |
+| sadd [key] [element]                 | 向集合中添加element(如果element已存在，则添加失败) | O(1) |
+| srem [key] [element]                 | 将集合key中的element移除                 | O(1) |
+| scard [key]                          | 计算集合key的大小                        | O(1) |
+| sismember [key] [it]                 | 判断it是否在集合key中                     | O(1) |
+| srandmember [key] [count]            | 随机取出集合key中的count个元素，不会删除集合数据      | O( ) |
+| smembers [key]                       | 取出集合中所有元素，结果无序                    | O(n) |
+| spop [key]                           | 从集合中随机弹出一个元素，会删除集合数据              | O()  |
+| sscan                                |                                   |      |
+| sdiff [key1] [key2]                  | 差集                                |      |
+| sinter [key1] [key2]                 | 交集                                |      |
+| sunion [key1] [key2]                 | 并集                                |      |
+| sdiff\|sinter\|suion + store destkey | 将差集、交集、并集结果保存于destkey中            |      |
 
 **TIPS**
 
@@ -567,24 +563,24 @@ keys一般不在生产环境使用.一般生产环境键值对多,keys命令时�
 > * 不能重复
 > * element + score
 
-| 命令                                                     | 含义                                      | 复杂度      |
-| :------------------------------------------------------- | ----------------------------------------- | ----------- |
-| zadd [key] [score] [element] [score2] [element2]...      | 添加score和element                        | O(log(n))   |
-| zrem [key] [element] [element2]...                       | 删除元素                                  | O(1)        |
-| zscore [key] [element]                                   | 获取元素的分数                            | O(1)        |
-| zincrby [key] [increScore] [element]                     | 增加或减少元素的分数                      | O(1)        |
-| zcard [key]                                              | 返回元素的总个数                          | O(1)        |
-| zrank [key] [element]                                    | 获取element的排名，从低到高               |             |
+| 命令                                                     | 含义                       | 复杂度         |
+|:------------------------------------------------------ | ------------------------ | ----------- |
+| zadd [key] [score] [element] [score2] [element2]...    | 添加score和element          | O(log(n))   |
+| zrem [key] [element] [element2]...                     | 删除元素                     | O(1)        |
+| zscore [key] [element]                                 | 获取元素的分数                  | O(1)        |
+| zincrby [key] [increScore] [element]                   | 增加或减少元素的分数               | O(1)        |
+| zcard [key]                                            | 返回元素的总个数                 | O(1)        |
+| zrank [key] [element]                                  | 获取element的排名，从低到高        |             |
 | zrange [key] [start] [end] 【withscores】                | 获取指定范围的element并打印分数值（升序） | O(log(n)+m) |
-| zrangebyscore [key] [minScore] [maxScore] 【withscores】 | 返回指定分数范围内的升序元素[升序]        | O(log(n)+m) |
-| zcount [key] [minScore] [maxScore]                       | 返回有序集合内在指定分数范围内的个数      | O(log(n)+m) |
-| zremrangebyrank [key] [start] [end]                      | 删除指定排名内的升序元素                  | O(log(n)+m) |
-| zremrangebysocre [key] [minScore] [maxScore]             | 删除指定分数内的升序元素                  | O(log(n)+m) |
-| zrevrank                                                 | 与zrank相反                               |             |
-| zrevrange                                                | 与zrange相反                              |             |
-| zrevrangebyscore                                         | 与zrangebyscore相反                       |             |
-| zinterstore                                              | 求交集并保存                              |             |
-| zunionstore                                              | 求并集并保存                              |             |
+| zrangebyscore [key] [minScore] [maxScore] 【withscores】 | 返回指定分数范围内的升序元素[升序]       | O(log(n)+m) |
+| zcount [key] [minScore] [maxScore]                     | 返回有序集合内在指定分数范围内的个数       | O(log(n)+m) |
+| zremrangebyrank [key] [start] [end]                    | 删除指定排名内的升序元素             | O(log(n)+m) |
+| zremrangebysocre [key] [minScore] [maxScore]           | 删除指定分数内的升序元素             | O(log(n)+m) |
+| zrevrank                                               | 与zrank相反                 |             |
+| zrevrange                                              | 与zrange相反                |             |
+| zrevrangebyscore                                       | 与zrangebyscore相反         |             |
+| zinterstore                                            | 求交集并保存                   |             |
+| zunionstore                                            | 求并集并保存                   |             |
 
 ### 2.5 实战
 
@@ -607,7 +603,7 @@ public VideoInfo get(long id) {
     String redisKey = redisPrefix + id;
     //先从redis查询
     VideoInfo videoInfo = redis.get(redisKey);
-    
+
     if (videoInfo == null) {
         //redis中没有再从原数据源中获取
         videoInfo = mysql.get(id);
@@ -616,7 +612,7 @@ public VideoInfo get(long id) {
             redis.set(redisKey, serialize(videoInfo));
         }
     }
-    
+
     return videoInfo;
 }
 
@@ -625,7 +621,7 @@ public VideoInfo get(long id) {
     String redisKey = redisPrefix + id;
     Map<String, String> hashMap = redis.hgetAll(redisKey);
     VideoInfo videoInfo = transferMapToVideoInfo(hashMap);
-    
+
     if (videoInfo == null)
     {
         videoInfo = mysql.get(id);
@@ -641,8 +637,6 @@ public VideoInfo get(long id) {
 
 与2.5.1类似,利用redis单线程无竞争,能保证incr id是原子操作.  
 
-
-
 ## 3. Redis客户端
 
 ### python
@@ -655,8 +649,6 @@ redigo
 
 ### C++
 
-
-
 ## 4. Redis其他功能
 
 ### 慢查询
@@ -664,19 +656,19 @@ redigo
 <img src="images/Redis/image-20200407235904167.png" alt=" " style="zoom:67%;" />
 
 > * 慢查询实现上是一个先进先出队列；
->
+> 
 > * 固定长度，最先进队列的就会被踢出；
->
+> 
 > * 保存在内存中，重启会丢失。
 
 <img src="images/Redis/image-20200408000714981.png" alt="image-20200408000714981" style="zoom:67%;" />
 
 **相关配置**
 
-| 配置项                  | 含义                                                         |
-| ----------------------- | ------------------------------------------------------------ |
+| 配置项                     | 含义                                                       |
+| ----------------------- | -------------------------------------------------------- |
 | slowlog-log-slower-than | 慢查询阈值（单位微妙），时间大于此值的命令会被记录到慢查询队列中；等于0，则记录所有命令；小于0，不记录任何命令 |
-| slowlog-max-len         | 慢查询队列最大长度                                           |
+| slowlog-max-len         | 慢查询队列最大长度                                                |
 
 **查看配置默认值**
 
@@ -687,16 +679,16 @@ redigo
 
 > * 修改配置文件重启
 > * 动态配置（建议操作）
->   *  config set slowlog-max-len 1000
+>   * config set slowlog-max-len 1000
 >   * config set slowlog-log-slower-than 1000
 
 **相关命令**
 
-| 命令            | 描述                |
-| --------------- | ------------------- |
+| 命令              | 描述         |
+| --------------- | ---------- |
 | slowlog get [n] | 获取慢查询队列中n条 |
 | slowlog len     | 获取慢查询队列长度  |
-| slowlog reset   | 清空慢查询队列      |
+| slowlog reset   | 清空慢查询队列    |
 
 **建议**
 
@@ -718,11 +710,11 @@ redigo
 
 **相关命令**
 
-| 命令                        | 描述                 |
-| --------------------------- | -------------------- |
+| 命令                          | 描述         |
+| --------------------------- | ---------- |
 | publish [channel] [message] | 发布，返回订阅者个数 |
 | unsubscribe [channel] ...   | 取消订阅，一个或多个 |
-| subscribe [channel] ...     | 订阅一个或多个       |
+| subscribe [channel] ...     | 订阅一个或多个    |
 
 ### 消息队列
 
@@ -732,11 +724,11 @@ redigo
 
 **相关命令**
 
-| 命令                        | 描述                 |
-| --------------------------- | -------------------- |
+| 命令                          | 描述         |
+| --------------------------- | ---------- |
 | publish [channel] [message] | 发布，返回订阅者个数 |
 | unsubscribe [channel] ...   | 取消订阅，一个或多个 |
-| subscribe [channel] ...     | 订阅一个或多个       |
+| subscribe [channel] ...     | 订阅一个或多个    |
 
 ### HyperLogLog
 
@@ -748,19 +740,19 @@ type hyperloglog_key = string
 
 **相关命令**
 
-| 命令                                     | 描述                      |
-| ---------------------------------------- | ------------------------- |
-| pfadd key element [element]...           | 向hyperloglog中添加元素   |
+| 命令                                       | 描述                 |
+| ---------------------------------------- | ------------------ |
+| pfadd key element [element]...           | 向hyperloglog中添加元素  |
 | pfcount key [key] ...                    | 计算hyperloglog的独立总数 |
-| pfmerge destkey sourcekey [sourcekey]... | 合并多个hyperloglog       |
+| pfmerge destkey sourcekey [sourcekey]... | 合并多个hyperloglog    |
 
- <img src="images/Redis/1586965519036.png" alt="1586965519036" style="zoom:67%;" />
+<img src="images/Redis/1586965519036.png" alt="1586965519036" style="zoom:67%;" />
 
 <img src="images/Redis/1586965609890.png" alt="1586965609890" style="zoom:67%;" />
 
 **内存消耗**
 
-  <img src="images/Redis/1586965898833.png" alt="1586965898833" style="zoom:67%;" />
+<img src="images/Redis/1586965898833.png" alt="1586965898833" style="zoom:67%;" />
 
 **使用注意:**
 
@@ -777,12 +769,12 @@ type geokey = zset
 
 **相关命令**
 
-| 命令                                       | 描述                                                       |
-| ------------------------------------------ | ---------------------------------------------------------- |
-| geoadd key [longtitude latitude member]... | 增加地理位置信息                                           |
-| geopos key [member...]                     | 获取地理位置信息                                           |
+| 命令                                         | 描述                                        |
+| ------------------------------------------ | ----------------------------------------- |
+| geoadd key [longtitude latitude member]... | 增加地理位置信息                                  |
+| geopos key [member...]                     | 获取地理位置信息                                  |
 | geodist key member1 member2 [unit]         | 获取两个地理位置的距离,unit:m(米)/km(千米)/mi(英里)/ft(尺) |
-| zrem key member                            | 删除member                                                 |
+| zrem key member                            | 删除member                                  |
 
 <img src="images/Redis/1586966905520.png" alt="1586966905520" style="zoom:67%;" />
 
@@ -811,8 +803,8 @@ redis所有数据保存在内存中，对数据的更新将异步地保存在磁
 
 ##### 两个命令
 
-| 命令   | 含义     |
-| ------ | -------- |
+| 命令     | 含义   |
+| ------ | ---- |
 | save   | 同步方式 |
 | bgsave | 异步方式 |
 
@@ -828,8 +820,6 @@ redis所有数据保存在内存中，对数据的更新将异步地保存在磁
 
 <img src="images/Redis/image-20200425175125563.png" alt="image-20200425175125563" style="zoom:67%;" />
 
-
-
 ##### 自动生成
 
 通过在配置文件中添加save配置实现。更新RDB频率无法控制。
@@ -840,11 +830,11 @@ redis所有数据保存在内存中，对数据的更新将异步地保存在磁
  save 900 1  
  save 300 10 #每300s有10条更新时生成RDB文件
  save 60 10000
- 
+
  dbfilename dump.rdb #RDB文件名 可以加port dump-${port}.rdb
- dir ./		#redis数据及日志等保存目录
+ dir ./        #redis数据及日志等保存目录
  stop-writes-on-bgsave-error yes #bgsave生成RDB文件时出错时停止写入
- rdbcompression yes	#是否采用压缩的方式写入RDB文件
+ rdbcompression yes    #是否采用压缩的方式写入RDB文件
  rdbchecksum yes
 ```
 
@@ -855,8 +845,6 @@ redis所有数据保存在内存中，对数据的更新将异步地保存在磁
 > * shutdown （shutdown save）
 
 #### 试验
-
-
 
 #### RDB现存问题
 
@@ -878,15 +866,13 @@ redis所有数据保存在内存中，对数据的更新将异步地保存在磁
 
 <img src="images/Redis/image-20200425191856366.png" alt="image-20200425191856366" style="zoom:67%;" />
 
-
-
 #### AOF三种策略
 
 <img src="images/Redis/image-20200425192842092.png" alt="image-20200425192842092" style="zoom: 50%;" />
 
 ##### always
 
- <img src="images/Redis/image-20200425192636892.png" alt="image-20200425192636892" style="zoom:67%;" />
+<img src="images/Redis/image-20200425192636892.png" alt="image-20200425192636892" style="zoom:67%;" />
 
 ##### everysec
 
@@ -923,9 +909,9 @@ AOF 持久化是通过保存被执行的写命令来记录数据库状态的，�
 
 AOF重写并不是依据原AOF文件重写，而是通过内存数据进行重写的。
 
-| 原生AOF                                               | AOF重写            |
+| 原生AOF                                                 | AOF重写              |
 | ----------------------------------------------------- | ------------------ |
-| 过期数据删除                                          |                    |
+| 过期数据删除                                                |                    |
 | set hello world<br/>set hello java<br/>set hello hehe | set hello hehe     |
 | incr counter<br/>incr counter                         | set counter 2      |
 | rpush mylist a<br/>rpush mylist b<br/>rpush mylist c  | rpush mylist a b c |
@@ -945,7 +931,7 @@ auto-aof-rewrite-min-size
 auto-aof-rewrite-percentage
 
 # AOF当前尺寸（字节）
-aof_current_size	
+aof_current_size    
 # AOF上次启动和重写的尺寸（字节）
 aof_base_size
 ```
@@ -1152,9 +1138,11 @@ sentinel集群选举一个sentinel节点完成故障转移。通过分布式强�
 选举：通过sentinel is-master-down-by-addr获取master下线认定和发送希望成为领导者的请求。
 
 > 1. 每个做主关下线的sentinel节点向其他sentinel节点发送命令，要求将它本身设置为领导者。
->
+> 
 > 2. 收到命令的sentinel节点如果没有同意通过其他sentinel节点发送的命令，那么将同意该请求，否则拒绝。
+> 
 > 3. 如果该Sentinel节点发现自己的票数已经超过sentinel集合半数且超过quorum，那么它将成为领导者。
+> 
 > 4. 如果此过程有多个sentinel节点成为领导者，那么将等待一段时间重新进行选举。
 
 ![image-20200517151802750](images/Redis/image-20200517151802750.png)
@@ -1165,15 +1153,15 @@ sentinel集群选举一个sentinel节点完成故障转移。通过分布式强�
 
 ```
 1. 从slave节点中选出一个“合适的”节点作为新的master节点。
-	选择slave-priority(slave节点优先级)最高的slave节点，如果存在则返回，不存在则继续。
-	选择复制偏移量最大的slave节点（复制的最完整），如果存在则返回，不存在则继续。
-	选择runId最小（启动最早）的slave节点。
+    选择slave-priority(slave节点优先级)最高的slave节点，如果存在则返回，不存在则继续。
+    选择复制偏移量最大的slave节点（复制的最完整），如果存在则返回，不存在则继续。
+    选择runId最小（启动最早）的slave节点。
 2. 对上面的slave节点执行slaveof no one命令让其成为master节点。
 3. 向剩余的slave节点发送命令，让他们成为新的maser节点的slave节点，复制规则和parallel-syncs参数有关，表示可以有几个slave同时进行复制。
 4. 更新对原来master节点配置为slave,并保持着对其“关注”，当其回复后命令它去复制新的master节点。
 ```
 
- <img src="images/Redis/image-20200517154641593.png" alt="image-20200517154641593" style="zoom:67%;" />
+<img src="images/Redis/image-20200517154641593.png" alt="image-20200517154641593" style="zoom:67%;" />
 
 <img src="images/Redis/image-20200517155110876.png" alt="image-20200517155110876" style="zoom:67%;" />
 
@@ -1191,7 +1179,7 @@ sentinel集群选举一个sentinel节点完成故障转移。通过分布式强�
 
 ```
 1. redis sentinel是Redis的高可用实现方案；
-	故障发现、故障自动转移、配置中心、客户端通知
+    故障发现、故障自动转移、配置中心、客户端通知
 2. redis sentinel从Redis2.8版本开始正式生产可用，之前版本不可用；
 3. 尽可能在不同物理机部署redis sentinel所有节点；
 4. redis sentinel中的sentinel节点个数应该为大于等于3且最好为奇数；
@@ -1203,8 +1191,6 @@ sentinel集群选举一个sentinel节点完成故障转移。通过分布式强�
 9. redis sentinel实现读写分离高可用可以依赖sentinel节点的消息通知，获取redis数据节点的状态变化。
 ```
 
-
-
 ## 8. Redis Cluster
 
 ## 9. 源码研究
@@ -1213,13 +1199,13 @@ sentinel集群选举一个sentinel节点完成故障转移。通过分布式强�
 
 #### 9.1.1 Redis的对象
 
-| 类型定义     | 对象分类     |
-| ------------ | ------------ |
-| REDIS_STRING | 字符串对象   |
-| REDIS_LIST   | 列表对象     |
-| REDIS_SET    | 集合对象     |
+| 类型定义         | 对象分类   |
+| ------------ | ------ |
+| REDIS_STRING | 字符串对象  |
+| REDIS_LIST   | 列表对象   |
+| REDIS_SET    | 集合对象   |
 | REDIS_ZSET   | 有序集合对象 |
-| REDIS_HASH   | 哈希对象     |
+| REDIS_HASH   | 哈希对象   |
 
 Redis的每个对象都使用一个redisObject结构来表示，该结构中保存和数据有关的很多属性，包括type属性、encoding属性、lru属性、refcount属性、ptr属性等。
 
@@ -1240,16 +1226,16 @@ typedef struct redisObject {
 
 **编码方式**
 
-| 类型定义                  | 编码类型       |
+| 类型定义                      | 编码类型           |
 | ------------------------- | -------------- |
-| REDIS_ENCODING_RAW        | 简单动态字符串 |
-| REDIS_ENCODING_INT        | 长整型 |
-| REDIS_ENCODING_HT         | 哈希表 |
+| REDIS_ENCODING_RAW        | 简单动态字符串        |
+| REDIS_ENCODING_INT        | 长整型            |
+| REDIS_ENCODING_HT         | 哈希表            |
 | REDIS_ENCODING_ZIPMAP     |                |
-| REDIS_ENCODING_LINKEDLIST | 双向链表 |
-| REDIS_ENCODING_ZIPLIST    | 压缩列表 |
-| REDIS_ENCODING_INTSET     | 整数集合 |
-| REDIS_ENCODING_SKIPLIST   | 跳跃表 |
+| REDIS_ENCODING_LINKEDLIST | 双向链表           |
+| REDIS_ENCODING_ZIPLIST    | 压缩列表           |
+| REDIS_ENCODING_INTSET     | 整数集合           |
+| REDIS_ENCODING_SKIPLIST   | 跳跃表            |
 | REDIS_ENCODING_EMBSTR     | embstr编码的简单字符串 |
 
 每种对象类型都至少使用了两种不同的编码：字符串对象可以使用long类型整数、embstr编码的简单动态字符串和简单动态字符串，列表对象可以使用压缩列表和双端链表，哈希对象可以使用压缩列表和字典，集合对象可以使用整数集合和字典，有序集合对象可以使用压缩列表和跳跃表和字典。
@@ -1409,23 +1395,23 @@ typedef struct list {
 #define listGetMatchMethod(l) ((l)->match)  //! 获取节点对比函数
 
 /* Prototypes */
-list *listCreate(void);			//! 创建链表
-void listRelease(list *list);	//! 删除链表
-void listEmpty(list *list);		//! 清空链表
-list *listAddNodeHead(list *list, void *value);	//! 头部插入节点
-list *listAddNodeTail(list *list, void *value);	//! 尾部插入节点
+list *listCreate(void);            //! 创建链表
+void listRelease(list *list);    //! 删除链表
+void listEmpty(list *list);        //! 清空链表
+list *listAddNodeHead(list *list, void *value);    //! 头部插入节点
+list *listAddNodeTail(list *list, void *value);    //! 尾部插入节点
 list *listInsertNode(list *list, listNode *old_node, void *value, int after); //! 插入节点至给定节点前或后
-void listDelNode(list *list, listNode *node);	//! 删除给定节点
-listIter *listGetIterator(list *list, int direction);	//! 生成链表迭代器（跟迭代器方向有关）
-listNode *listNext(listIter *iter);	//! 返回迭代器next属性
-void listReleaseIterator(listIter *iter);	//! 释放给定迭代器
-list *listDup(list *orig);	//! 拷贝整个链表
-listNode *listSearchKey(list *list, void *key);	//! 查找保存给定key值的节点
-listNode *listIndex(list *list, long index);	//! 获取指定索引位置的节点，支持负索引
-void listRewind(list *list, listIter *li);		//! 创建一个迭代器，默认前向
-void listRewindTail(list *list, listIter *li);	//! 创建一个反向迭代器
-void listRotate(list *list);	//! 旋转链表（删除尾结点并插入至头部）
-void listJoin(list *l, list *o);	//! 将o链表合并至l链表末尾，将o置为空
+void listDelNode(list *list, listNode *node);    //! 删除给定节点
+listIter *listGetIterator(list *list, int direction);    //! 生成链表迭代器（跟迭代器方向有关）
+listNode *listNext(listIter *iter);    //! 返回迭代器next属性
+void listReleaseIterator(listIter *iter);    //! 释放给定迭代器
+list *listDup(list *orig);    //! 拷贝整个链表
+listNode *listSearchKey(list *list, void *key);    //! 查找保存给定key值的节点
+listNode *listIndex(list *list, long index);    //! 获取指定索引位置的节点，支持负索引
+void listRewind(list *list, listIter *li);        //! 创建一个迭代器，默认前向
+void listRewindTail(list *list, listIter *li);    //! 创建一个反向迭代器
+void listRotate(list *list);    //! 旋转链表（删除尾结点并插入至头部）
+void listJoin(list *l, list *o);    //! 将o链表合并至l链表末尾，将o置为空
 ```
 
 #### 9.1.4 字典
@@ -1470,9 +1456,9 @@ typedef struct dictht {
  * 每个字典使用两个哈希表，用于实现渐进式 rehash
  */
 typedef struct dict {
-    dictType *type;	//! 特定类型的处理函数
-    void *privdata;	//! 类型处理函数的私有数据
-    dictht ht[2];	//! 哈希表
+    dictType *type;    //! 特定类型的处理函数
+    void *privdata;    //! 类型处理函数的私有数据
+    dictht ht[2];    //! 哈希表
     long rehashidx; //! 记录 rehash 进度的标志，值为 -1 表示 rehash 未进行
     unsigned long iterators; //! 当前正在运作的安全迭代器数量
 } dict;
@@ -1501,8 +1487,6 @@ typedef void (dictScanBucketFunction)(void *privdata, dictEntry **bucketref);
 #### 9.1.6 跳跃表
 
 #### 9.1.7 压缩列表
-
-
 
 ## 10. 实践
 
@@ -1544,4 +1528,3 @@ redis-sentinel ./sentinel-6379.conf
 redis-sentinel ./sentinel-6380.conf
 redis-sentinel ./sentinel-6381.conf
 ```
-

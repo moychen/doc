@@ -127,7 +127,7 @@ gcc [-c|-S|-E] [-std=standard]
 
 **（5）错误与告警选项**
 
-```javascript
+```
 -Wall
     一般使用该选项，允许发出GCC能够提供的所有有用的警告。也可以用-W{warning}来标记指定的警告。
 -pedantic
@@ -138,6 +138,10 @@ gcc [-c|-S|-E] [-std=standard]
     把所有警告转换为错误，在警告发生时中止编译过程。
 -w
     关闭所有警告,建议不要使用此项。
+-WFATAL-ERRORS
+	在出现错误的时候停止编译
+--fmax-errors=N
+	在第N次出现错误的时候停止编译
 ```
 
 **（6）调试选项**
