@@ -1279,6 +1279,10 @@ struct __attribute__ ((__packed__)) sdshdr64 {
 }；
 ```
 
+以前的sdshdr结构：
+
+![image-20220516210916703](images/Redis/image-20220516210916703.png)
+
 **空数组（柔性数组）**
 
 * 不需要初始化，数组名直接就是缓冲区数据的起始地址(如果存在数据)。
@@ -1290,24 +1294,27 @@ struct __attribute__ ((__packed__)) sdshdr64 {
 * 常数复杂度获取字符串的长度，SDS的字符串长度可以通过len属性获取。
 * 杜绝缓冲区溢出，SDS的API需要对SDS进行修改时，会检查SDS的空间是否满足修改所需的要求，如果不满足，API会自动将SDS空间扩展至执行修改所需的大小。
 * 减少修改字符串带来的内存重新分配次数：
-  * 通过空间预分配，可以减少字符串拼接时内存重分配的次数。当SDS的长度小于1MB时，分配两倍和len属性同样大小的未使用空间。如果SDS的长度大于1MB时，将分配1MB的未使用空间。
+  * 通过空间预分配，可以减少字符串拼接时内存重分配的次数。当SDS的长度小于1MB时，分配两倍和len属性同样大小的未使用空间。如果SDS的长度大于1MB时，将分配1MB的未使用空间。**？？最新规则待确认**
   * 通过惰性空间释放，可以减少字符串缩短时的内存回收的次数。SDS提供了相应的API，让我们在有需要时，真正释放SDS的未使用空间。
-* 二进制安全，SDS的API都会以二进制的方式来处理buf数组中的内容，因此SDS不仅可以保存文本，还可以保存二进制。而对于C的字符串来说，遇到空格就终止了。
+* 二进制安全，SDS的API都会以二进制的方式来处理buf数组中的内容，因此SDS不仅可以保存文本，还可以保存二进制，因为SDS使用len属性判断字符串是否结束，而对于C的字符串来说，遇到空格就终止了。
+* 兼容部分C字符串函数，**保存文本数据的SDS**可以重用一部分 <string.h> 中的函数。
+
+![image-20220516220655760](images/Redis/image-20220516220655760.png)
 
 **sds相关API**
 
 ```c
 sds sdsnewlen(const void *init, size_t initlen);
-sds sdsnew(const char *init);
-sds sdsempty(void);
-sds sdsdup(const sds s);
-void sdsfree(sds s);
-sds sdsgrowzero(sds s, size_t len);
-sds sdscatlen(sds s, const void *t, size_t len);
-sds sdscat(sds s, const char *t);
-sds sdscatsds(sds s, const sds t);
+sds sdsnew(const char *init);		// 创建一个包含给定C字符串的SDS O(N)，N为C字符串长度		
+sds sdsempty(void);					// 创建一个空SDS O(1)
+sds sdsdup(const sds s);			// 创建一个给定SDS的副本(copy) O(N)，N为给定SDS的长度
+void sdsfree(sds s);				// 释放给定的SDS O(N)，N为被释放SDS的长度
+sds sdsgrowzero(sds s, size_t len); // 用空字符将SDS扩展至给定长度 O(N)，N为扩展新增的字节数
+sds sdscat(sds s, const char *t);	// 将给定的C字符串拼接至SDS字符串末尾 O(N)，N为给定c字符串长度
+sds sdscatsds(sds s, const sds t);	// 将给定的SDS字符串拼接至SDS字符串末尾 O(N)，N为给定SDS字符串长度
+sds sdscpy(sds s, const char *t);	// 将给定的C字符串复制到SDS中 O(N)，N为被复制C字符串的长度
 sds sdscpylen(sds s, const char *t, size_t len);
-sds sdscpy(sds s, const char *t);
+sds sdscatlen(sds s, const void *t, size_t len);
 
 sds sdscatvprintf(sds s, const char *fmt, va_list ap);
 #ifdef __GNUC__
@@ -1318,11 +1325,11 @@ sds sdscatprintf(sds s, const char *fmt, ...);
 #endif
 
 sds sdscatfmt(sds s, char const *fmt, ...);
-sds sdstrim(sds s, const char *cset);
-void sdsrange(sds s, ssize_t start, ssize_t end);
+sds sdstrim(sds s, const char *cset);	// 从SDS字符串中移除所有在C字符串中出现过的字符 O(N^2)，N为给定C字符串的长度
+void sdsrange(sds s, ssize_t start, ssize_t end);	// 保留给定区间内的数据，不在区间内的被清除或覆盖 O(N)，N为被保留数据的字节数
 void sdsupdatelen(sds s);
-void sdsclear(sds s);
-int sdscmp(const sds s1, const sds s2);
+void sdsclear(sds s);				// 清空SDS保存的字符串内容，因为惰性释放，所以为O(1)
+int sdscmp(const sds s1, const sds s2);	// 对比两个SDS字符串是否相同 O(N)，N为两个SDS中较短的那个SDS长度
 sds *sdssplitlen(const char *s, ssize_t len, const char *sep, int seplen, int *count);
 void sdsfreesplitres(sds *tokens, int count);
 void sdstolower(sds s);
