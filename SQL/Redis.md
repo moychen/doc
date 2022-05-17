@@ -1374,12 +1374,14 @@ typedef struct list {
 } list;
 ```
 
+![image-20220517205516551](images/Redis/image-20220517205516551.png)
+
 **双向链表的特性：**
 
-- 双端：链表节点带有prev和next指针
-- 无环
-- 带表头指针和表尾指针
-- 带链表长度计数器
+- 双端，链表节点带有prev和next指针
+- 无环，表头节点的prev指针和表尾节点的next指针都指向NULL，对链表的访问以NULL为终点。
+- 带表头指针和表尾指针—head和tail指针
+- 带链表长度计数器—len
 - 多态 ：链表节点使用void *指针来保存节点值，并且可以通过list结构的dup、free和match三个属性为节点值设置类型特定函数，所以链表可以用于保存各种不同类型的值。
 
 **双向链表相关API**
@@ -1402,22 +1404,22 @@ typedef struct list {
 #define listGetMatchMethod(l) ((l)->match)  //! 获取节点对比函数
 
 /* Prototypes */
-list *listCreate(void);            //! 创建链表
-void listRelease(list *list);    //! 删除链表
+list *listCreate(void);            //! 创建链表 O(1)
+void listRelease(list *list);    //! 删除链表	O(N)，N为链表长度
 void listEmpty(list *list);        //! 清空链表
-list *listAddNodeHead(list *list, void *value);    //! 头部插入节点
-list *listAddNodeTail(list *list, void *value);    //! 尾部插入节点
-list *listInsertNode(list *list, listNode *old_node, void *value, int after); //! 插入节点至给定节点前或后
-void listDelNode(list *list, listNode *node);    //! 删除给定节点
+list *listAddNodeHead(list *list, void *value);    //! 头部插入节点 O(1)
+list *listAddNodeTail(list *list, void *value);    //! 尾部插入节点 O(1)
+list *listInsertNode(list *list, listNode *old_node, void *value, int after); //! 插入节点至给定节点前或后 O(1)
+void listDelNode(list *list, listNode *node);    //! 删除给定节点 O(N)，N为链表长度
 listIter *listGetIterator(list *list, int direction);    //! 生成链表迭代器（跟迭代器方向有关）
 listNode *listNext(listIter *iter);    //! 返回迭代器next属性
 void listReleaseIterator(listIter *iter);    //! 释放给定迭代器
-list *listDup(list *orig);    //! 拷贝整个链表
-listNode *listSearchKey(list *list, void *key);    //! 查找保存给定key值的节点
-listNode *listIndex(list *list, long index);    //! 获取指定索引位置的节点，支持负索引
+list *listDup(list *orig);    //! 拷贝整个链表 O(N)，N为链表长度
+listNode *listSearchKey(list *list, void *key);    //! 查找保存给定key值的节点 O(N)，N为链表长度
+listNode *listIndex(list *list, long index);    //! 获取指定索引位置的节点，支持负索引 O(N)
 void listRewind(list *list, listIter *li);        //! 创建一个迭代器，默认前向
 void listRewindTail(list *list, listIter *li);    //! 创建一个反向迭代器
-void listRotate(list *list);    //! 旋转链表（删除尾结点并插入至头部）
+void listRotate(list *list);    //! 旋转链表（删除尾结点并插入至头部） O()
 void listJoin(list *l, list *o);    //! 将o链表合并至l链表末尾，将o置为空
 ```
 
