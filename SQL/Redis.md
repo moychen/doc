@@ -1351,6 +1351,8 @@ void *sdsAllocPtr(sds s);
 
 #### 9.1.3 双端链表
 
+双向无环链表
+
 ```c
 typedef struct listNode {
     struct listNode *prev;  //! 前驱指针
@@ -1425,6 +1427,8 @@ void listJoin(list *l, list *o);    //! 将o链表合并至l链表末尾，将o�
 
 #### 9.1.4 字典
 
+Redis数据库就是使用字典作为底层实现的，对数据库的增删改查都是构建在对字典的操作之上的。
+
 ```c
 //! 哈希表节点
 typedef struct dictEntry {
@@ -1435,7 +1439,7 @@ typedef struct dictEntry {
         int64_t s64;
         double d;
     } v;
-    struct dictEntry *next; //! 后继节点
+    struct dictEntry *next; //! 后继节点，
 } dictEntry;
 
 /*
@@ -1456,7 +1460,7 @@ typedef struct dictType {
 typedef struct dictht {
     dictEntry **table;  //! 哈希表节点指针数组（俗称桶，bucket）
     unsigned long size; //! 指针数组的大小
-    unsigned long sizemask; //! 针数组的长度掩码，用于计算索引值
+    unsigned long sizemask; //! 针数组的长度掩码，用于计算索引值,index=hash值&sizemask
     unsigned long used; //! 哈希表现有的节点数量
 } dictht;
 
@@ -1466,8 +1470,8 @@ typedef struct dictht {
  */
 typedef struct dict {
     dictType *type;    //! 特定类型的处理函数
-    void *privdata;    //! 类型处理函数的私有数据
-    dictht ht[2];    //! 哈希表
+    void *privdata;    //! 类型处理函数的私有数据，函数参数
+    dictht ht[2];    //! 哈希表 
     long rehashidx; //! 记录 rehash 进度的标志，值为 -1 表示 rehash 未进行
     unsigned long iterators; //! 当前正在运作的安全迭代器数量
 } dict;
@@ -1489,7 +1493,15 @@ typedef void (dictScanFunction)(void *privdata, const dictEntry *de);
 typedef void (dictScanBucketFunction)(void *privdata, dictEntry **bucketref);
 ```
 
-**注意：**`dict` 类型使用了两个指针，分别指向两个哈希表。其中， 0 号哈希表（`ht[0]`）是字典主要使用的哈希表， 而 1 号哈希表（`ht[1]`）则只有在程序对 0 号哈希表进行 rehash 时才使用。
+![image-20220523210545441](images/Redis/image-20220523210545441.png)
+
+> * 使用哈希表作为底层实现，使用链地址法解决哈希冲突
+> * 使用 dictType 结构实现不同类型字典设置不同类型特定函数
+> * ht[2] 两个哈希表，ht[0] 是字典主要使用的哈希表，ht[1] 只在对ht[0] rehash 时使用
+> * 渐进式rehash，将rehash的次数分散在多次增删改查操作中渐进式完成，使用 rehashidx 保存 rehash 进度
+> * 
+
+
 
 #### 9.1.5 整数集合
 
