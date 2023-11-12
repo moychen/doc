@@ -1444,7 +1444,23 @@ void f(T param); // param is now passed by value
 
 #### auto
 
+* auto 声明的变量必须在定义时初始化，初始化的右值可以是具体的数值，也可以是表达式和函数的返回值等。
+* 引用类型不能直接推导出来，正确写法：vector<int> v(5, 1); vector<int> &a = v; **auto &b = a;** 
+* const/volatile 语义不能直接推导出来，指针另说，正确写法：cont int a = 1; const auto cNum = a;
 
+**不要滥用auto，auto在编程时真正的用途如下：**
+
+* 代替冗长复杂的变量声明
+* 在模板中，用于声明依赖模板参数的变量**
+* 函数模板依赖模板参数的返回值
+* 用于lambda表达式中
+
+**不能推导的情况**
+
+* 函数形参类型不能由auto推导出来；
+* 对于结构体来说，非静态成员变量的类型是不能auto的；
+* 声明auto数组， 例如 char x[3]; auto z[3] = x;
+* 实例化模板的时候使用auto作为模板参数，如 vector<auto> v = {1};
 
 #### decltype
 
@@ -2098,11 +2114,6 @@ placement new并不会去堆上申请一块内存，而是直接使用指针p指
 
 ### auto
 
-#### 不能推导的情况
-
-* 函数形参类型不能由auto推导出来；
-* 对于结构体来说，非静态成员变量的类型是不能auto的；
-* 声明auto数组， 例如 char x[3]; auto z[3] = x;
-* 实例化模板的时候使用auto作为模板参数，如 vector<auto> v = {1};
+见类型推导
 
 ### tuple

@@ -545,6 +545,12 @@ $ tcpdump -i bond0 -s 0 tcp port 38910 -G 3000000 -Z billapp -w  /data01/billapp
 
 ### telnet
 
+```
+退出：Ctrl+]+quit
+```
+
+
+
 ### ping
 
 ### traceroute
