@@ -4,8 +4,6 @@
 
 ### extern
 
-
-
 #### extern "C"的作用
 
 extern "C"的主要作用就是为了能够正确实现C++代码调用其他C语言代码。加上extern "C"后，会指示编译器这部分代码按C语言的一些规则进行编译，而不是C++的。比如C++和C的函数签名是不一样的，C++函数签名包括参数类型不单单是函数名。
@@ -55,7 +53,7 @@ volatile int a;//这里对a是否初始化已经不再重要了
 
 下面我们来看一个例子：
 
-```
+```C++
 #include <stdio.h>
 //函数定义为inline即:内联函数
 inline char* dbtest(int a) {
@@ -275,6 +273,73 @@ result =(p[1]<<8)|result;
 准确的来说，面向对象应该有四个特点：抽象、封装、继承和多态。
 多态指为指为不同数据类型的实体提供统一的接口，能够依据对象所属类别，引发对应类别的方法，而有不同的行为。
 
+### 重载、重写和同名隐藏
+
+**重载与覆盖**
+成员函数被重载的特征：
+
+* 相同的范围（在同一个类中）
+
+* 函数名字相同
+* 参数不同
+* virtual 关键字可有可无
+* 函数后面有const，即this参数类型不一样
+
+
+覆盖（重写）是指派生类函数覆盖基类函数，特征是：
+
+* 不同的范围（分别位于派生类与基类）
+* 函数名字相同
+* 参数相同
+* 基类函数必须有virtual 关键字
+
+**有些描述可能不太准确，这种事最好自己再试一试，一试出真知。**
+这里“隐藏”是指派生类的函数屏蔽了与其同名的基类函数，规则如下：
+（1）如果派生类的函数与基类的函数同名，但是参数不同（返回类型不用考虑）。此时，不论有无virtual 关键字，基类的函数将被隐藏（注意别与重载混淆）。
+（2）如果派生类的函数与基类的函数同名，并且参数也相同（返回类型可以不相同）且基类函数没有virtual 关键字。此时，基类的函数被隐藏（注意别与覆盖混淆）。
+
+ 另一个c++特性——协变，简单的说就是一个派生类语义上也是一个基类。
+
+​		***在C++中，只要原来的返回类型是指向基类的指针或引用，新的返回类型是指向派生类的指针或引用，覆盖的方法就可以改变返回类型。这样的类型称为协变返回类型，注意是指针或者引用。***
+
+```c++
+class Shape
+{
+public:
+	virtual void draw() = 0;
+	virtual ~Shape() {}
+private:
+	int width;
+};
+
+class Rect : public Shape
+{
+public:
+	virtual void draw() { cout << "draw..." << endl; }
+	virtual void draw(int scale) { cout << "draw with param..." << endl; }
+
+private:
+	int width;
+};
+
+int main()
+{
+	Shape *p = new Rect();
+	p->draw();
+
+	Rect *q = new Rect();
+	q->draw();
+	q->draw(23);
+
+	delete p;
+	delete q;
+
+	return 0;
+}
+```
+
+
+
 ### 动态库与静态库的区别，动态库链接的方法
 
 静态库和动态库区别来自链接阶段如何处理库、链接成可执行程序。分别称为静态链接方式、动态链接方式。
@@ -488,31 +553,19 @@ class 派生类名： virtual 派生方式 基类
 **3.注意**
 
 ```
-**1.基类向派生类提供它的行为和结构，派生类负责正确初始化基类对象**
-
-**2.要用正确的参数调用直接基类的构造函数，以作为每个派生类构造函数的一部分(讨论)**
-
-**3.普通成员函数不能用这种语法调用基类方法**
-
-**4.类只负责其直接基类的构造。但存在虚基类时有所不同**
-
-**5.派生类构造函数的参数要包括自己使用的和基类需要使用的所用参数**
-
-**6.派生类继承基类的行为和结构，但不继承构造函数和析构函数**
-
-**7.要在派生类拷贝构造函数中调用基类的拷贝构造函数**
-
-**8.要在派生类赋值运算符中调用基类的赋值运算符**
-
-**9. 派生类析构函数并不明确调用基类的析构函数**
-
-**10. 所用虚基类都由最后的派生类的构造函数所初始化。当创建对象时，将忽略子对象构造函数内部对虚基类构造函数的调用。**
-
-**11.公有继承是继承的主要模式，私有继承只在特殊情况下用（如实现堆栈类可从列表类中继承，但它不是某种列表，重新导出私有基类的成员。）私有继承没有多态性。**
-
-**12.在单一继承能实现目的时,不要用多重继承**
-
-**13.继承的优点：代码重用，在正在运行的程序中加入新类和新功能（如卫星、病人监护），动态联编，多态性。**
+1.基类向派生类提供它的行为和结构，派生类负责正确初始化基类对象
+2.要用正确的参数调用直接基类的构造函数，以作为每个派生类构造函数的一部分(讨论)
+3.普通成员函数不能用这种语法调用基类方法
+4.类只负责其直接基类的构造。但存在虚基类时有所不同
+5.派生类构造函数的参数要包括自己使用的和基类需要使用的所用参数
+6.派生类继承基类的行为和结构，但不继承构造函数和析构函数
+7.要在派生类拷贝构造函数中调用基类的拷贝构造函数
+8.要在派生类赋值运算符中调用基类的赋值运算符
+9. 派生类析构函数并不明确调用基类的析构函数
+10. 所用虚基类都由最后的派生类的构造函数所初始化。当创建对象时，将忽略子对象构造函数内部对虚基类构造函数的调用。
+11.公有继承是继承的主要模式，私有继承只在特殊情况下用（如实现堆栈类可从列表类中继承，但它不是某种列表，重新导出私有基类的成员。）私有继承没有多态性。
+12.在单一继承能实现目的时,不要用多重继承
+13.继承的优点：代码重用，在正在运行的程序中加入新类和新功能（如卫星、病人监护），动态联编，多态性。
 ```
 
 #### 3. 虚继承
@@ -1152,6 +1205,352 @@ void main()
 
 ### 引用折叠
 
+### new/delete、operator new/delete 和 placement new
+
+​		new operator/delete operator 就是 new 和 delete 操作符，而 operator new/operator delete 是函数。
+
+**new operator**
+
+* 调用 operator new 分配足够的空间，并调用相关对象的构造函数生成对象，返回对应指针。
+* 不可以被重载
+
+**operator new**
+
+* 只分配所要求的空间，不调用相关对象的构造函数。当无法满足所要求分配的空间时，则
+      ->如果有new_handler，则调用new_handler，否则
+      ->如果没要求不抛出异常（以nothrow参数表达），则执行bad_alloc异常，否则
+      ->返回0
+* 可以被重载
+* 重载时，返回类型必须声明为void*
+* 重载时，第一个参数类型必须为表达要求分配空间的大小（字节），类型为size_t
+* 重载时，可以带其它参数
+* 如果类中没有重载operator new，那么调用的就是全局的::operator new来完成堆的分配。同理，operator new[]、operator delete、operator delete[]也是可以重载的
+
+**placement new**
+
+* operator new重载的一个版本
+* 不分配内存，只是返回指向已经分配好的某段内存的一个指针。因此不能删除它，但需要调用对象的析构函数
+* placement new允许你在一个已经分配好的内存中（栈或者堆中）构造一个新的对象。原型中void* p实际上就是指向一个已经分配好的内存缓冲区的的首地址
+
+```C++
+#include <iostream>
+#include <string>
+using namespace std;
+
+class X
+{
+public:
+    X() { cout<<"constructor of X"<<endl; }
+    ~X() { cout<<"destructor of X"<<endl;}
+
+    void* operator new(size_t size,string str)
+    {
+        cout<<"operator new size "<<size<<" with string "<<str<<endl;
+        return ::operator new(size);
+    }
+
+    void operator delete(void* pointee)
+    {
+        cout<<"operator delete"<<endl;
+        ::operator delete(pointee);
+    }
+private:
+    int num;
+};
+
+int main()
+{
+    //new operator 它将调用类X中的operator new，为该类的对象分配空间，然后调用当前实例的构造函数
+    X *px = new("A new class") X;
+    
+    // delete operator 它将调用该实例的析构函数，然后调用类X中的operator delete，以释放该实例占用的空间
+    delete px;
+
+    return 0;
+}
+```
+
+​		`new` operator 与 `delete` operator 的行为是不能够也不应该被改变，这是C++标准作出的承诺。而 operator new 与 operator delete 和 C语言中的 `malloc` 与 `free`  对应，只负责分配及释放空间。但使用 operator new 分配的空间必须使用 operator delete 来释放，而不能使用 free，因为它们对内存使用的登记方式不同。反过来亦是一样。你可以重载 operator new 和 operator delete 以实现对内存管理的不同要求，但你不能重载new operator 或 delete operator以改变它们的行为。
+
+**为什么有必要写自己的operator new和operator delete？**
+
+
+​		答案通常是：为了效率。缺省的 operator new 和 operator delete 具有非常好的通用性，它的这种灵活性也使得在某些特定的场合下，可以进一步改善它的性能。尤其在那些需要动态分配大量的但很小的对象的应用程序里，情况更是如此。具体可参考《Effective C++》中的第二章内存管理。
+
+**Placement new的含义**？
+
+​		placement new 是重载 operator new 的一个标准、全局的版本，它不能够被自定义的版本代替（不像普通版本的operator new 和 operator delete能够被替换）。
+
+```C++
+void *operator new( size_t, void * p ) throw() { return p; }
+```
+
+​		placement new的执行忽略了size_t参数，只返还第二个参数。其结果是允许用户把一个对象放到一个特定的地方，达到调用构造函数的效果。和其他普通的new不同的是，它在括号里多了另外一个参数。比如：
+
+```C++
+Widget * p = new Widget;          			//ordinary new
+pi = new (ptr) int; pi = new (ptr) int;   	//placement new
+```
+
+​		括号里的参数ptr是一个指针，它指向一个内存缓冲器，placement new 将在这个缓冲器上分配一个对象。placement new 的返回值是这个被构造对象的地址（比如括号中的传递参数）。
+
+placement new 主要适用于：
+
+* 在对时间要求非常高的应用程序中，因为这些程序分配的时间是确定的
+* 长时间运行而不被打断的程序
+* 以及执行一个垃圾收集器 (garbage collector)
+
+**placement new 存在的理由**
+
+1.用 placement new 解决 buffer 的问题
+
+问题描述：用new分配的数组缓冲时，由于调用了默认构造函数，因此执行效率上不佳。若没有默认构造函数则会发生编译时错误。如果你想在预分配的内存上创建对象，用缺省的new操作符是行不通的。要解决这个问题，你可以用placement new构造。它允许你构造一个新对象到预分配的内存上。
+
+2.增大时空效率的问题
+
+使用 new 操作符分配内存需要在堆中查找足够大的剩余空间，显然这个操作速度是很慢的，而且有可能出现无法分配内存的异常（空间不够）。placement new就可以解决这个问题。我们构造对象都是在一个预先准备好了的内存缓冲区中进行，不需要查找内存，内存分配的时间是常数；而且不会出现在程序运行中途出现内存不足的异常。所以，placement new 非常适合那些对时间要求比较高，长时间运行不希望被打断的应用程序。
+
+**Placement new使用步骤**
+
+在很多情况下，placement new的使用方法和其他普通的new有所不同。这里提供了它的使用步骤。
+
+```C++
+// 第一步 缓存提前分配
+// 为了保证通过 placement new 使用的缓存区的 memory alignment（内存队列）正确准备，使用普通的
+// new 来分配它：在堆上进行分配。请注意 auto 或者 static 内存并非都正确地为每一个对象类型排列，所
+// 以，你将不能以 placement new 使用它们。
+// class Task ;
+// char * buff = new [sizeof(Task)]; //分配内存
+
+// 在栈上进行分配
+class Task ;
+char buf[N*sizeof(Task)]; //分配内存
+
+// 还有一种方式，就是直接通过地址来使用。(必须是有意义的地址)
+// void* buf = reinterpret_cast<void*> (0xF00F);
+
+// 第二步 对象的分配
+// 在刚才已分配的缓存区调用placement new来构造一个对象。
+Task *ptask = new (buf) Task
+
+// 第三步 按照普通方式使用分配的对象
+ptask->memberfunction();
+ptask-> member;
+
+
+// 第四步 对象的析构
+// 一旦你使用完这个对象，你必须调用它的析构函数来毁灭它。按照下面的方式调用析构函数：
+ptask->~Task(); //调用外在的析构函数
+
+// 第五步 释放
+// 你可以反复利用缓存并给它分配一个新的对象（重复步骤2，3，4）如果你不打算再次使用这个缓存，
+// 你可以象这样释放它
+delete [] buf;
+```
+
+```
+#include <iostream>
+using namespace std;
+
+class X
+{
+public:
+    X() { cout<<"constructor of X"<<endl; }
+    ~X() { cout<<"destructor of X"<<endl;}
+
+    void SetNum(int n)
+    {
+        num = n;
+    }
+
+    int GetNum()
+    {
+        return num;
+    }
+
+private:
+    int num;
+};
+
+int main()
+{
+    char* buf = new char[sizeof(X)];
+    X *px = new(buf) X;
+    px->SetNum(10);
+    cout<<px->GetNum()<<endl;
+    px->~X();
+    delete []buf;
+
+    return 0;
+}
+```
+
+### 写时拷贝
+
+ 写时拷贝技术是通过"引用计数"实现的，在分配空间的时候多分配4个字节，用来记录有多少个指针指向块空间，当有新的指针指向这块空间时，引用计数加一，当要释放这块空间时，引用计数减一(假装释放)，直到引用计数减为0时才真的释放掉这块空间。当有的指针要改变这块空间的值时，再为这个指针分配自己的空间(注意这时引用计数的变化，旧的空间的引用计数减一，新分配的空间引用计数加一)。
+
+![img](images/CC++ fundation/写时拷贝.png)
+
+```C++
+#include<iostream>
+#include<new.h>
+#include<string>
+using namespace std;
+
+//1 解决内存泄漏
+//2 编写赋值语句
+//3 写时拷贝
+class String;
+ostream& operator<<(ostream &out, const String &s);
+
+/////////////////////////////////////////////////////////////////////
+class String_rep
+{
+	friend class String;
+	friend ostream& operator<<(ostream &out, const String &s);
+
+private:
+	String_rep(const char *str = "") : use_count_(0)
+	{
+		if (str == NULL)
+		{
+			data = new char[1];
+			data[0] = '\0';
+		}
+		else
+		{
+			data = new char[strlen(str) + 1];
+			strcpy(data, str);
+		}
+	}
+	String_rep(const String_rep &rep)
+	{
+		this->data = rep.data;
+	}
+	String_rep& operator=(const String_rep &rep)
+	{
+		this->data = rep.data;
+	}
+	~String_rep()
+	{
+		if (data != NULL)
+		{
+			delete[]data;
+			data = NULL;
+		}
+	}
+public:
+	void increment()
+	{
+		++use_count_;
+	}
+
+	void decrement()
+	{
+		//引用计数为0，释放共享内存
+		if (--use_count_ == 0)
+			delete this;
+	}
+
+private:
+	char *data;
+	int use_count_;
+};
+
+//////////////////////////////////////////////////////
+class String
+{
+	friend ostream& operator<<(ostream& out, const String &s);
+
+public:
+	String(const char *str = "") :rep(new String_rep(str))
+	{
+		rep->increment();
+	}
+	String(const String &s)
+	{
+		rep = s.rep;
+		rep->increment();
+	}
+	String& operator=(const String &s)
+	{
+		if (&s != this)
+		{
+			this->rep->decrement();	  //原有共享内存中的引用计数减一
+			this->rep = s.rep;
+			this->rep->increment();	  //现有引用计数加一
+		}
+		return *this;
+	}
+	~String()
+	{
+		//String析构一次，引用计数减一
+		rep->decrement();
+	}
+
+public:
+	void to_upper();
+	String& operator+=(const String &str);
+
+private:
+	String_rep *rep;
+};
+
+/////////////////////////////////////////////////////////////////////////
+ostream& operator<<(ostream &out, const String &s)
+{
+	out << s.rep->data;
+	return out;
+}
+
+//创建新的共享内存原来共享内存中值一样，然后再修改
+void String::to_upper()
+{
+	String *newStr = new String(this->rep->data);
+	this->rep->decrement();
+	this->rep = newStr->rep;
+	this->rep->increment();
+
+	char *str = this->rep->data;
+	while (*str != '\0')
+	{
+		*str -= 32;
+		++str;
+	}
+	delete newStr;
+}
+
+String& String::operator+=(const String &str)
+{
+	char *ch = new char[strlen(str.rep->data) + strlen(this->rep->data) + 1];
+	strcpy(ch,this->rep->data);
+	strcat(ch, str.rep->data);
+
+	this->rep->decrement();
+	String_rep *s = new String_rep(ch);
+	this->rep = s;
+	this->rep->increment();
+
+	return *this;
+}
+
+int main()
+{
+	String s("abc");
+	String s1;
+	s1 = s; //
+	String s2("xyz");
+	String s3(s);
+	s2.to_upper();
+	
+	s3 += s2;
+	cout << s2 << endl;
+	cout << s3 << endl;
+
+	return 0;
+}
+```
+
 
 
 ## 其他专题
@@ -1506,12 +1905,14 @@ int main() {
     person p;
     return 0;
 }
+/*
 编译并运行：
 g++ person.cpp -o person
 ./person 
 运行结果：
 Init a person!
 Destory a person!
+*/
 ```
 
 从person class可以看出，当我们在main函数中声明一个局部对象的时候，会自动调用构造函数进行对象的初始化，当整个main函数执行完成后，自动调用析构函数来销毁对象，整个过程无需人工介入，由操作系统自动完成；于是，很自然联想到，当我们在使用资源的时候，在构造函数中进行初始化，在析构函数中进行销毁。整个RAII过程我总结四个步骤：
@@ -1936,169 +2337,6 @@ Grand* GetOne()
     return p;
 }
 ```
-
-## STL
-
-### 1. vector、list
-
-### 2. 迭代器失效
-**迭代器失效有两个层面的意思:**
->* 无法通过迭代器++,--操作遍历整个stl容器。记作: 第一层失效。
->* 无法通过迭代器存取迭代器所指向的内存。 记作: 第二层失效。
-
-使用STL时，迭代器失效是一个很重要的问题，也是一个非常需要注意的地方，
-**vector**
-
->* 插入操作如果导致vector扩容，所有迭代器均失效，还有引用
->* 删除操作，会导致当前迭代器及以后所有迭代器失效。
-
-**dequeue**
-
->* 增加任何元素都将使deque的迭代器失效。
->* 在deque的中间删除元素将使迭代器失效。
->* 在deque的头或尾删除元素时，只有指向该元素的迭代器失效。
-
-**list/set/map**
-
->* 删除时，指向该删除节点的迭代器失效
-
-
-
-## 智能指针
-
-### auto_ptr 
-
-std::auto_ptr 是C++98的遗留物，它是⼀次标准化的尝试，后来变成了C++11的 std::unique_ptr 。要正确的模拟原⽣制作需要移动语义，但是C++98没有这个东西。取而代之， std::auto_ptr 拉拢拷⻉操作来达到⾃⼰的移动意图。这导致了令⼈奇怪的代码（拷贝⼀个std::auto_ptr 会将它本⾝设置为null！）和令⼈沮丧的使⽤限制（比如不能将 std::auto_ptr 放⼊容器）。 
-
-std::unique_ptr 能做 std::auto_ptr 可以做的所有事情以及更多。它能⾼效完成任务，而且不会扭曲拷贝语义。在所有方面它都比std::auto_ptr好。现在 std::auto_ptr 唯⼀合法的使⽤场景就是代码使⽤C++98编译器编译。除非你有上述限制，否则你就该把 std::auto_ptr 替换为std::unique_ptr 而且绝不回头。
-
-### unique_ptr
-
-std::unique_ptr 有两种形式，⼀种用于单个对象（ std::unique_ptr<T> ），⼀种用于数组（ std::unique_ptr<T[]> ）。结果就是，指向哪种形式没有歧义。 std::unique_ptr 的API设计会自动匹配你的⽤法，比如[]操作符就是数组对象，*和->就是单个对象专有。 
-
-数组的 std::unique_ptr 的存在应该不被使⽤，因为 std::array , std::vector , std::string 这些更好⽤的数据容器应该取代原始数组。原始数组的使⽤唯⼀情况是你使用类似C的API返回⼀个指向堆数组的原始指针。 
-
-std::unique_ptr 是C++11中表示专有所有权的方法，但是其最吸引⼈的功能之⼀是它可以轻松高效的转换为 std::shared_ptr ： 
-
-这就是为什么 std::unique_ptr非常适合⽤作工厂函数返回类型的关键部分。 工厂函数无法知道调用者是否要对它们返回的对象使用专有所有权语义，或者共享所有权（即 std::shared_ptr ）是否更合适。 通过返回 std::unique_ptr ，工厂为调用者提供了最有效的智能指针，但它们并不妨碍调用者用其更灵活的兄弟替换它。
-
-默认情况下，销毁将通过delete进⾏，但是在构造过程中，可以自定义 std::unique_ptr 指向对象的析构函数：任意函数（或者函数对象，包括lambda）。 
-
-```c++
-auto delInvmt = [](Investment* pInvestment) {
-	makeLogEntry(pInvestment); 
-	delete pInvestment; 
-};
-template<typename... Ts> 
-std::unique_ptr<Investment, decltype(delInvmt)> makeInvestment(Ts&& params) { 
-    std::unique_ptr<Investment, decltype(delInvmt)> pInv(nullptr, delInvmt); 
-    if (/*a Stock object should be created*/) { 
-    	pInv.reset(new Stock(std::forward<Ts>(params)...)); 
-    } else if ( /* a Bond object should be created */ ) { 
-		pInv.reset(new Bond(std::forward<Ts>(params)...)); 
-	} else if ( /* a RealEstate object should be created */ ) { 
-		pInv.reset(new RealEstate(std::forward<Ts>(params)...)); 
-	}
-	return pInv; 
-}
-```
-
-这个实现确实相当棒，如果你理解了： 
-
-> * delInvmt 是⾃定义的从 makeInvestment 返回的析构函数。所有的⾃定义的析构⾏为接受要销毁对象的原始指针，然后执⾏销毁操作。如上例⼦。使⽤lambda创建 delInvmt 是⽅便的，而且， 正如稍后看到的，比编写常规的函数更有效当使⽤⾃定义删除器时，必须将其作为第⼆个参数传给 std::unique_ptr 。
-> * makeInvestment 的基本策略是创建⼀个空的 std::unique_ptr ，然后指向⼀个合适类型的对象，然后返回。为了与pInv关联⾃定义删除器，作为构造函数的第⼆个参数。
-> * 尝试将原始指针（⽐如new创建）赋值给 std::unique_ptr 通不过编译，因为不存在从原始指针到智能指针的隐式转换。这种隐式转换会出问题，所以禁⽌。这就是为什么通过 reset 来传递new指针的原因 
-> * 使⽤new时，要使⽤ std::forward 作为参数来完美转发给 makeInvestment （查看Item 25）。 这使调⽤者提供的所有信息可⽤于正在创建的对象的构造函数自定义删除器的参数类型是 Investment* ，尽管真实的对象类型是在 makeInvestment 内部创建的，它最终通过在lambda表达式中，作为 Investment* 对象被删除。这意味着我们通过基类指针删除派生类实例，为此，基类必须是虚函数析构： 
-
-```c++
-class Investment { 
-public: 
-    ... 
-    virtual ~Investment(); 
-    ... 
-};
-```
-
-对于删除器的函数对象来说，⼤小取决于函数对象中存储的状态多少，无状态函数对象（比如没有捕获的lambda表达式）对大小没有影响，这意味当⾃定义删除器可以被lambda实现时，尽量使用lambda。
-
-```c++
-auto delInvmt = [](Investment* pInvestment) { 
-	makeLogEntry(pInvestment); delete pInvestment; 
-};
-template<typename... Ts> 
-std::unique_ptr<Investment, decltype(delInvmt)> makeInvestment(Ts&& params); //返回Investment*的⼤小 
-
-void delInvmt2(Investment* pInvestment) { 
-	makeLogEntry(pInvestment); 
-    delete pInvestment; 
-}
-template<typename... Ts> 
-std::unique_ptr<Investment, void(*)(Investment*)> makeInvestment(Ts&&... params); //返回Investment*的指针加⾄少⼀个函数指针的⼤小
-```
-
-具有很多状态的自定义删除器会产⽣⼤尺⼨ std::unique_ptr 对象。如果你发现⾃定义删除器使得你的 std::unique_ptr 变得过大，你需要审视修改你的设计。
-
-#### 小结
-
-> * std::unique_ptr 是轻量级、快速的、只能move的管理专有所有权语义资源的智能指针 
-> * 默认情况，资源销毁通过delete，但是⽀持⾃定义delete函数。有状态的删除器和函数指针会增加 std::unique_ptr 的大小 
-> * 将 std::unique_ptr 转化为 std::shared_ptr 是简单的 
-
-### shared_ptr
-
-https://www.geeksforgeeks.org/auto_ptr-unique_ptr-shared_ptr-weak_ptr-2/
-
-### weak_ptr
-
-### scoped_ptr 
-
-### 常见问题
-
-#### auto_ptr为什么不能存入容器
-
-编译报错: 
-
-```
-In file included from /usr/include/c++/4.4/memory:51,
-                 from foo.cpp:x:
-/usr/include/c++/4.4/bits/stl_construct.h: In function ‘void std::_Construct(_T1*, const _T2&) [with _T1 = std::auto_ptr<int>, _T2 = std::auto_ptr<int>]’:
-/usr/include/c++/4.4/bits/stl_uninitialized.h:187:   instantiated from ‘static void std::__uninitialized_fill_n<<anonymous> >::uninitialized_fill_n(_ForwardIterator, _Size, const _Tp&) [with _ForwardIterator = std::auto_ptr<int>*, _Size = unsigned int, _Tp = std::auto_ptr<int>, bool <anonymous> = false]’
-/usr/include/c++/4.4/bits/stl_uninitialized.h:223:   instantiated from ‘void std::uninitialized_fill_n(_ForwardIterator, _Size, const _Tp&) [with _ForwardIterator = std::auto_ptr<int>*, _Size = unsigned int, _Tp = std::auto_ptr<int>]’
-/usr/include/c++/4.4/bits/stl_uninitialized.h:318:   instantiated from ‘void std::__uninitialized_fill_n_a(_ForwardIterator, _Size, const _Tp&, std::allocator<_Tp2>&) [with _ForwardIterator = std::auto_ptr<int>*, _Size = unsigned int, _Tp = std::auto_ptr<int>, _Tp2 = std::auto_ptr<int>]’
-/usr/include/c++/4.4/bits/stl_vector.h:1035:   instantiated from ‘void std::vector<_Tp, _Alloc>::_M_fill_initialize(size_t, const _Tp&) [with _Tp = std::auto_ptr<int>, _Alloc = std::allocator<std::auto_ptr<int> >]’
-/usr/include/c++/4.4/bits/stl_vector.h:230:   instantiated from ‘std::vector<_Tp, _Alloc>::vector(size_t, const _Tp&, const _Alloc&) [with _Tp = std::auto_ptr<int>, _Alloc = std::allocator<std::auto_ptr<int> >]’
-foo.cpp:22:   instantiated from here
-/usr/include/c++/4.4/bits/stl_construct.h:74: error: passing ‘const std::auto_ptr<int>’ as ‘this’ argument of ‘std::auto_ptr<_Tp>::operator std::auto_ptr_ref<_Tp1>() [with _Tp1 = int, _Tp = int]’ discards qualifiers
-```
-
-查看stl_construct.h的74行所在的函数
-
-```c++
- 64   /**
- 65    * Constructs an object in existing memory by invoking an allocated
- 66    * object's constructor with an initializer.
- 67    */
- 68   template<typename _T1, typename _T2>
- 69     inline void
- 70     _Construct(_T1* __p, const _T2& __value)
- 71     {
- 72       // _GLIBCXX_RESOLVE_LIB_DEFECTS
- 73       // 402. wrong new expression in [some_]allocator::construct
- 74       ::new(static_cast<void*>(__p)) _T1(__value);
- 75     }
-```
-
-这个函数是把第二个参数__T2& value拷贝构造一份，然后复制到T1这个指针所指向的位置。 这里是一个placement new。 placement new的语法是：
-
-```cpp
-new(p) T(value)
-```
-
-placement new并不会去堆上申请一块内存，而是直接使用指针p指向的内存，将value对象拷贝一份放到p指向的内存上去。
-
-而且根据这个函数来看，需要auto_ptr存在一个参数为const auto_ptr& 的拷贝构造函数，但是auto_prt实现上需要修改参数，拷贝构造和赋值操作的参数都不能是const。
-
-
 
 ## C++11
 
