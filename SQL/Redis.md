@@ -1195,6 +1195,8 @@ sentinel集群选举一个sentinel节点完成故障转移。通过分布式强�
 
 ## 9. 源码研究
 
+参考《redis设计与实现》，redis版本：Redis 6.2.7。
+
 ### 9.1 Redis的数据结构
 
 #### 9.1.1 Redis的对象
@@ -1276,7 +1278,7 @@ struct __attribute__ ((__packed__)) sdshdr64 {
     uint64_t alloc; /* excluding the header and null terminator */
     unsigned char flags; /* 3 lsb of type, 5 unused bits */
     char buf[];
-}；
+};
 ```
 
 以前的sdshdr结构：
@@ -1499,7 +1501,10 @@ typedef void (dictScanBucketFunction)(void *privdata, dictEntry **bucketref);
 > * 使用 dictType 结构实现不同类型字典设置不同类型特定函数
 > * ht[2] 两个哈希表，ht[0] 是字典主要使用的哈希表，ht[1] 只在对ht[0] rehash 时使用
 > * 渐进式rehash，将rehash的次数分散在多次增删改查操作中渐进式完成，使用 rehashidx 保存 rehash 进度
-> * 
+
+**渐进式 rehash 过程：**
+
+
 
 
 

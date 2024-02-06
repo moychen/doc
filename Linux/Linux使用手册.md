@@ -85,9 +85,12 @@ find $MDB_USER_BAK -mtime +3 -name "*aimdb*" -exec rm {} \;
 find lib -type f  -a -newer lib/xxxx -o -type l -a -newer lib/xxxx |xargs tar -czvf patch_all.tar.gz 
 ```
 
+![image-20230221225313860](images/Linux使用手册/image-20230221225313860.png)
+
 ### grep
 
 ```
+
 ```
 
 
@@ -96,6 +99,33 @@ find lib -type f  -a -newer lib/xxxx -o -type l -a -newer lib/xxxx |xargs tar -c
 # 去除配置中的注释和所有的空行
 $ cat sentinel.conf | grep -v "#" | grep -v "^$" > sentinel-26379.conf
 ```
+
+### tree
+
+```
+-a 显示所有文件和目录。
+-A 使用ASNI绘图字符显示树状图而非以ASCII字符组合。
+-C 在文件和目录清单加上色彩，便于区分各种类型。
+-d 显示目录名称而非内容。
+-D 列出文件或目录的更改时间。
+-f 在每个文件或目录之前，显示完整的相对路径名称。
+-F 在执行文件，目录，Socket，符号连接，管道名称名称，各自加上"*","/","=","@","|"号。
+-g 列出文件或目录的所属群组名称，没有对应的名称时，则显示群组识别码。
+-i 不以阶梯状列出文件或目录名称。
+-L level 限制目录显示层级。
+-l 如遇到性质为符号连接的目录，直接列出该连接所指向的原始目录。
+-n 不在文件和目录清单加上色彩。
+-N 直接列出文件和目录名称，包括控制字符。
+-p 列出权限标示。
+-P<范本样式> 只显示符合范本样式的文件或目录名称。
+-q 用"?"号取代控制字符，列出文件和目录名称。
+-s 列出文件或目录大小。
+-t 用文件和目录的更改时间排序。
+-u 列出文件或目录的拥有者名称，没有对应的名称时，则显示用户识别码。
+-x 将范围局限在现行的文件系统中，若指定目录下的某些子目录，其存放于另一个文件系统上，则将该子目录予以排除在寻找范围外。
+```
+
+
 
 ### xargs
 
@@ -119,6 +149,9 @@ NF  字段数量变量
 ```bash
 # 替换某个字段并重定向
 $ sed "s/26379/26380/g" redis-sentinel-26379.conf > redis-sentinel-26380.conf
+
+# 解析json
+ cat buildLogAndroid.json  | sed 's/,/\n/g' | grep 'buildUrl' | sed 's/"buildUrl": "//g' | sed 's/"//g'
 ```
 
 ### top
@@ -226,7 +259,13 @@ I/O wait time:
 - 按列排序
    按大写的 F 或 O 键，然后按 a-z 可以将进程按照相应的列进行排序。而大写的 R 键可以将当前的排序倒转。
 
-### du&df
+### du&df&dh
+
+```
+du -ah --max-depth=1
+du -sh : 查看当前目录总共占的容量。而不单独列出各子项占用的容量 
+du -lh --max-depth=1 : 查看当前目录下一级子文件和子目录占用的磁盘容量。
+```
 
 ### sort
 
@@ -329,7 +368,51 @@ $ tar -zvf tool.rar tools/
 -f: 使用档案名字，切记，这个参数是最后一个参数，后面只能接档案名。
 ```
 
-### unzip
+### zip/unzip
+
+#### zip
+
+`-a` 将文件转成ASCII模式
+
+`-F` 尝试修复损坏的压缩文件
+
+`-h` 显示帮助界面
+
+`-m` 将文件压缩之后，删除源文件
+
+`-n` 特定字符串 不压缩具有特定字尾字符串的文件
+
+`-o` 将压缩文件内的所有文件的最新变动时间设为压缩时候的时间
+
+`-q` 安静模式，在压缩的时候不显示指令的执行过程
+
+`-r` 将指定的目录下的所有子目录以及文件一起处理
+
+`-S` 包含系统文件和隐含文件（S是大写）
+
+```shell
+# 将指定目录tmp和tmb压缩成test.zip文件
+$ zip -r test.zip tmb/ tmp/
+```
+
+#### unzip
+
+`-n` 解压缩时不要覆盖原有的文件；
+
+`-o` 不必先询问用户，unzip执行后覆盖原有的文件；
+
+`-P [密码]` 使用zip的密码选项；
+
+`-q` 执行时不显示任何信息；
+
+`-d [目录]` 指定文件解压缩后所要存储的目录；
+
+```shell
+# 将压缩文件test.zip在指定目录/tmp下解压缩，如果已有相同的文件存在，要求unzip命令覆盖原先的文件。
+$ unzip -o test.zip -d tmp/
+```
+
+
 
 ### rar
 
@@ -1037,7 +1120,36 @@ c++filt + <symbol> -- 查看符号的原型
 
 ### file
 
-## 4. 查漏补缺
+## 4. shell编程
+
+### 条件语句
+
+```
+if:
+if [ a = b ]	a与b是否相等 （a、b是数值）
+if [ a -ge b ]	a 是否大于等于 b
+if [ a -gt b ]	a 是否大于 b
+if [ a -le b ]	a 是否小于等于 b
+if [ a -lt b ]	a 是否小于 b
+if [ a -ne b ]	a 是否不等于 b
+if [ str1 = str2 ]	str1是否与str2相同(str1、str2是字符串)
+if [ str1 != str2 ]	str1是否与str2不同
+if [ str1 < str2 ]	str1是否小于str2
+if [ str1 > str2 ]	str1是否da于str2
+if [ -n str ]	判断str长度是否非零
+if [ -z str ]	str长度是否为0
+if [ -d file ]	判断file是否为一个目录
+if [ -e file ]	判断file是否存在
+if [ -f file ]	检查file文件是否存在
+if [ -r file ]	判断file是否存在并可读
+if [ -s file ]	判断file是否存在并非空
+if [ -w file ]	判断file是否存在并可写
+if [ -x file ]	判断file是否存在并可执行
+```
+
+
+
+## 5. 查漏补缺
 
 ### 内核态和用户态
 
@@ -1148,9 +1260,9 @@ lrwxrwxrwx 1 root root 10 Apr 17 16:16./oldgirl.txt -> oldboy.txt
 
 ### Linux中的文件标识号inode
 
-## 5. 性能优化
+## 6. 性能优化
 
-## 6. 问题分析
+## 7. 问题分析
 
 ### CPU过高问题排查
 

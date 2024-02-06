@@ -26,14 +26,13 @@ map.insert(...);    //往容器插入元素，返回pair<iterator,bool>
 >* 通过value_type的方式插入对象:mapStu.insert(map<int,string>::value_type(1,"小李")); //make_pair(1, "小李")
 >* 通过数组的方式插入值mapStu[3] = “小刘";mapStu[5] = “小王"；
 
-第三种方法非常直观，但存在一个性能的问题。插入3时，先在mapStu中查找主键为3的项，若没发现，则将一个键为3，值为初始化值的对组插入到mapStu中，然后再将值修改成“小刘”。若发现已存在3这个键，
-则修改这个键对应的value。
+第三种方法非常直观，但存在一个性能的问题。插入3时，先在mapStu中查找主键为3的项，若没发现，则将一个键为3，值为初始化值的对组插入到mapStu中，然后再将值修改成“小刘”。若发现已存在3这个键，则修改这个键对应的value。
 
 前两种方法，采用的是insert()方法，该方法返回值为pair<iterator,bool>。
 
 	pair< map<int,string>::iterator , bool> pairResult = mapStu.insert(pair<int,string>(3,"小张"));//如果插入成功，(pairResult.first)->first == 3, (pairResult.first)->second == "小张", pairResult.second == true。
 	
-	map<T1,T2,less<T1> >  mapA;  	//该容器是按键的升序方式排列元素。未指定函数对象，默认	采用less<T1>函数对象。
+	map<T1,T2,less<T1> >  mapA;  	//该容器是按键的升序方式排列元素。未指定函数对象，默认采用less<T1>函数对象。
 	map<T1,T2,greater<T1>> mapB;   	//该容器是按键的降序方式排列元素。
 
 less<T1> 与 greater<T1> 可以替换成其它的函数对象functor。

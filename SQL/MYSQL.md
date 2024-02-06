@@ -137,6 +137,11 @@ sort_buffer_size
     
 -- 统计表数据（不要用count(*) 或 count(1)）待定
 
+-- 查看主键
+SELECT table_name, GROUP_CONCAT(COLUMN_NAME) key_words  FROM information_schema.COLUMNS WHERE (TABLE_SCHEMA = 'dbtrade') AND (TABLE_NAME = 'BAT_TMORTGAGE_XY') AND (COLUMN_KEY = 'PRI');
+
+-- 查看索引
+select table_schema, table_name, index_name, GROUP_CONCAT(COLUMN_NAME) key_words from information_schema.statistics where table_schema = 'dbtrade'and non_unique != '1' and table_name = lower('BAT_TMORTGAGE_XY') and index_name != 'PRIMARY' group by table_schema, table_name, index_name;
 ```
 
 **数据操作**
@@ -527,6 +532,8 @@ h. DISTINCT, ALL 选项
     
 select info.id, info.name, info.stu_num, extra_info.hobby, extra_info.sex from info, extra_info where info.stu_num = extra_info.stu_id;
 ```
+
+![img](images/MYSQL/1524137465473697.jpg)
 
 ### 导入导出
 
