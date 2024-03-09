@@ -1408,6 +1408,7 @@ typedef struct list {
 #define listGetMatchMethod(l) ((l)->match)  //! 获取节点对比函数
 
 /* Prototypes */
+<<<<<<< Updated upstream
 list *listCreate(void);            //! 创建链表 O(1)
 void listRelease(list *list);    //! 删除链表	O(N)，N为链表长度
 void listEmpty(list *list);        //! 清空链表
@@ -1424,6 +1425,24 @@ listNode *listIndex(list *list, long index);    //! 获取指定索引位置的�
 void listRewind(list *list, listIter *li);        //! 创建一个迭代器，默认前向
 void listRewindTail(list *list, listIter *li);    //! 创建一个反向迭代器
 void listRotate(list *list);    //! 旋转链表（删除尾结点并插入至头部） O()
+=======
+list *listCreate(void);            //! 创建链表
+void listRelease(list *list);    //! 删除链表
+void listEmpty(list *list);        //! 清空链表
+list *listAddNodeHead(list *list, void *value);    //! 头部插入节点
+list *listAddNodeTail(list *list, void *value);    //! 尾部插入节点
+list *listInsertNode(list *list, listNode *old_node, void *value, int after); //! 插入节点至给定节点前或后
+void listDelNode(list *list, listNode *node);    //! 删除给定节点
+listIter *listGetIterator(list *list, int direction);    //! 生成链表迭代器（跟迭代器方向有关）
+listNode *listNext(listIter *iter);    //! 返回迭代器next属性
+void listReleaseIterator(listIter *iter);    //! 释放给定迭代器
+list *listDup(list *orig);    //! 拷贝整个链表
+listNode *listSearchKey(list *list, void *key);    //! 查找保存给定key值的节点
+listNode *listIndex(list *list, long index);    //! 获取指定索引位置的节点，支持负索引
+void listRewind(list *list, listIter *li);        //! 创建一个迭代器，默认前向
+void listRewindTail(list *list, listIter *li);    //! 创建一个反向迭代器
+void listRotate(list *list);    //! 旋转链表（删除尾结点并插入至头部）
+>>>>>>> Stashed changes
 void listJoin(list *l, list *o);    //! 将o链表合并至l链表末尾，将o置为空
 ```
 
@@ -1472,8 +1491,13 @@ typedef struct dictht {
  */
 typedef struct dict {
     dictType *type;    //! 特定类型的处理函数
+<<<<<<< Updated upstream
     void *privdata;    //! 类型处理函数的私有数据，函数参数
     dictht ht[2];    //! 哈希表 
+=======
+    void *privdata;    //! 类型处理函数的私有数据
+    dictht ht[2];    //! 哈希表
+>>>>>>> Stashed changes
     long rehashidx; //! 记录 rehash 进度的标志，值为 -1 表示 rehash 未进行
     unsigned long iterators; //! 当前正在运作的安全迭代器数量
 } dict;
