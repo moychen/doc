@@ -70,6 +70,8 @@ gcc [-c|-S|-E] [-std=standard]
     指定目标名称，缺省的时候，gcc/g++编译出来的文件是a.out。例子如下：   
     g++ -o hello.out hello.cpp
     g++ -o hello.asm -S hello.cpp   
+
+g++ -std=c++0x test.cpp -Wl,-R /home/ufccode/appcom -L /home/ufccode/appcom -ls_libpublic_uft
 ```
 
 **（2）目录选项**
@@ -293,7 +295,57 @@ bar.o. If bar.o refers to functions in `z', those functions may not be loaded.
 
 ### 参考文献
 
-[1][gcc及其选项详解](http://blog.chinaunix.net/uid-25119314-id-224398.html)  [2][GCC官方手册](https://gcc.gnu.org/onlinedocs/gcc-6.1.0/gcc.pdf)  [3][gcc编译选项](http://www.cnblogs.com/fengbeihong/p/3641384.html)  [4][gcc/g++ 静态动态库混链接](http://blog.csdn.net/wangxvfeng101/article/details/15336955)  [5][折腾gcc/g++链接时.o文件及库的顺序问题](http://blog.csdn.net/imilli/article/details/51454236)  [6][g++参数介绍](http://www.cnblogs.com/lidan/archive/2011/05/25/2239517.html)  [7][gcc cannot find cc1plus](https://stackoverflow.com/questions/36353302/gcc-cannot-find-cc1plus?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa)
+[gcc及其选项详解](http://blog.chinaunix.net/uid-25119314-id-224398.html)  
+
+[GCC官方手册](https://gcc.gnu.org/onlinedocs/gcc-6.1.0/gcc.pdf)  
+
+[gcc编译选项](http://www.cnblogs.com/fengbeihong/p/3641384.html)  
+
+[gcc/g++ 静态动态库混链接](http://blog.csdn.net/wangxvfeng101/article/details/15336955) 
+
+[折腾gcc/g++链接时.o文件及库的顺序问题](http://blog.csdn.net/imilli/article/details/51454236)  
+
+[g++参数介绍](http://www.cnblogs.com/lidan/archive/2011/05/25/2239517.html)  
+
+[gcc cannot find cc1plus](https://stackoverflow.com/questions/36353302/gcc-cannot-find-cc1plus?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa)
+
+### 5. 手工安装
+
+```bash
+# GMP: https://gcc.gnu.org/pub/gcc/infrastructure/
+$ ./configure --prefix=/usr/local/gmp-6.1.0/
+
+# MPFR: https://gcc.gnu.org/pub/gcc/infrastructure/
+$ ./configure --prefix=/usr/local/mpfr-4.1.0/     --with-gmp-include=/usr/local/gmp-6.1.0/include     --with-gmp-lib=/usr/local/gmp-6.1.0/lib
+
+#MPC: https://gcc.gnu.org/pub/gcc/infrastructure/
+$ ./configure --prefix=/usr/local/mpc-1.2.1     --with-gmp-include=/usr/local/gmp-6.1.0/include --with-gmp-lib=/usr/local/gmp-6.1.0/lib --with-mpfr-include=/usr/local/mpfr-4.1.0/include --with-mpfr-lib=/usr/local/mpfr-4.1.0/lib
+
+# GCC: https://ftp.gnu.org/gnu/gcc/gcc-4.4.6/
+$ ./configure     --disable-multilib     --prefix=/usr/local/gcc-4.4.6   --with-gmp-include=/usr/local/gmp-6.1.0/include --with-gmp-lib=/usr/local/gmp-6.1.0/lib --with-mpfr-include=/usr/local/mpfr-4.1.0/include --with-mpfr-lib=/usr/local/mpfr-4.1.0/lib     --with-mpc-include=/usr/local/mpc-1.2.1/include  --with-mpc-lib=/usr/local/mpc-1.2.1/lib  
+
+# 不设置编译gcc时会报一些不明确的错误
+$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/gmp-6.1.0/lib:/usr/local/mpfr-4.1.0/lib:/usr/local/mpc-1.2.1/lib
+
+# 编译并安装 需要有zip/jar
+$ make && make install
+# 卸载
+$ make uninstall
+```
+
+```bash
+$ export PATH=/usr/local/gcc-4.4.6/bin:$PATH
+$ export LIBRARY_PATH=/usr/local/gcc-4.4.6/lib64:$LIBRARY_PATH
+$ export LD_LIBRARY_PATH=/usr/local/gcc-4.4.6/lib64:/usr/local/gmp-6.1.0/lib:/usr/local/mpfr-4.1.0/lib:/usr/local/mpc-1.2.1/lib:$LD_LIBRARY_PATH
+$ export C_INCLUDE_PATH=/usr/local/gcc-4.4.6/include:$C_INCLUDE_PATH
+$ export CPLUS_INCLUDE_PATH=/usr/local/gcc-4.4.6/include:$CPLUS_INCLUDE_PATH
+
+# 在oracle pcscfg.cfg（编译似乎会默认从这里找相关依赖文件）中添加 $GCC_PATH
+# System default option values taken from: /u01/app/oracle/product/11.2.0/db/precomp/admin/pcscfg.cfg
+$export GCC_PATH=/usr/local/gcc-4.4.6/lib/gcc/x86_64-unknown-linux-gnu/4.4.6/include/:/usr/local/gcc-4.4.6/include/c++/4.4.6/tr1,/usr/local/gcc-4.4.6/include/c++/4.4.6:/usr/local/gcc-4.4.6/include/c++/4.4.6/x86_64-unknown-linux-gnu:/usr/local/gcc-4.4.6/libexec/gcc/x86_64-unknown-linux-gnu/4.4.6/cc1plus
+```
+
+
 
 ## GDB 调试
 
