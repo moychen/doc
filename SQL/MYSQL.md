@@ -533,10 +533,11 @@ select info.id, info.name, info.stu_num, extra_info.hobby, extra_info.sex from i
 ```sql
 select * into outfile 文件地址 [控制格式] from 表名;   -- 导出表数据
 
-load data [local] infile 文件地址 [replace|ignore] into table 表名 [控制格式]; -- 导入数据
+load data [low_priority][local] infile 文件地址 [replace|ignore] into table 表名 [控制格式]; -- 导入数据
     生成的数据默认的分隔符是制表符
-    local未指定，则数据文件必须在服务器上
-    replace 和 ignore 关键词控制对现有的唯一键记录的重复的处理
+    low_priority 指定后则会等到没有其他人读表时才会插入数据
+    local 未指定则数据文件必须在服务器上，指定后则从客户主机读取文件
+    replace 和 ignore 关键词控制对现有的唯一键记录的重复的处理。如果不指定两者之一，则出现重复数据时，报错且剩余数据被忽略
     
 -- 控制格式
 fields  控制字段格式
@@ -547,12 +548,35 @@ fields  控制字段格式
     -- 示例：
         SELECT a,b,a+b INTO OUTFILE '/tmp/result.text'
         FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
-        LINES TERMINATED BY '
-'
+        LINES TERMINATED BY '\n'
         FROM test_table;
 lines   控制行格式
 默认：lines terminated by 'XXX'
     terminated by 'string'  -- 终止
+    
+4 分隔符
+（1） fields关键字指定了文件记段的分割格式，如果用到这个关键字，MySQL剖析器希望看到至少有下面的一个选项： 
+terminated by分隔符：意思是以什么字符作为分隔符
+enclosed by字段括起字符
+escaped by转义字符
+terminated by描述字段的分隔符，默认情况下是tab字符（\t） 
+enclosed by描述的是字段的括起字符。
+escaped by描述的转义字符。默认的是反斜杠（backslash：\ ）  
+例如：load data infile "/home/mark/Orders.txt" replace into table Orders fields terminated by',' enclosed by '"';
+（2）lines 关键字指定了每条记录的分隔符默认为'\n'即为换行符
+如果两个字段都指定了那fields必须在lines之前。如果不指定fields关键字缺省值与如果你这样写的相同： fields terminated by'\t' enclosed by ’ '' ‘ escaped by'\\'
+如果你不指定一个lines子句，缺省值与如果你这样写的相同： lines terminated by'\n'
+例如：load data infile "/jiaoben/load.txt" replace into table test fields terminated by ',' lines terminated by '/n';
+ 
+5  load data infile 可以按指定的列把文件导入到数据库中。 当我们要把数据的一部分内容导入的时候，，需要加入一些栏目（列/字段/field）到MySQL数据库中，以适应一些额外的需要。比方说，我们要从Access数据库升级到MySQL数据库的时候
+下面的例子显示了如何向指定的栏目(field)中导入数据： 
+load data infile "/home/Order.txt" into table Orders(Order_Number, Order_Date, Customer_ID);
+ 
+6  当在服务器主机上寻找文件时，服务器使用下列规则： 
+（1）如果给出一个绝对路径名，服务器使用该路径名。 
+（2）如果给出一个有一个或多个前置部件的相对路径名，服务器相对服务器的数据目录搜索文件。  
+（3）如果给出一个没有前置部件的一个文件名，服务器在当前数据库的数据库目录寻找文件。 
+例如： /myfile.txt”给出的文件是从服务器的数据目录读取，而作为“myfile.txt”给出的一个文件是从当前数据库的数据库目录下读取。
 ```
 
 ### INSERT

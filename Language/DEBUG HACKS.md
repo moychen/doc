@@ -25,7 +25,7 @@
 
 ## 第2章 调试前的必知必会
 
-### HACK 4 获取进程的内核存储
+### 2.1  获取进程的内核存储
 
 ```shell
 # 检查当前的内核转储功能是否有效
@@ -109,7 +109,7 @@ $ echo 1 > coredump_filter
 | 比特 3   | file-backed 共享内存                              |
 | 比特 4   | ELF 文件映射 （内核版本2.6.24以后的版本可以使用） |
 
-### HACK 5 GDB 的基本使用方法
+### 2.2 GDB 的基本使用方法
 
 **参考文档：**[GDB: The GNU Project Debugger](https://sourceware.org/gdb/)
 
@@ -430,4 +430,22 @@ until 地址
 #### 初始化文件（.gdbinit）
 
 #### 命令定义 (define)
+
+
+
+### 2.3 Intel 架构的基本知识
+
+####  2.3.1 字节序（Little Endian & Big Endian）
+
+**Little Endian : **低位数据排在内存低地址。
+
+**Big Endian : **高位数据存放再低地址。
+
+ #### 2.3.2 32 位环境寄存器
+
+#### 2.3.3 64 位环境寄存器
+
+#### 2.3.4 数据类型
+
+
 
