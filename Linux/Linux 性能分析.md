@@ -272,11 +272,9 @@ KiB Swap:        0 total,        0 used,        0 free.   554208 cached Mem
 
 ​		`top` 的一个缺点是很难看到随时间变化的模式，而 `vmstat` 和 `pidstat` 等提供滚动输出的工具可能更清楚。如果没有足够快地暂停输出（Ctrl-S 暂停，Ctrl-Q 继续），屏幕就会清空，间歇性问题的证据也可能丢失。
 
-### Follow-on Analysis
+#### Follow-on Analysis
 
 ​		你还可以应用更多命令和方法来深入研究。请参阅布兰登在 Velocity 2015上的 Linux 性能工具教程 [Linux Performance Tools tutorial](https://medium.com/@Netflix_Techblog/netflix-at-velocity-2015-linux-performance-tools-51964ddb81cf)，其中介绍了40多种命令，涵盖可观察性、基准测试、调优、静态性能调优、剖析和跟踪。
-
-​		解决网络规模下的系统可靠性和性能问题是我们的热情所在。如果您愿意加入我们的行列，共同应对此类挑战，我们正在招聘！
 
 
 

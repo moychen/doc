@@ -121,29 +121,3 @@ $ /root/scripts/umount_nfs.sh -c trade@{$client_ip}:/home/trade/workspace/dbtrad
 ## 常见问题
 
 ### umount.nfs4: /home/trade/workspace/dbtradeback: device is busy
-
-
-
-### 连续两次安装有一个报错了，一个机器目录归属用户是trade，另一个是ufccode
-
-![1689919303273](NFS 文件服务器.assets/1689919303273.png)
-
-![1689919315018](NFS 文件服务器.assets/1689919315018.png)
-
-### 从修改之前的版本升级到当前改动后的版本就会出现死循环的问题，挂载失败 
-
-![1689919288415](NFS 文件服务器.assets/1689919288415.png)
-
-
-
-### 手动解绑之后这个目录就从777变成755了，归属用户也从ufccode变成trade了  
-
-![1689919281965](NFS 文件服务器.assets/1689919281965.png)
-
-目前不报错了，但是用户还是ufccode，基础组反馈用户没有关系
-
-### 服务端dbtradeback_sync目录偶现没挂载成功 
-
-![1689919357156](NFS 文件服务器.assets/1689919357156.png)
-
-![1689919365111](NFS 文件服务器.assets/1689919365111.png)
