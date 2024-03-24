@@ -137,18 +137,18 @@ public:
 
 ## hash_map简介
 
-hash_map不属于C++ STL标准库，它是SGI额外提供的一个以hashtable为底层实现结构的容器。hashtable提供了大量接口，因此几乎所有hash_map的接口都是掉用hashtable的操作。hash_multimap的底层也是通过hashtable来实现的，具体的实现下面来讲。
+​		hash_map不属于 C++ STL 标准库，它是 SGI 额外提供的一个以 hashtable 为底层实现结构的容器。hashtable 提供了大量接口，因此几乎所有 hash_map 的接口都是调用 hashtable 的操作。hash_multimap 的底层也是通过 hashtable 来实现的，具体的实现下面来讲。
 
-hash_map 和 map 两者不论底层是 hashtable 还是 RB-tree，都能够根据键值快速查找元素，但是 RB-tree有自动排序功能，而 hashtable 没有。 还有一点需要注意，那就是 hashtable 存储的类型应该具有 hash function，因此某些情况在使用hashtable 时，我们需要为存储的类型实现 hash function。
+​		hash_map 和 map 两者不论底层是 hashtable 还是 RB-tree，都能够根据键值快速查找元素，但是 RB-tree有自动排序功能，而 hashtable 没有。 还有一点需要注意，那就是 hashtable 存储的类型应该具有 hash function，因此某些情况在使用 hashtable 时，我们需要为存储的类型实现 hash function。
 
 ## hashtable的剖析
 
-在SGI STL中，hashtable的实现：
+在 SGI STL 中，hashtable 的实现：
 
-> - 使用vector管理桶结点；
+> - 使用 vector 管理桶结点；
 > - 使用除留余数法作为哈希函数；
 > - 采用链地址法解决哈希冲突;
-> - 在SGI hashtable实现过程中，hashtable的长度就是用来通过除留余数法计算地址的被除数。
+> - 在 SGI hashtable 实现过程中，hashtable 的长度就是用来通过除留余数法计算地址的被除数。
 
 ![](../../../Algorithm/images/散列表/hashtable.png)
 
