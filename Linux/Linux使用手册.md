@@ -412,8 +412,6 @@ $ zip -r test.zip tmb/ tmp/
 $ unzip -o test.zip -d tmp/
 ```
 
-
-
 ### rar
 
 ### pkexec
@@ -421,6 +419,16 @@ $ unzip -o test.zip -d tmp/
 ### nano
 
 ## 2. 网络工具
+
+### ping
+
+### telnet
+
+```
+退出：Ctrl+]+quit
+```
+
+### route
 
 ### netstat
 
@@ -625,16 +633,6 @@ $ tcpdump -i bond0 -s 0 tcp port 38910 -G 3000000 -Z billapp -w  /data01/billapp
 ```
 
 ### nc(netcat)
-
-### telnet
-
-```
-退出：Ctrl+]+quit
-```
-
-
-
-### ping
 
 ### traceroute
 
