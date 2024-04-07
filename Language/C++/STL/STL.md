@@ -102,6 +102,7 @@ Views provide flexible facilities for interacting with one- or multi-dimensional
 >* 无法通过迭代器++,--操作遍历整个stl容器。记作: 第一层失效。
 >* 无法通过迭代器存取迭代器所指向的内存。 记作: 第二层失效。
 
-参考：
+**参考：**
 
 * [cpp reference —  Iterator invalidation](https://en.cppreference.com/w/cpp/container)
+

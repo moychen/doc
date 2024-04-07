@@ -8,11 +8,7 @@
 
 ​		本教程可以作为 Linux 性能工具的免费速成课程，与广大 Linux 系统工作人员分享。希望大家喜欢并觉得有用。下面是[播放列表](https://www.youtube.com/watch?v=FJW8nGV4jxY&list=PLhhdIMVi0o5RNrf8E2dUijvGpqKLB9TCR)。
 
-
-
 **原文地址：**[Netflix at Velocity 2015: Linux Performance Tools](https://netflixtechblog.com/netflix-at-velocity-2015-linux-performance-tools-51964ddb81cf)
-
-
 
 ## 性能分析文章
 
