@@ -44,6 +44,4 @@ etcd also keeps a secondary in-memory [btree](https://en.wikipedia.org/wiki/B-tr
 
 ## Glossary
 
-![image-20220503113908241](C:\Users\neighbor\AppData\Roaming\Typora\typora-user-images\image-20220503113908241.png)
-
-
+![image-20220503113908241](images/etcd/image-20220503113908241.png)
