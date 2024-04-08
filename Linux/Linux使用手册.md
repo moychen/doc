@@ -93,8 +93,6 @@ find lib -type f  -a -newer lib/xxxx -o -type l -a -newer lib/xxxx |xargs tar -c
 
 ```
 
-
-
 ```bash
 # 去除配置中的注释和所有的空行
 $ cat sentinel.conf | grep -v "#" | grep -v "^$" > sentinel-26379.conf
@@ -1007,8 +1005,6 @@ c.id列显示了CPU处在空闲状态的时间百分比；
 d.wa列表示IO等待所占的CPU时间百分比。wa值越高，说明IO等待越严重。如果wa值超过20%，说明IO等待严重 。
 e.st列一般不关注，虚拟机占用的时间百分比。 （Linux 2.6.11）
 ```
-
-### perf
 
 ### lsof
 

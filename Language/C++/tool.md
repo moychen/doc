@@ -318,7 +318,7 @@ $ ./configure --prefix=/usr/local/gmp-6.1.0/
 # MPFR: https://gcc.gnu.org/pub/gcc/infrastructure/
 $ ./configure --prefix=/usr/local/mpfr-4.1.0/     --with-gmp-include=/usr/local/gmp-6.1.0/include     --with-gmp-lib=/usr/local/gmp-6.1.0/lib
 
-#MPC: https://gcc.gnu.org/pub/gcc/infrastructure/
+# MPC: https://gcc.gnu.org/pub/gcc/infrastructure/
 $ ./configure --prefix=/usr/local/mpc-1.2.1     --with-gmp-include=/usr/local/gmp-6.1.0/include --with-gmp-lib=/usr/local/gmp-6.1.0/lib --with-mpfr-include=/usr/local/mpfr-4.1.0/include --with-mpfr-lib=/usr/local/mpfr-4.1.0/lib
 
 # GCC: https://ftp.gnu.org/gnu/gcc/gcc-4.4.6/
