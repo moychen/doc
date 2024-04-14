@@ -10,6 +10,32 @@
 
 **原文地址：**[Netflix at Velocity 2015: Linux Performance Tools](https://netflixtechblog.com/netflix-at-velocity-2015-linux-performance-tools-51964ddb81cf)
 
+## perf 
+
+```
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 性能分析文章
 
 ### 1. 60s Linux 性能分析
