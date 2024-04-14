@@ -325,9 +325,105 @@ oracle提供了五种字符数据类型：char、nchar、varchar、varchar2、nv
 
 ### sqlldr
 
+```
+SQLLDR keyword=value [,keyword=value,...]
+```
+
+```
+有效的关键字:
+
+    userid -- ORACLE 用户名/口令
+   control -- 控制文件名
+       log -- 日志文件名
+       bad -- 错误文件名
+      data -- 数据文件名
+   discard -- 废弃文件名
+discardmax -- 允许废弃的文件的数目         (全部默认)
+      skip -- 要跳过的逻辑记录的数目  (默认 0)
+      load -- 要加载的逻辑记录的数目  (全部默认)
+    errors -- 允许的错误的数目         (默认 50)
+      rows -- 常规路径绑定数组中或直接路径保存数据间的行数
+               (默认: 常规路径 64, 所有直接路径)
+  bindsize -- 常规路径绑定数组的大小 (以字节计)  (默认 256000)
+    silent -- 运行过程中隐藏消息 (标题,反馈,错误,废弃,分区)
+    direct -- 使用直接路径                     (默认 FALSE)
+   parfile -- 参数文件: 包含参数说明的文件的名称
+  parallel -- 执行并行加载                    (默认 FALSE)
+      file -- 要从以下对象中分配区的文件
+skip_unusable_indexes -- 不允许/允许使用无用的索引或索引分区  (默认 FALSE)
+skip_index_maintenance -- 没有维护索引, 将受到影响的索引标记为无用  (默认 FALSE)
+commit_discontinued -- 提交加载中断时已加载的行  (默认 FALSE)
+  readsize -- 读取缓冲区的大小               (默认 1048576)
+external_table -- 使用外部表进行加载; NOT_USED, GENERATE_ONLY, EXECUTE  (默认 NOT_USED)
+columnarrayrows -- 直接路径列数组的行数  (默认 5000)
+streamsize -- 直接路径流缓冲区的大小 (以字节计)  (默认 256000)
+multithreading -- 在直接路径中使用多线程
+ resumable -- 启用或禁用当前的可恢复会话  (默认 FALSE)
+resumable_name -- 有助于标识可恢复语句的文本字符串
+resumable_timeout -- RESUMABLE 的等待时间 (以秒计)  (默认 7200)
+date_cache -- 日期转换高速缓存的大小 (以条目计)  (默认 1000)
+no_index_errors -- 出现任何索引错误时中止加载  (默认 FALSE)
+
+PLEASE NOTE: 命令行参数可以由位置或关键字指定
+。前者的例子是 'sqlldr
+scott/tiger foo'; 后一种情况的一个示例是 'sqlldr control=foo
+userid=scott/tiger'。位置指定参数的时间必须早于
+但不可迟于由关键字指定的参数。例如,
+允许 'sqlldr scott/tiger control=foo logfile=log', 但是
+不允许 'sqlldr scott/tiger control=foo log', 即使
+参数 'log' 的位置正确。
+```
+
+```shell
+$ sqlldr userid=xxx/xxx@xxx  control=./ctl/xxx.ctl log=./xxx.log   bad=./xxx.bad
+
+$ sqlldr userid=xxx/xxx@xxx  control=./ctl/xxx.ctl log=./xxx.log   bad=./xxx.bad  rows=5000 bindsize=20971520 readsize=20971520
+
+$ sqlldr userid=xxx/xxx@xxx  control=./ctl/xxx.ctl log=./xxx.log   bad=./xxx.bad direct=y 
+
+$ sqlldr userid=xxx/xxx@xxx  control=./ctl/xxx.ctl log=./xxx.log   bad=./xxx.bad direct=y streamsize=2560000
+```
+
 #### 常见问题
 
+##### 1. sqlldr 导入归档数据的时候是直接路径导入的(OPTIONS(DIRECT=true))
 
+​		直接路径加载过程中，索引会变成 unusable 状态,加载完成后变为 valid 状态，如果导入数据中存在重复数据，则索引会一直失效。
+
+##### 2. Field in data file exceeds maximum length
+
+​		sqlldr 限制 ctl 文件默认字段类型为 char 类型超过 char 的最大限制 255 之后，会出现该报错，需通过在 ctl 文件中对字段指定 char(xxx) 的方式解决该问题（xxx 为字段类型在数据库中实际定义的长度）。
+
+```
+OPTIONS(DIRECT=true)
+LOAD DATA
+INFILE '/xxxx/xxxxx.txt'
+APPEND INTO TABLE HISJY_TREALDEAL
+FIELDS TERMINATED BY X'09'
+trailing nullcols
+(
+xxx,
+xxx,
+xxx char(256),
+xxx
+)
+```
+
+##### 3. Column not found before end of logical record (use TRAILING NULLCOLS)
+​		sqlldr导入时若最后一列允许为空，且导出内容为空不包含该列，需在ctl文件中增加 trailing nullcols  参数控制。
+
+```
+OPTIONS(DIRECT=true)
+LOAD DATA
+INFILE '/xxxx/xxxxx.txt'
+APPEND INTO TABLE HISJY_TREALDEAL
+FIELDS TERMINATED BY X'09'
+trailing nullcols
+(
+XXX,
+xxx
+)
+```
 
 ### exp/imp
 
@@ -431,6 +527,19 @@ TTS_OWNERS 拥有可传输表空间集中数据的用户
 
 ​		数据泵不加载具有禁用唯一索引的表。要将数据加载到表中，索引必须被放弃或重新启用。
 
+```sql
+GRANT EXECUTE ON SYS.utl_file TO dbtrade;
+revoke execute on sys.utl_file from dbtrade;
+```
+
+```sql
+-- 停止备份
+SELECT 'DROP TABLE '||o.owner||'."'||object_name||'" PURGE;' FROM dba_objects o, dba_datapump_jobs j WHERE o.owner=j.owner_name AND o.object_name=j.job_name AND j.job_name NOT LIKE 'BIN$%';
+begin
+	DBMS_DATAPUMP.STOP_JOB(DBMS_DATAPUMP.ATTACH('SYS_EXPORT_TABLE_01','TRADE'));
+end;
+```
+
 
 
 ## 4. 性能分析
@@ -452,8 +561,6 @@ AAS/逻辑CPU数（逻辑CPU数 = 物理CPU * 核数）真实的反映了数据�
 
 ```
 
-
-
 ```
 $ sqlplus /nolog
 
@@ -462,8 +569,6 @@ SQL> exec dbms_workload_repository.create_snapshot;
 SQL> exec dbms_workload_repository.create_snapshot;
 SQL> @?/rdbms/admin/awrrpt
 ```
-
-
 
 
 
@@ -574,7 +679,7 @@ WHERE l.object_id = o.object_id
 ORDER BY sid, s.serial#; 
 
 kill掉当前的锁对象: 
-alter system kill session 'sid， s.serial#‘; 
+alter system kill session 'sid,s.serial#‘; 
 
 查询当前正在执行的事务: 
 SELECT s.sid,   
@@ -736,6 +841,4 @@ ORA-01455: converting column overflows integer datatype
 ### 4.7 扩展表空间
 
 ![lQLPJxa0_Tg78O7NAcPNA1SwBJxwEBacTDsDKZlSz0CkAA_852_451](images/Oracle/lQLPJxa0_Tg78O7NAcPNA1SwBJxwEBacTDsDKZlSz0CkAA_852_451.png)
-
-### 4.8 
 

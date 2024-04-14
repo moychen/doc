@@ -10,6 +10,76 @@
 
 **原文地址：**[Netflix at Velocity 2015: Linux Performance Tools](https://netflixtechblog.com/netflix-at-velocity-2015-linux-performance-tools-51964ddb81cf)
 
+## perf 
+
+```
+
+```
+
+## vmstat
+
+```
+Usage:
+ vmstat [options] [delay [count]]
+
+Options:
+ -a, --active           active/inactive memory
+ -f, --forks            number of forks since boot
+ -m, --slabs            slabinfo
+ -n, --one-header       do not redisplay header
+ -s, --stats            event counter statistics
+ -d, --disk             disk statistics
+ -D, --disk-sum         summarize disk statistics
+ -p, --partition <dev>  partition specific statistics
+ -S, --unit <char>      define display unit
+ -w, --wide             wide output
+ -t, --timestamp        show timestamp
+
+ -h, --help     display this help and exit
+ -V, --version  output version information and exit
+```
+
+![image-20240509155932475](images/Linux 性能分析/image-20240509155932475.png)
+
+```
+procs：显示队列和等待状态
+r 列：表示运行队列中的进程数，即当前正在运行的进程数。如果这个值长期大于系统 CPU 个数，说明 CPU 紧张，需进行 CPU 升级（即增加系统 CPU）。
+b 列：表示在等待资源的进程数，即处于不可中断（blocked）状态的进程数，通常是等待 I/O、内存交换完成的进程数。
+
+memory：显示物理内存状态
+
+swpd 列：表示交换（swap）的虚拟内存使用量，表示从实际物理内存已经交换到交换空间的数据量，我这里的值为 0，因为我压根就没有启用 Swap Space。如果你启用了交换空间，发现swpd 列下的值很大，且 swap 字段下的 si、so 列的值长期为 0，这也不会影响系统性能。
+free 列：表示当前可用的空闲物理内存。
+buff 列： Buffers Cache，表示内存缓冲区缓存的数据量，一般对块设备的读写才需要缓冲（即通常用于文件I/O缓存）。
+cache 列：Page Cache，表示内存的页高速缓存的数据量，一般作为文件系统的缓存（即通常用于文件系统缓存），频繁访问的文件都会被缓存，如果 cache 列的值比较大，说明页缓存的文件数较多，如果此时 io 字段中的 bi 列的值较小，说明文件系统效率较好。
+swap：显示交换分区读写情况
+
+si 列：表示每秒从磁盘（即交换空间）交换到内存的数据量（swap in)（单位KB/s）。
+so 列：表示每秒从内存交换到磁盘（即交换空间）的数据量（swap out）（单位KB/s）。
+说明：如果 si、so 长期不为 0，那我们的 Linux 系统的物理内存资源肯能不足了。为什么呢？你想一想，根据内存的相关机制，我们知道长期不为 0，说明数据频繁地在物理内存和交换空间中交换数据，如：需要使用内存的进程会在内存中运行，然后内存会将不常用的文件数据交换到 Swap Space，这样的话 si、so 值势必是不会为 0 的，而且会存在频繁波动。
+
+io：显示磁盘读写情况
+
+bi 列：表示每秒从块设备（磁盘）读取的块数量（blocks in）（单位KB/s）。
+bo 列：表示每秒写入块设备（磁盘）的块数量（blocks out）（单位KB/s）。
+说明：如果 bi + bo 的值大于 1000KB/s，且 wa 值较大，则表示系统磁盘 I/O 有瓶颈，应该提高磁盘的读写性能。
+
+system：显示采集间隔内发生的中断数
+
+in 列：每秒中断的数量，包括时钟中断、网络中断等。
+cs 列：每秒上下文切换的数量，包括进程切换和内核线程切换。
+说明：如果这两个值越大，说明内核消耗的 CPU 时间会越多。
+
+cpu：显示 CPU 的使用状态
+
+us 列：用户空间占用CPU时间的百分比。如果长期大于 50%，就需要考虑优化程序或算法。
+sy 列：内核空间占用CPU时间的百分比。如果 us + sy 长期大于 80%，说明 CPU 资源不足。
+id 列：CPU空闲时间的百分比。
+wa 列：等待 I/O 完成的CPU时间的百分比。wa 越高说明 IO 等待越严重，一般如果 wa 超过 20%，说明 IO 等待严重（可能是因为磁盘大量的随机读写造成）。
+st 列：用于虚拟机监控程序（hypervisor）的CPU时间的百分比（仅在虚拟化环境中可见），因为我使用的就是虚拟机，所以我有这一列。
+因此，对于 CPU 的性能瓶颈分析重点关注 procs 字段的 r 列和 CPU 字段的值。
+```
+
 ## 性能分析文章
 
 ### 1. 60s Linux 性能分析

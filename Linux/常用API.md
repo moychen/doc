@@ -207,7 +207,22 @@ void freeifaddrs(struct ifaddrs *ifa);
 // man 3
 #include <arpa/inet.h>
 const char *inet_ntop(int af, const void *src, char *dst, socklen_t size);
+
+//  The htonl() function converts the unsigned integer hostlong from host byte order to network byte order.
+uint32_t htonl(uint32_t hostlong);
+// The htons() function converts the unsigned short integer hostshort from host byte order to network byte order.
+uint16_t htons(uint16_t hostshort);
+// The ntohl() function converts the unsigned integer netlong from network byte order to host byte order.
+uint32_t ntohl(uint32_t netlong);
+// The ntohs() function converts the unsigned short integer netshort from network byte order to host byte order.
+uint16_t ntohs(uint16_t netshort);
+
+// On the i386 the host byte order is Least Significant Byte first, whereas the network byte order, as used on the Internet, is Most Significant Byte first.
 ```
+
+
+
+
 
 ### 域名解析
 

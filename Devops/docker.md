@@ -1,4 +1,4 @@
-#  Docker入门
+# Docker 手册
 
 ## 1 安装Docker
 
@@ -9,7 +9,7 @@
 其他配置：
 
 ```bash
-# 修改存储位置 ExecStart=/usr/bin/dockerd 后增加--graph=/new-path/docke
+# 修改存储位置 ExecStart=/usr/bin/dockerd 后增加--graph=/new-path/docker
 vim /usr/lib/systemd/system/docker.service
 # 编辑保存成功后
 systemctl daemon-reload

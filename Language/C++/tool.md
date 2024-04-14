@@ -1497,3 +1497,17 @@ $ strings dump.bin
 $ valgrind --log-file="report.log" --tool=memcheck --leak-check=full --show-leak-kinds=all  exe
 ```
 
+
+
+## 动态库路径
+
+* export LD_LIBRARY_PATH=`具体路径`，将某具体路径添加到动态库路径环境变量，但仅当前终端有效
+
+* 将.so文件放到/lib或/usr/lib目录下（不推荐）
+
+* 将库文件绝对路径添加到/etc/ls.so.conf文件中，并用ldconfig命令重建ld.so.cache文件（不推荐）
+
+* 增加编译链接参数 （LDFLAGS = -Wl,--hash-style=sysv,-Bsymbolic,-rpath=./）让程序在当前目录寻找依赖的.so文件，编译链接可执行文件时，增加 -Wl,--rpath=选项，链接器在可执行文件头中记录动态库的路径，动态加载器运行时读取动态库路径，加载动态库
+
+
+
