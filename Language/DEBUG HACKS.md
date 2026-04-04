@@ -276,6 +276,10 @@ U - 表 2-4 中所示的单位
 | w    | 字（4字节）（默认值） |
 | g    | 双字（8字节）         |
 
+#### tel
+
+#### stack
+
 #### info registers (info reg) - 显示寄存器
 
 ```
@@ -416,6 +420,8 @@ until 地址
 #### frame (f) - 选择要显示的栈帧
 
 #### up/down (do) - 在当前调用的栈帧中选择要显示的栈帧
+
+#### search
 
 #### forward - search (fo) - 向前搜索
 

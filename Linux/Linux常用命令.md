@@ -74,6 +74,14 @@ x（eXecute，执行权限）：对文件而言，具有执行文件的权限；
 
 ### ps
 
+```shell
+# 使用内存最多的进程
+$ ps aux --sort=-%mem | head -n 5
+$ smem -t -k -p
+```
+
+
+
 ### find
 
 ```bash
@@ -257,6 +265,8 @@ I/O wait time:
 - 按列排序
    按大写的 F 或 O 键，然后按 a-z 可以将进程按照相应的列进行排序。而大写的 R 键可以将当前的排序倒转。
 
+### htop
+
 ### du&df&dh
 
 ```
@@ -290,6 +300,15 @@ sort -n -k 22 -t ";" 文件名 -o 排序后的文件名
   ：对于特殊符号(如制表符)，可使用类似于-t$'\t'或-t'ctrl+v,tab'(先按ctrl+v，然后按tab键)的方法实现。
 -u：只输出重复行的第一行。结合"-f"使用时，重复的小写行被丢弃。 
 ```
+
+### sync
+
+```shell
+# 手动回收物理内存
+$ sudo sync && sudo echo 3 > /proc/sys/vm/drop_caches
+```
+
+
 
 ### rsync
 
